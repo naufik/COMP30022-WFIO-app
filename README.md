@@ -11,7 +11,7 @@ An application to help the elderly people help reach their destination.
 **Members**:
 
 - @fdarma
-_ @naufik
+- @naufik
 - @syudanardi
 - @staticDDQ
 - @chill-X
