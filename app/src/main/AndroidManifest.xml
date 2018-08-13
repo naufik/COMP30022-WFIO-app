@@ -17,7 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".ElderNavigation" />
-        <activity android:name=".ElderSettings"></activity>
+        <activity android:name=".ElderSettings" />
+        <activity android:name=".LogIn" />
+        <activity android:name=".ChooseAccountType" />
+        <activity android:name=".SignUp"></activity>
     </application>
 
 </manifest>
