@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ElderNavigation"></activity>
+        <activity android:name=".ElderNavigation" />
+        <activity android:name=".ElderSettings"></activity>
     </application>
 
 </manifest>

@@ -13,12 +13,21 @@ public class ElderHome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_home);
-        final Button navigationButton = (Button)findViewById(R.id.navigateButton);
+        Button navigationButton = (Button)findViewById(R.id.navigateButton);
         navigationButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
                 startIntent.putExtra("test", "Hello World?");
+                startActivity(startIntent);
+            }
+        });
+
+        Button settingsBtn = (Button) findViewById(R.id.settingsBtn);
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent (getApplicationContext(), ElderSettings.class);
                 startActivity(startIntent);
             }
         });
