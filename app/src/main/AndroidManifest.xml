@@ -20,7 +20,9 @@
         <activity android:name=".ElderSettings" />
         <activity android:name=".LogIn" />
         <activity android:name=".ChooseAccountType" />
-        <activity android:name=".SignUp"></activity>
+        <activity android:name=".SignUp" />
+        <activity android:name=".CarerHome" />
+        <activity android:name=".CarerConnect"></activity>
     </application>
 
 </manifest>
