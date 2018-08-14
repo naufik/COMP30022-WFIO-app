@@ -33,14 +33,6 @@ public class ElderHome extends AppCompatActivity {
             }
         });
 
-        Button logoutBtn = (Button) findViewById(R.id.logoutBtn);
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
-                startActivity(startIntent);
-            }
-        });
     }
 
 }
