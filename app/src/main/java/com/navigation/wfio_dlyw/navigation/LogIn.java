@@ -17,7 +17,7 @@ public class LogIn extends AppCompatActivity {
         enterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                 startActivity(startIntent);
             }
         });
