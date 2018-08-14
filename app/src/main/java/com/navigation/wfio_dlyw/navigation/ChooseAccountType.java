@@ -13,21 +13,21 @@ public class ChooseAccountType extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-        ImageView chooseCarer = (ImageView) findViewById(R.id.chooseCarer);
-        chooseCarer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(startIntent);
-            }
-        });
-        ImageView chooseElder = (ImageView) findViewById(R.id.chooseElder);
-        chooseElder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
-                startActivity(startIntent);
-            }
-        });
+//        ImageView chooseCarer = (ImageView) findViewById(R.id.chooseCarer);
+//        chooseCarer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
+//                startActivity(startIntent);
+//            }
+//        });
+//        ImageView chooseElder = (ImageView) findViewById(R.id.chooseElder);
+//        chooseElder.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
+//                startActivity(startIntent);
+//            }
+//        });
     }
 }

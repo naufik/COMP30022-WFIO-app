@@ -8,6 +8,6 @@ public class CarerConnect extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_carer_connect);
+        setContentView(R.layout.activity_carer_home);
     }
 }
