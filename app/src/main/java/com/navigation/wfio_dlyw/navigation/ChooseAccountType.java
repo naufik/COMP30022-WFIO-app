@@ -12,7 +12,7 @@ public class ChooseAccountType extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_choose_account_type);
         ImageView chooseCarer = (ImageView) findViewById(R.id.chooseCarer);
         chooseCarer.setOnClickListener(new View.OnClickListener() {
             @Override

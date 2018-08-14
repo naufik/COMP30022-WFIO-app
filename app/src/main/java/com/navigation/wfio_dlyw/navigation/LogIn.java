@@ -21,7 +21,7 @@ public class LogIn extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
-        final Button signUpBtn = (Button)findViewById(R.id.signUpBtn);
+        Button signUpBtn = (Button)findViewById(R.id.signUpBtn);
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
