@@ -20,5 +20,13 @@ public class CarerHome extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+        Button carerSettingsBtn = (Button)findViewById(R.id.carerSettingsBtn);
+        carerSettingsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
+                startActivity(startIntent);
+            }
+        });
     }
 }

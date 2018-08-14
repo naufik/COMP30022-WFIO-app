@@ -22,7 +22,8 @@
         <activity android:name=".ChooseAccountType" />
         <activity android:name=".SignUp" />
         <activity android:name=".CarerHome" />
-        <activity android:name=".CarerConnect"></activity>
+        <activity android:name=".CarerConnect" />
+        <activity android:name=".CarerSettings"></activity>
     </application>
 
 </manifest>

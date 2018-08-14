@@ -6,14 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class ElderSettings extends AppCompatActivity {
+public class CarerSettings extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_elder_settings);
-        Button elderLogOutBtn = (Button)findViewById(R.id.elderLogOutBtn);
-        elderLogOutBtn.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.activity_carer_settings);
+        final Button carerLogOutBtn = (Button) findViewById(R.id.carerLogOutBtn);
+        carerLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
