@@ -12,7 +12,7 @@ public class ElderSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_settings);
-        Button elderLogOutBtn = (Button)findViewById(R.id.logoutBtn);
+        Button elderLogOutBtn = (Button)findViewById(R.id.elderLogOutBtn);
         elderLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
