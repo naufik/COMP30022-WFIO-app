@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class LogIn extends AppCompatActivity {
 
@@ -17,8 +18,20 @@ public class LogIn extends AppCompatActivity {
         enterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
-                startActivity(startIntent);
+                EditText username = (EditText) findViewById(R.id.username);
+                EditText password = (EditText) findViewById(R.id.password);
+
+                String user = username.getText().toString();
+                String pass = password.getText().toString();
+
+                if (user.equals("Elder") && pass.equals("123")) {
+                    Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                    startActivity(startIntent);
+                }
+                if (user.equals("Carer") && pass.equals("123")) {
+                    Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                    startActivity(startIntent);
+                }
             }
         });
         Button signUpBtn = (Button)findViewById(R.id.signUpBtn);
