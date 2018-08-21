@@ -12,6 +12,8 @@ public class CarerHome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_home);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
         Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
         connectToElderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
