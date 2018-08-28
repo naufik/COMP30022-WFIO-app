@@ -8,13 +8,6 @@
         app:showAsAction="ifRoom"
     />
 
-    <item
-        android:id="@+id/settingsTB"
-        android:icon="@drawable/settings"
-        android:title="@string/home"
-        app:showAsAction="ifRoom"
-    />
-
     <!-- Settings, should always be in the overflow -->
 
 </menu>
