@@ -8,6 +8,8 @@ import com.android.volley.toolbox.Volley;
 
 public class Requester {
 
+    public static String SERVER_URL = "http://rawon.naufik.net";
+
     private static Requester instance;
     private Context context;
     private RequestQueue requestQueue;
