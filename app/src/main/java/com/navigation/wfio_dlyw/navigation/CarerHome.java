@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ToolbarWidgetWrapper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,8 +20,10 @@ public class CarerHome extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_home);
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
         Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
         connectToElderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -30,6 +33,7 @@ public class CarerHome extends AppCompatActivity{
             }
         });
         Button carerSettingsBtn = (Button)findViewById(R.id.carerSettingsBtn);
+
         carerSettingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -38,26 +42,31 @@ public class CarerHome extends AppCompatActivity{
             }
         });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.tool, menu);
-        return super.onCreateOptionsMenu(menu);
+        inflater.inflate(R.menu.tool,menu);
+        return true;
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle presses on the action bar items
-//        switch (item.getItemId()) {
-//            case R.id.action_search:
-//                openSearch();
-//                return true;
-//            case R.id.action_compose:
-//                composeMessage();
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.back_button:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.se:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
 }
