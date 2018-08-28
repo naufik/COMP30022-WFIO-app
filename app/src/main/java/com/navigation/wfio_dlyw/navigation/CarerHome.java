@@ -21,7 +21,7 @@ public class CarerHome extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_home);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCH);
         setSupportActionBar(myToolbar);
 
         Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
@@ -29,15 +29,6 @@ public class CarerHome extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 Intent startIntent = new Intent(getApplicationContext(), CarerConnect.class);
-                startActivity(startIntent);
-            }
-        });
-        Button carerSettingsBtn = (Button)findViewById(R.id.carerSettingsBtn);
-
-        carerSettingsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
                 startActivity(startIntent);
             }
         });
@@ -53,13 +44,9 @@ public class CarerHome extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.back_button:
-                // User chose the "Settings" item, show the app settings UI...
-                return true;
-
-            case R.id.se:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
+            case R.id.settingsTB:
+                Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
+                startActivity(startIntent);
                 return true;
 
             default:

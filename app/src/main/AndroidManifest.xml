@@ -15,14 +15,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ElderNavigation" />
-        <activity android:name=".ElderSettings" />
-        <activity android:name=".ElderHome" />
-        <activity android:name=".ChooseAccountType" />
-        <activity android:name=".SignUp" />
-        <activity android:name=".CarerHome" />
-        <activity android:name=".CarerConnect" />
-        <activity android:name=".CarerSettings"></activity>
+        <activity android:name=".ElderNavigation" android:label="@string/app_name"/>
+        <activity android:name=".ElderSettings" android:label="@string/settings"/>
+        <activity android:name=".ElderHome" android:label="@string/home"/>
+        <activity android:name=".ChooseAccountType" android:label="@string/ChooseAccountType" />
+        <activity android:name=".SignUp" android:label="@string/SignUp"/>
+        <activity android:name=".CarerHome" android:label="@string/home"/>
+        <activity android:name=".CarerConnect" android:label="@string/CarerConnect"/>
+        <activity android:name=".CarerSettings" android:label="@string/settings"></activity>
     </application>
 
 </manifest>
