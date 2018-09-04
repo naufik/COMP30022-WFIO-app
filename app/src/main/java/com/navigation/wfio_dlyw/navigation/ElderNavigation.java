@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ElderNavigation extends AppCompatActivity {
 
@@ -35,6 +36,7 @@ public class ElderNavigation extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.back_button:
                 Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                Toast.makeText(this, "get back on it, come on come on", Toast.LENGTH_LONG).show();
                 startActivity(startIntent);
                 return true;
 
