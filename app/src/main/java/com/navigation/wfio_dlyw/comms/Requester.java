@@ -49,9 +49,9 @@ public class Requester {
         this.requestQueue.add(req);
     }
 
-    public void GETRequest(@Nullable JSONObject body, Response.Listener<JSONObject> onResponse) {
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, SERVER_URL,
-                body, onResponse, new Response.ErrorListener(){
+    public void GETRequest(Response.Listener<JSONObject> onResponse) {
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, SERVER_URL,
+                null, onResponse, new Response.ErrorListener(){
                 @Override
                 public void onErrorResponse(VolleyError err) {
 
