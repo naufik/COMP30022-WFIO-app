@@ -2,14 +2,12 @@ package com.navigation.wfio_dlyw.comms;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.android.volley.*;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Requester {
@@ -24,6 +22,7 @@ public class Requester {
     private Requester(Context context) {
         this.context = context;
         this.requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+        this.requestQueue.start();
     }
 
     public static synchronized Requester getInstance(Context context) {
@@ -43,7 +42,8 @@ public class Requester {
                 body, onResponse, new Response.ErrorListener(){
                     @Override
                     public void onErrorResponse(VolleyError err) {
-
+                        Toast.makeText(context.getApplicationContext(), err.getMessage(),
+                                Toast.LENGTH_LONG);
                     }
                 });
         this.requestQueue.add(req);
@@ -52,10 +52,11 @@ public class Requester {
     public void GETRequest(Response.Listener<JSONObject> onResponse) {
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, SERVER_URL,
                 null, onResponse, new Response.ErrorListener(){
-                @Override
-                public void onErrorResponse(VolleyError err) {
-
-                }
+                    @Override
+                    public void onErrorResponse(VolleyError err) {
+                        Toast.makeText(context.getApplicationContext(), err.getMessage(),
+                                Toast.LENGTH_LONG);
+                    }
         });
         this.requestQueue.add(req);
     }
