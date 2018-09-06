@@ -6,5 +6,6 @@
     <string name="CarerConnect">Connect to an Elder</string>
     <string name="ElderConnect">Connect to a Carer</string>
     <string name="SignUp">Sign-Up</string>
+    <string name="Login">Login</string>
     <string name="ChooseAccountType">Choose Account Type</string>
 </resources>
