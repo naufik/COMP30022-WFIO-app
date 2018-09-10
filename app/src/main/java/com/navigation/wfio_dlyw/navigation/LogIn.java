@@ -10,18 +10,30 @@ import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.view.KeyEvent;
+import android.speech.tts.TextToSpeech;
+import com.navigation.wfio_dlyw.utility.*;
+import android.speech.tts.TextToSpeech.OnInitListener;
 
 import com.navigation.wfio_dlyw.comms.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 public class LogIn extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+        text2speech t2t = new text2speech(getApplicationContext());
+
+        Button b1 = (Button)findViewById(R.id.forgotPassword);
+
+        t2t.buttonTalk(b1, "Johny Johny... YES PAPA!");
+
 
         //for the moment it only redirects to the elder's home page
         Button enterBtn = (Button)findViewById(R.id.enterBtn);
