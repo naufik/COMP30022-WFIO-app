@@ -1,5 +1,8 @@
 package com.navigation.wfio_dlyw.comms;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
@@ -39,55 +42,81 @@ public class Requester {
         this.requestQueue.add(req);
     }
 
-    public void POSTRequest(String endpoint, @Nullable JSONObject body, Response.Listener<JSONObject> onResponse) {
+    private void post(String endpoint, JSONObject body,
+                      Response.Listener<JSONObject> onResponse, String auth) {
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,
                 SERVER_URL + endpoint,
                 body,
                 onResponse,
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError err) {
+                err -> {
                         Toast.makeText(context, err.getMessage(),
-                                Toast.LENGTH_LONG);
-                    }
-                });
+                                Toast.LENGTH_LONG).show();
+        }) { //no semicolon or coma
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json");
+                if (auth != null) {
+                    params.put("WFIO-AUTH", auth);
+                }
+                return params;
+            }
+        };
         this.addRequest(req);
     }
 
-    public void GETRequest(String endpoint, Response.Listener<JSONObject> onResponse) {
+    private void get(String endpoint, Response.Listener<JSONObject> onResponse, String auth) {
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,
                 SERVER_URL + endpoint,
                 null,
                 onResponse,
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError err) {
+                err -> {
                         Toast.makeText(context, err.getMessage(),
-                                Toast.LENGTH_LONG);
-                    }
-        });
+                                Toast.LENGTH_LONG).show();
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/json");
+                if (auth != null) {
+                    params.put("WFIO-AUTH", auth);
+                }
+                return params;
+            }
+        };
         this.addRequest(req);
     }
 
     public void getServerStatus(Function<Boolean, Void> onStatusReceived) {
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,
-                SERVER_URL,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            onStatusReceived.apply((Boolean) response.get("status"));
-                        } catch (JSONException e) {
+        this.get("", response -> {
+                try {
+                    onStatusReceived.apply((Boolean) response.get("online"));
+                } catch (Exception e) {
+                    Toast.makeText(context, e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+            }, null);
+    }
 
-                        }
-                    }
-                },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError e){
+    public void requestAction(ServerAction action, JSONObject params,
+                              Response.Listener<JSONObject> onFinish, String token) {
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("action", action.getPrompt());
+            jsonObj.put("params", params);
+            if (token != null) {
+                jsonObj.put("auth", token);
+            }
+        } catch (JSONException e) {
+            Toast.makeText(this.context, "Invalid Request Sent -- Contact Developer!",
+                    Toast.LENGTH_LONG).show();
+        }
+        this.post(action.mapEndpoint(), jsonObj, onFinish, token);
+    }
 
-                    }
-                });
+    public void requestAction(ServerAction action, JSONObject params,
+                              Response.Listener<JSONObject> onFinish) {
+        this.requestAction(action, params, onFinish, null);
+
     }
 }
