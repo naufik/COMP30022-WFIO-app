@@ -23,6 +23,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.VoidDDQ.Cam.UnityPlayerActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,6 +43,15 @@ public class ElderNavigation extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
+
+        Button arButton = (Button) findViewById(R.id.AR);
+        arButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
+                startActivity(startIntent);
+            }
+        });
     }
 
     public void sendOnChannel(View v){
