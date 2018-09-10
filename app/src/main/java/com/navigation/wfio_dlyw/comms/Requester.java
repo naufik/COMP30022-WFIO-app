@@ -42,7 +42,7 @@ public class Requester {
         this.requestQueue.add(req);
     }
 
-    private void post(String endpoint, JSONObject body,
+    public void post(String endpoint, JSONObject body,
                       Response.Listener<JSONObject> onResponse, String auth) {
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,
                 SERVER_URL + endpoint,
@@ -65,7 +65,7 @@ public class Requester {
         this.addRequest(req);
     }
 
-    private void get(String endpoint, Response.Listener<JSONObject> onResponse, String auth) {
+    public void get(String endpoint, Response.Listener<JSONObject> onResponse, String auth) {
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,
                 SERVER_URL + endpoint,
                 null,

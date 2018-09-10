@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.navigation.wfio_dlyw.comms.*;
 
 public class LogIn extends AppCompatActivity {
 
@@ -15,24 +18,15 @@ public class LogIn extends AppCompatActivity {
         setContentView(R.layout.activity_log_in);
         //for the moment it only redirects to the elder's home page
         Button enterBtn = (Button)findViewById(R.id.enterBtn);
-        enterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                EditText username = (EditText) findViewById(R.id.username);
-                EditText password = (EditText) findViewById(R.id.password);
-
-                String user = username.getText().toString();
-                String pass = password.getText().toString();
-
-                if (user.equals("Elder") && pass.equals("123")) {
-                    Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                    startActivity(startIntent);
-                }
-                if (user.equals("Carer") && pass.equals("123")) {
-                    Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
-                    startActivity(startIntent);
-                }
-            }
+        enterBtn.setOnClickListener((v) -> {
+            Requester.getInstance(this).getServerStatus(
+                    (b) -> {
+                        Toast.makeText(this.getApplicationContext(),
+                                b ? "YES" : "NO",
+                                Toast.LENGTH_LONG).show();
+                        return null;
+                    }
+            );
         });
         Button signUpBtn = (Button)findViewById(R.id.signUpBtn);
         signUpBtn.setOnClickListener(new View.OnClickListener() {
