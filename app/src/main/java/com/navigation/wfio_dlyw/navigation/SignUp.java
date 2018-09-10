@@ -8,17 +8,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class SignUp extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+
         setContentView(R.layout.activity_sign_up);
         Button submitBtn = (Button) findViewById(R.id.submitBtn);
-        submitBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        submitBtn.setOnClickListener(view -> {
                 Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
+                String type = null;
+                if (extras != null){
+                    type = extras.getString("type");
+                }
 
                 //trim removes leading and trailing whitespace
                 EditText usernameS = (EditText) findViewById(R.id.usernameS);
@@ -55,9 +65,24 @@ public class SignUp extends AppCompatActivity {
                 }else if(emailSS.contains(" ") && !emailSS.contains("@")){
                     Toast.makeText(getApplicationContext(), "Invalid E-mail address", Toast.LENGTH_LONG).show();
                 }else{
+                    try {
+                        JSONObject params = new JSONObject();
+                        params.put("username", usernameSS).put("fullname", fullnameSS)
+                                .put("password", passwordSS).put("email", emailSS)
+                                .put("accountType", type);
+
+                        Requester minta = Requester.getInstance(this);
+
+                        minta.requestAction(ServerAction.USER_SIGN_UP, params,
+                                t -> {
+                                    try {
+                                        String s = t.getJSONObject("result").getString("token");
+                                        Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                                    } catch (JSONException e) {}
+                                });
+
+
+                    } catch (JSONException e) {}
                     startActivity(startIntent);
                 }
-            }
-        });
-    }
-}
+    });}}
