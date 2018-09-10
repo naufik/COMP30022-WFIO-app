@@ -6,6 +6,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.navigation.wfio_dlyw.comms.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LogIn extends AppCompatActivity {
 
@@ -15,14 +21,29 @@ public class LogIn extends AppCompatActivity {
         setContentView(R.layout.activity_log_in);
         //for the moment it only redirects to the elder's home page
         Button enterBtn = (Button)findViewById(R.id.enterBtn);
-        enterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        enterBtn.setOnClickListener(view -> {
                 EditText username = (EditText) findViewById(R.id.username);
                 EditText password = (EditText) findViewById(R.id.password);
 
                 String user = username.getText().toString();
                 String pass = password.getText().toString();
+
+                try {
+                    JSONObject params = new JSONObject();
+                    params.put("username", username).put("password", password);
+                } catch (JSONException e) {
+                }
+
+                Requester minta = Requester.getInstance(this);
+
+                minta.requestAction(ServerAction.SERVER_TEST_ROOT, null,
+                        t -> {
+                    try {
+                        String s = t.getString("message");
+                        Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) {}
+                        });
+
 
                 if (user.equals("Elder") && pass.equals("123")) {
                     Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
@@ -32,8 +53,7 @@ public class LogIn extends AppCompatActivity {
                     Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                     startActivity(startIntent);
                 }
-            }
-        });
+            });
         Button signUpBtn = (Button)findViewById(R.id.signUpBtn);
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override

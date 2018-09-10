@@ -32,29 +32,11 @@ public class ElderNavigation extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         Button favoritesButton = (Button) findViewById(R.id.favoritesButton);
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                exampleRequest();
-            }
-        });
+
     }
 
-    private void exampleRequest(){
-        Requester rs = Requester.getInstance(this.getApplicationContext());
 
-        rs.GETRequest(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    makeToast(response.getString("message"));
-                } catch (JSONException e) {
-                    makeToast(e.getMessage());
-                }
-            }
 
-        });
-    }
 
     private void makeToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();

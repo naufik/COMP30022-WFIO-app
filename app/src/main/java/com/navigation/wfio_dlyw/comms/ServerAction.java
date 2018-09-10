@@ -2,7 +2,7 @@ package com.navigation.wfio_dlyw.comms;
 
 import com.android.volley.Request;
 
-enum ServerAction {
+public enum ServerAction {
     SERVER_TEST_ROOT("root.test", Request.Method.GET),
     USER_LOGIN("user.login", Request.Method.POST),
     USER_SIGN_UP("user.signup", Request.Method.POST),
