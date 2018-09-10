@@ -49,7 +49,8 @@
         <receiver android:name=".NotificationReceiver" />
 
         <activity android:name=".AnswerHelp" />
-        <activity android:name=".EnterCurrentPassword"></activity>
+        <activity android:name=".EnterCurrentPassword" />
+        <activity android:name=".NewPassword"></activity>
     </application>
 
 </manifest>
