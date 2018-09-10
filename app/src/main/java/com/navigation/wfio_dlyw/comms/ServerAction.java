@@ -1,22 +1,36 @@
 package com.navigation.wfio_dlyw.comms;
 
-public enum ServerAction {
-    USER_LOGIN("user.login"),
-    USER_SIGN_UP("user.signup"),
-    USER_GET_INFO("user.details"),
-    USER_GET_FAVORITES("user.favs");
+import com.android.volley.Request;
+
+enum ServerAction {
+    SERVER_TEST_ROOT("root.test", Request.Method.GET),
+    USER_LOGIN("user.login", Request.Method.POST),
+    USER_SIGN_UP("user.signup", Request.Method.POST),
+    USER_GET_INFO("user.details", Request.Method.GET),
+    USER_MODIFY_RECORD("user.modify", Request.Method.POST),
+    USER_GET_FAVORITES("user.getfavs", Request.Method.GET),
+    ELDER_REQUEST_CODE("auth.codelink", Request.Method.POST),
+    MESSAGE_PULL("msg.pull", Request.Method.GET),
+    MESSAGE_SEND("msg.send", Request.Method.POST);
 
     private String actionString;
+    private int method;
 
-    ServerAction(String s) {
-        this.actionString = s;
+    ServerAction(String actionPrompt, int httpRequestMethod) {
+        this.actionString = actionPrompt;
+        this.method = httpRequestMethod;
     }
 
     public String getPrompt() {
         return this.actionString;
-    };
+    }
+
+    public int getRequestMethod() {
+        return this.method;
+    }
 
     public String mapEndpoint() {
-        return this.actionString.split(".")[0];
+        String t = this.actionString.split(".")[0];
+        return t.equalsIgnoreCase("root") ? "" : t;
     }
 }
