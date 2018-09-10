@@ -2,10 +2,12 @@ package com.navigation.wfio_dlyw.navigation;
 
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,25 +27,43 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 public class ElderNavigation extends AppCompatActivity {
 
-    NotificationCompat.Builder notification;
+    public static final String channel_1_ID = "channel 1";
+    public static final String channel_2_ID = "channel 2";
     private static final int uniqueID = 45612;
 
+    private void createNotificationChannels(){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            NotificationChannel channel1= new NotificationChannel(
+                    channel_1_ID,
+                    "channel 1",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel1.setDescription("This is Channel 1");
+            NotificationChannel channel2= new NotificationChannel(
+                    channel_2_ID,
+                    "channel 1",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            channel2.setDescription("This is Channel 2");
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel1);
+            manager.createNotificationChannel(channel2);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_navigation);
 
-        notification  = new NotificationCompat.Builder(ElderNavigation.this, "45612");
-        notification.setAutoCancel(true);
-
-        Button notif = (Button) findViewById(R.id.notif);
-        notif.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ButtonClicked(view);
-            }
-        });
+//        Button notif = (Button) findViewById(R.id.notif);
+//        notif.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ButtonClicked(view);
+//            }
+//        });
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
@@ -58,22 +78,6 @@ public class ElderNavigation extends AppCompatActivity {
 
     }
 
-    public void ButtonClicked(View view) {
-        //Build the notification
-        notification.setSmallIcon(R.drawable.ic_launcher_background);
-        notification.setTicker("This is the ticker");
-        notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("Here is the title");
-        notification.setContentText("I am body test of your notification");
-
-        Intent intent = new Intent(this, ElderNavigation.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        notification.setContentIntent(pendingIntent);
-
-        //Build Notification and issues it
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.notify(uniqueID, notification.build());
-    }
 //
 //    private void exampleRequest(){
 //        Requester rs = Requester.getInstance(this.getApplicationContext());
@@ -89,11 +93,11 @@ public class ElderNavigation extends AppCompatActivity {
 //            }
 //
 //        });
+////    }
+//
+//    private void makeToast(String msg) {
+//        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
 //    }
-
-    private void makeToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
