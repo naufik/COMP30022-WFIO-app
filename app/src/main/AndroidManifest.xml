@@ -47,7 +47,12 @@
         <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
-
+        <activity
+            android:name=".MapActivity"
+            android:label="Map Activity" />
+        <activity
+            android:name=".MapSwitch"
+            android:label="Map Switch" />
         <receiver android:name=".NotificationReceiver" />
 
         <activity android:name=".AnswerHelp"></activity>
