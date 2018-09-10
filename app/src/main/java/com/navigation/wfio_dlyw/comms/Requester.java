@@ -111,7 +111,13 @@ public class Requester {
             Toast.makeText(this.context, "Invalid Request Sent -- Contact Developer!",
                     Toast.LENGTH_LONG).show();
         }
-        this.post(action.mapEndpoint(), jsonObj, onFinish, token);
+
+        if (action.getRequestMethod() == Request.Method.POST) {
+            this.post(action.mapEndpoint(), jsonObj, onFinish, token);
+        } else if (action.getRequestMethod() == Request.Method.GET) {
+            this.get(action.mapEndpoint(),onFinish, token);
+        }
+
     }
 
     public void requestAction(ServerAction action, JSONObject params,
