@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -46,35 +47,35 @@ public class ElderNavigation extends AppCompatActivity {
         String title = "New Notif";
         String message = "yeet";
 
+        //start an activity, then choose intent
+        Intent activityIntent = new Intent(this, AnswerHelp.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,
+                0, activityIntent, 0);
+
+        //instant intent
+        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
+        broadcastIntent.putExtra("toastMessage", message);
+        PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0,
+                broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         Notification notification = new NotificationCompat.Builder(this, channel_1_ID)
                 .setSmallIcon(R.drawable.ic_child)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setColor(Color.BLUE)
+                //click this shows the new activity
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                //clicks Toast and creates new Intent use this to decline and answer help request immediately
+                .addAction(R.mipmap.ic_launcher, "Accept", actionIntent)
+                .addAction(R.mipmap.ic_launcher, "Decline",actionIntent)
                 .build();
         //need to give different id's if you want to give multiple notifications instanteneously
         notificationManager.notify(1, notification);
-
     }
 
-//    private void exampleRequest(){
-//        Requester rs = Requester.getInstance(this.getApplicationContext());
-//
-//        rs.GETRequest(new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                try {
-//                    makeToast(response.getString("message"));
-//                } catch (JSONException e) {
-//                    makeToast(e.getMessage());
-//                }
-//            }
-//
-//        });
-////    }
-//
-//    private void makeToast(String msg) {
-//        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-//    }
+
     public void createNotificationChannels(){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
             NotificationChannel channel1= new NotificationChannel(
