@@ -1,6 +1,5 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -10,12 +9,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,7 +16,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -33,14 +25,12 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private boolean mLocationPermission;
     private Location mLastKnownLocation;
-    private String destination;
-    private Location mDefaultLocation;
 
     private static final int CASE_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = Maps.class.getSimpleName();
-    //private final LatLng mDefaultLocation = new LatLng(-37.8070, 144.9612);
+    private final LatLng mDefaultLocation = new LatLng(-37.8070, 144.9612);
 
-    private final String ROUTE_URL = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&key=%s";
+    private final String ROUTE_URL = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&key=" + "@string/google_maps_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +42,6 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        mDefaultLocation = new Location("Zen Apartments");
-        mDefaultLocation.setLatitude(-37.8070);
-        mDefaultLocation.setLongitude(144.9612);
-        Intent intent = getIntent();
-        destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
     }
 
 
@@ -135,10 +119,10 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
     private void getLocation() {
         try {
             if (mLocationPermission) {
-                Task locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
+                Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
-                    public void onComplete(@NonNull Task task) {
+                    public void onComplete(@NonNull Task<Location> task) {
                         if (task.isSuccessful() && task.getResult() != null) {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = (Location) task.getResult();
@@ -146,13 +130,9 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
                                     new LatLng(mLastKnownLocation.getLatitude(),
                                             mLastKnownLocation.getLongitude()), 15));
                         } else {
-                            LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
-                                    mDefaultLocation.getLongitude());
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
-                            mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, 15));
-                            drawRoute(mDefaultLatLng, destination);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 15));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
@@ -161,30 +141,5 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         } catch(SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
-    }
-
-    private void drawRoute(LatLng loc, String dest) {
-        String formatUrl = String.format(ROUTE_URL, loc.latitude + "," + loc.longitude, dest, "AIzaSyBbm1wwfULDJFvSC44OoTa_G8XAnGgV6XM");
-        Log.d(TAG, formatUrl);
-
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, formatUrl,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, response.substring(0,100));
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "Volley Error");
-                }
-        });
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
     }
 }
