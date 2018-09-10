@@ -18,6 +18,7 @@ public class ChooseAccountType extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
+                startIntent.putExtra("type", "CARER");
                 startActivity(startIntent);
             }
         });
@@ -26,6 +27,7 @@ public class ChooseAccountType extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
+                startIntent.putExtra("type", "ELDER");
                 startActivity(startIntent);
             }
         });

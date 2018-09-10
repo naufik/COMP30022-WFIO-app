@@ -31,19 +31,18 @@ public class LogIn extends AppCompatActivity {
                 try {
                     JSONObject params = new JSONObject();
                     params.put("username", username).put("password", password);
-                } catch (JSONException e) {
-                }
-
 
                 Requester minta = Requester.getInstance(this);
 
-                minta.requestAction(ServerAction.SERVER_TEST_ROOT, null,
+                minta.requestAction(ServerAction.USER_LOGIN, params,
                         t -> {
                     try {
-                        String s = t.getString("message");
+                        String s = t.getJSONObject("result").getString("token");
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {}
                         });
+                } catch (JSONException e) {
+                }
 
 
                 if (user.equals("Elder") && pass.equals("123")) {
