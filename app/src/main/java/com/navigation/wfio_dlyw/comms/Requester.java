@@ -98,12 +98,16 @@ public class Requester {
             }, null);
     }
 
-    public void requestAction(ServerAction action, JSONObject params,
+    public void requestAction(ServerAction action, @Nullable JSONObject params,
                               Response.Listener<JSONObject> onFinish, String token) {
         JSONObject jsonObj = new JSONObject();
         try {
             jsonObj.put("action", action.getPrompt());
-            jsonObj.put("params", params);
+            if (params != null) {
+                jsonObj.put("params", params);
+            } else {
+                jsonObj.put("params", new JSONObject());
+            }
             if (token != null) {
                 jsonObj.put("auth", token);
             }
