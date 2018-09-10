@@ -26,7 +26,15 @@ public class ElderHome extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
-                startIntent.putExtra("test", "Hello World?");
+                startActivity(startIntent);
+            }
+        });
+
+        Button connectBtn = (Button)findViewById(R.id.rncButton);
+        connectBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent startIntent = new Intent(getApplicationContext(), ElderConnect.class);
                 startActivity(startIntent);
             }
         });
