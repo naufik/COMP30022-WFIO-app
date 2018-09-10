@@ -33,7 +33,7 @@ public class LogIn extends AppCompatActivity {
                     params.put("username", username).put("password", password);
                 } catch (JSONException e) {
                 }
-
+                /*
                 Requester minta = Requester.getInstance(this);
 
                 minta.requestAction(ServerAction.SERVER_TEST_ROOT, null,
@@ -42,7 +42,7 @@ public class LogIn extends AppCompatActivity {
                         String s = t.getString("message");
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {}
-                        });
+                        });*/
 
 
                 if (user.equals("Elder") && pass.equals("123")) {
