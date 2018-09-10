@@ -14,7 +14,7 @@ public class AnswerHelp extends AppCompatActivity {
 
         Button decline = (Button)findViewById(R.id.decline);
         decline.setOnClickListener(view -> {
-            Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
+            Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
             startActivity(startIntent);
         });
     }
