@@ -30,7 +30,7 @@ public enum ServerAction {
     }
 
     public String mapEndpoint() {
-        String t = this.actionString.split(".")[0];
+        String t = this.actionString.split("\\.")[0];
         return t.equalsIgnoreCase("root") ? "" : t;
     }
 }
