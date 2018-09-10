@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Dark">
-        <activity android:name=".LogIn" android:label="Login" android:theme="@style/AppTheme.Dark">
+        <activity android:name=".LogIn" android:label="Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +21,7 @@
         <activity android:name=".ElderSettings" android:label="@string/settings"/>
         <activity android:name=".ElderHome" android:label="@string/home"/>
         <activity android:name=".ChooseAccountType" android:label="@string/ChooseAccountType" />
-        <activity android:name=".SignUp" android:label="@string/SignUp" android:theme="@style/AppTheme.Dark" />
+        <activity android:name=".SignUp" android:label="@string/SignUp" />
         <activity android:name=".CarerHome" android:label="@string/home"/>
         <activity android:name=".CarerConnect" android:label="@string/CarerConnect"/>
         <activity android:name=".CarerSettings" android:label="@string/settings"/>
