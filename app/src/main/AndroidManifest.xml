@@ -48,10 +48,10 @@
             android:name=".CarerSettings"
             android:label="@string/settings" />
         <activity
-            android:name=".MapActivity"
+            android:name="com.navigation.wfio_dlyw.viewmap.MapActivity"
             android:label="Map Activity" />
         <activity
-            android:name=".MapSwitch"
+            android:name="com.navigation.wfio_dlyw.viewmap.MapSwitch"
             android:label="Map Switch" />
         <receiver android:name=".NotificationReceiver" />
 
