@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
+import android.view.KeyEvent;
 
 import com.navigation.wfio_dlyw.comms.*;
 
@@ -19,6 +22,7 @@ public class LogIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+
         //for the moment it only redirects to the elder's home page
         Button enterBtn = (Button)findViewById(R.id.enterBtn);
         enterBtn.setOnClickListener(view -> {
@@ -62,5 +66,19 @@ public class LogIn extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        EditText edittext = (EditText)findViewById(R.id.password);
+
+        edittext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    //do what you want on the press of 'done'
+                    enterBtn.performClick();
+                }
+                return false;
+            }
+        });
+
     }
 }
