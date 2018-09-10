@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
+    public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     public static final String channel_1_ID = "channel 1";
 
     @Override
@@ -40,6 +41,14 @@ public class ElderNavigation extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
+    }
+
+    public void sendDestination(View view) {
+        Intent intent = new Intent(this, Maps.class);
+        EditText editText = (EditText) findViewById(R.id.navigationSearchField);
+        String destination = editText.getText().toString();
+        intent.putExtra(EXTRA_DESTINATION, destination);
+        startActivity(intent);
     }
 
     public void sendOnChannel(View v){
