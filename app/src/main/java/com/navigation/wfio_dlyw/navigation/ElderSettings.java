@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class ElderSettings extends AppCompatActivity {
 
@@ -16,6 +17,13 @@ public class ElderSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_settings);
+        EditText fullname = (EditText) findViewById(R.id.fullNameES);
+        EditText lastname = (EditText) findViewById(R.id.usernameES);
+        EditText email = (EditText) findViewById(R.id.emailES);
+
+        //TO-DO set hints so that it shows the user's current details
+        fullname.setHint("cool");
+
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarES);
         setSupportActionBar(myToolbar);
@@ -28,6 +36,8 @@ public class ElderSettings extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+
     }
 
     @Override

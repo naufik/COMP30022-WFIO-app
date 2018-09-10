@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class CarerSettings extends AppCompatActivity {
 
@@ -16,6 +17,13 @@ public class CarerSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_settings);
+
+        EditText fullname = (EditText) findViewById(R.id.fullNameCS);
+        EditText username = (EditText) findViewById(R.id.usernameCS);
+        EditText email = (EditText) findViewById(R.id.emailCS);
+
+        //TO-DO set hints so that it shows the user's current details
+        fullname.setHint("cool");
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCS);
         setSupportActionBar(myToolbar);
