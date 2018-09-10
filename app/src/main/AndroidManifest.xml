@@ -24,7 +24,7 @@
         <activity android:name=".SignUp" android:label="@string/SignUp" android:theme="@style/AppTheme.Dark" />
         <activity android:name=".CarerHome" android:label="@string/home"/>
         <activity android:name=".CarerConnect" android:label="@string/CarerConnect"/>
-        <activity android:name=".CarerSettings" android:label="@string/settings"></activity>
+        <activity android:name=".CarerSettings" android:label="@string/settings"/>
     </application>
 
 </manifest>
