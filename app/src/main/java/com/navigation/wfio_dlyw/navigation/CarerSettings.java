@@ -36,6 +36,15 @@ public class CarerSettings extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        Button changePassword = (Button)findViewById(R.id.changePasswordCS);
+        changePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), EnterCurrentPassword.class);
+                startActivity(startIntent);
+            }
+        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

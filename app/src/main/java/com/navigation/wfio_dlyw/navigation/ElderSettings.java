@@ -37,6 +37,15 @@ public class ElderSettings extends AppCompatActivity {
             }
         });
 
+        Button changePassword = (Button)findViewById(R.id.changePasswordES);
+        changePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), EnterCurrentPassword.class);
+                startActivity(startIntent);
+            }
+        });
+
 
     }
 
