@@ -1,7 +1,5 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import com.android.volley.Response;
-import com.navigation.wfio_dlyw.comms.*;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -50,13 +48,13 @@ public class ElderNavigation extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
 
-        Button favoritesButton = (Button) findViewById(R.id.favoritesButton);
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                exampleRequest();
-            }
-        });
+//        Button favoritesButton = (Button) findViewById(R.id.favoritesButton);
+//        favoritesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                exampleRequest();
+//            }
+//        });
 
     }
 
@@ -76,22 +74,22 @@ public class ElderNavigation extends AppCompatActivity {
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.notify(uniqueID, notification.build());
     }
-
-    private void exampleRequest(){
-        Requester rs = Requester.getInstance(this.getApplicationContext());
-
-        rs.GETRequest(new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    makeToast(response.getString("message"));
-                } catch (JSONException e) {
-                    makeToast(e.getMessage());
-                }
-            }
-
-        });
-    }
+//
+//    private void exampleRequest(){
+//        Requester rs = Requester.getInstance(this.getApplicationContext());
+//
+//        rs.GETRequest(new Response.Listener<JSONObject>() {
+//            @Override
+//            public void onResponse(JSONObject response) {
+//                try {
+//                    makeToast(response.getString("message"));
+//                } catch (JSONException e) {
+//                    makeToast(e.getMessage());
+//                }
+//            }
+//
+//        });
+//    }
 
     private void makeToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
