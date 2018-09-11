@@ -32,6 +32,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
+    public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     public static final String channel_1_ID = "channel 1";
 
     @Override
@@ -45,13 +46,18 @@ public class ElderNavigation extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         Button arButton = (Button) findViewById(R.id.AR);
-        arButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
-                startActivity(startIntent);
-            }
+        arButton.setOnClickListener(view -> {
+            Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
+            startActivity(startIntent);
         });
+    }
+
+    public void sendDestination(View view) {
+        Intent intent = new Intent(this, Maps.class);
+        EditText editText = (EditText) findViewById(R.id.navigationSearchField);
+        String destination = editText.getText().toString();
+        intent.putExtra(EXTRA_DESTINATION, destination);
+        startActivity(intent);
     }
 
     public void sendOnChannel(View v){
