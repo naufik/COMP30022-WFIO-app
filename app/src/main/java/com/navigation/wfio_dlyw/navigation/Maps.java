@@ -2,6 +2,10 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -15,7 +19,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,6 +46,10 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
     private String destination;
     private Location mDefaultLocation;
 
+    private SensorEventListener eventListener;
+    private Sensor sensor;
+    private SensorManager sensorManager;
+
     private static final int CASE_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = Maps.class.getSimpleName();
     //private final LatLng mDefaultLocation = new LatLng(-37.8070, 144.9612);
@@ -65,14 +72,34 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         mDefaultLocation.setLongitude(144.9612);
         Intent intent = getIntent();
         destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        if(sensor == null){
+            finish();
+        }
+
+        eventListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                if(event.values[2] < 1 && event.values[1] > 8){
+                    Log.d(TAG, "Listening");
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                // empty
+            }
+        };
     }
 
 
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -143,25 +170,22 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         try {
             if (mLocationPermission) {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            // Set the map's camera position to the current location of the device.
-                            mLastKnownLocation = (Location) task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), 15));
-                        } else {
-                            LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
-                                    mDefaultLocation.getLongitude());
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
-                            mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, 15));
-                            getRoute(mDefaultLatLng, destination);
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        }
+                locationResult.addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        // Set the map's camera position to the current location of the device.
+                        mLastKnownLocation = (Location) task.getResult();
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(mLastKnownLocation.getLatitude(),
+                                        mLastKnownLocation.getLongitude()), 15));
+                    } else {
+                        LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
+                                mDefaultLocation.getLongitude());
+                        Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.e(TAG, "Exception: %s", task.getException());
+                        mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, 15));
+                        getRoute(mDefaultLatLng, destination);
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
                 });
             }
@@ -179,17 +203,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
 
         // Request a string response from the provided URL.
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, formatUrl,
-                null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        drawRoute(response);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "Volley Error");
-                }
-        });
+                null, response -> drawRoute(response), error -> Log.e(TAG, "Volley Error"));
 
         // Add the request to the RequestQueue.
         queue.add(jsonObjectRequest);
@@ -221,5 +235,17 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(eventListener);
     }
 }
