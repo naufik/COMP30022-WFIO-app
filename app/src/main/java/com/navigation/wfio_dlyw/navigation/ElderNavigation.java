@@ -59,7 +59,7 @@ public class ElderNavigation extends AppCompatActivity {
         String message = "yeet";
 
         //start an activity, then choose intent
-        Intent activityIntent = new Intent(this, AnswerHelp.class);
+        Intent activityIntent = new Intent(this,     AnswerHelp.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0, activityIntent, 0);
 
