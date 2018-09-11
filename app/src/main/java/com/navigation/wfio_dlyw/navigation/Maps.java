@@ -14,6 +14,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,8 +25,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Maps extends FragmentActivity implements OnMapReadyCallback {
 
@@ -152,7 +159,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
                             Log.e(TAG, "Exception: %s", task.getException());
                             mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, 15));
-                            drawRoute(mDefaultLatLng, destination);
+                            getRoute(mDefaultLatLng, destination);
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
@@ -163,7 +170,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private void drawRoute(LatLng loc, String dest) {
+    private void getRoute(LatLng loc, String dest) {
         String formatUrl = String.format(ROUTE_URL, loc.latitude + "," + loc.longitude, dest, "AIzaSyBbm1wwfULDJFvSC44OoTa_G8XAnGgV6XM");
         Log.d(TAG, formatUrl);
 
@@ -171,11 +178,11 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, formatUrl,
-                new Response.Listener<String>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, formatUrl,
+                null, new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, response.substring(0,100));
+                    public void onResponse(JSONObject response) {
+                        drawRoute(response);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -185,6 +192,34 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         });
 
         // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        queue.add(jsonObjectRequest);
+    }
+
+    private void drawRoute(JSONObject route) {
+        PolylineOptions polylineOptions = new PolylineOptions();
+        try {
+            JSONObject legs = route.getJSONArray("routes")
+                    .getJSONObject(0)
+                    .getJSONArray("legs")
+                    .getJSONObject(0);
+
+            JSONObject start = legs.getJSONObject("start_location");
+            LatLng latLngStart = new LatLng(Double.parseDouble(start.getString("lat")),
+                    Double.parseDouble(start.getString("lng")));
+            polylineOptions.add(latLngStart);
+
+            JSONArray steps = legs.getJSONArray("steps");
+            for(int i = 0; i < steps.length(); i++) {
+                JSONObject step = steps.getJSONObject(i).getJSONObject("end_location");
+                LatLng latLngStep = new LatLng(Double.parseDouble(step.getString("lat")),
+                        Double.parseDouble(step.getString("lng")));
+                polylineOptions.add(latLngStep);
+            }
+
+            Polyline polyline = mMap.addPolyline(polylineOptions);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
