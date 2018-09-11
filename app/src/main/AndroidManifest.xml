@@ -68,10 +68,20 @@
         <activity
             android:name=".Maps"
             android:label="@string/title_activity_maps"></activity>
-
+        <!--
+        <activity
+            android:name="com.navigation.wfio_dlyw.viewmap.MapActivity"
+            android:label="Map Activity" />
+        <activity
+            android:name="com.navigation.wfio_dlyw.viewmap.MapSwitch"
+            android:label="Map Switch" />
+        -->
         <receiver android:name=".NotificationReceiver" />
 
-        <activity android:name=".AnswerHelp"></activity>
+        <activity android:name=".AnswerHelp" />
+        <activity android:name=".EnterCurrentPassword" />
+        <activity android:name=".NewPassword" />
+        <activity android:name=".ElderConnect"></activity>
     </application>
 
 </manifest>

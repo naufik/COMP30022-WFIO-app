@@ -22,12 +22,12 @@ public class LogIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+        EditText username = (EditText) findViewById(R.id.username);
+        EditText password = (EditText) findViewById(R.id.password);
 
         //for the moment it only redirects to the elder's home page
         Button enterBtn = (Button)findViewById(R.id.enterBtn);
         enterBtn.setOnClickListener(view -> {
-                EditText username = (EditText) findViewById(R.id.username);
-                EditText password = (EditText) findViewById(R.id.password);
 
                 String user = username.getText().toString();
                 String pass = password.getText().toString();
@@ -67,9 +67,7 @@ public class LogIn extends AppCompatActivity {
             }
         });
 
-        EditText edittext = (EditText)findViewById(R.id.password);
-
-        edittext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
