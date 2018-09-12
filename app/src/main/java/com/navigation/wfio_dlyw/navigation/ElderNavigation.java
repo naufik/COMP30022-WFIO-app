@@ -38,12 +38,11 @@ public class ElderNavigation extends AppCompatActivity {
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     public static final String channel_1_ID = "channel 1";
 
-    private Activity mActivity;
+   private final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivity = this;
         setContentView(R.layout.activity_elder_navigation);
         createNotificationChannels();
         notificationManager = NotificationManagerCompat.from(this);
@@ -53,8 +52,7 @@ public class ElderNavigation extends AppCompatActivity {
 
         Button arButton = (Button) findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
-            Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
-            Log.d("Intentions",startIntent.toString());
+            Intent startIntent = new Intent(this, UnityPlayerActivity.class);
             startActivity(startIntent);
         });
     }
@@ -141,14 +139,8 @@ public class ElderNavigation extends AppCompatActivity {
         }
     }
 
-    public void callOption(){
-        Log.d("Intentions","Calling");
-        Intent intent = new Intent(ElderNavigation.this, ElderHome.class);
-        Log.d("Intentions",intent.toString());
-        if(intent != null) {
-            Log.d("Intentions","Starting");
-            this.startActivity(intent);
-        }
-        Log.d("Intentions","Stopped");
+    public static void Call(Activity activity){
+        Intent intent = new Intent(activity, ElderNavigation.class);
+        activity.startActivity(intent);
     }
 }
