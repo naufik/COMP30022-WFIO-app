@@ -70,7 +70,7 @@
             android:label="@string/title_activity_maps"></activity>
 
         <activity
-            android:name="com.navigation.wfio_dlyw.viewmap.MapActivity"
+            android:name="com.navigation.wfio_dlyw.navigation.MapActivity"
             android:label="Map Activity" />
         <activity
             android:name="com.navigation.wfio_dlyw.viewmap.MapSwitch"
