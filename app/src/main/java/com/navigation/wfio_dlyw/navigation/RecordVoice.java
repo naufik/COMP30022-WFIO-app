@@ -175,6 +175,7 @@ public class RecordVoice extends AppCompatActivity {
         if (mRecorder != null) {
             mRecorder.release();
             mRecorder = null;
+            
         }
 
         if (mPlayer != null) {
