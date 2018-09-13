@@ -62,7 +62,7 @@ public class SignUp extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
                 }else if(usernameSS.contains(" ")){
                     Toast.makeText(getApplicationContext(), "Username cannot contain spaces", Toast.LENGTH_LONG).show();
-                }else if(emailSS.contains(" ") && !emailSS.contains("@")){
+                }else if(emailSS.contains(" ") || !emailSS.contains("@")){
                     Toast.makeText(getApplicationContext(), "Invalid E-mail address", Toast.LENGTH_LONG).show();
                 }else{
                     try {

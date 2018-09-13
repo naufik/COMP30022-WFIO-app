@@ -17,8 +17,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme.Dark"
+        android:usesCleartextTraffic="true"
         tools:replace="android:icon,android:theme">
         <activity
             android:name=".LogIn"
@@ -51,6 +51,9 @@
             android:name=".CarerConnect"
             android:label="@string/CarerConnect" />
         <activity
+            android:name=".ElderConnect"
+            android:label="@string/ElderConnect" />
+        <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
         <!--
@@ -64,24 +67,25 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
         <activity
             android:name=".Maps"
-            android:label="@string/title_activity_maps"></activity>
-
+            android:label="@string/title_activity_maps" />
         <activity
             android:name="com.navigation.wfio_dlyw.navigation.MapActivity"
             android:label="Map Activity" />
-        <activity
-            android:name="com.navigation.wfio_dlyw.viewmap.MapSwitch"
-            android:label="Map Switch" />
 
         <receiver android:name=".NotificationReceiver" />
 
         <activity android:name=".AnswerHelp" />
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
-        <activity android:name=".ElderConnect"></activity>
+        <activity android:name=".ApplicationAppearrance"
+                  android:label="@string/ApplicationAppearrance" />
     </application>
 
 </manifest>
