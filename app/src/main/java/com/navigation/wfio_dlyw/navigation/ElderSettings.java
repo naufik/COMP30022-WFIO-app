@@ -67,6 +67,15 @@ public class ElderSettings extends AppCompatActivity {
             }
         });
 
+        Button applicationAppearrance = (Button) findViewById(R.id.changeAppearrance);
+        applicationAppearrance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), ApplicationAppearrance.class);
+                startActivity(startIntent);
+            }
+        });
+
 
     }
 
