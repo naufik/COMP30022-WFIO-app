@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ChooseAccountType extends AppCompatActivity {
 
@@ -31,5 +32,25 @@ public class ChooseAccountType extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        TextView carerText = (TextView) findViewById(R.id.carerText);
+        carerText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
+                startIntent.putExtra("type", "CARER");
+                startActivity(startIntent);
+            }
+        });
+        TextView elderText = (TextView) findViewById(R.id.elderText);
+        elderText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), SignUp.class);
+                startIntent.putExtra("type", "ELDER");
+                startActivity(startIntent);
+            }
+        });
+
     }
 }
