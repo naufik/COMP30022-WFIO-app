@@ -34,7 +34,7 @@ public class LogIn extends AppCompatActivity {
 
                 try {
                     JSONObject params = new JSONObject();
-                    params.put("username", username).put("password", password);
+                    params.put("username", user).put("password", pass);
 
                 Requester minta = Requester.getInstance(this);
 
