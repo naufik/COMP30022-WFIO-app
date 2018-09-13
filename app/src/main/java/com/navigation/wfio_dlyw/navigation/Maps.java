@@ -83,8 +83,8 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         eventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if(event.values[2] < 1 && event.values[1] > 8){
-                    Log.d(TAG, "Listening");
+                if(event.values[2] < 2 && event.values[1] > 8){
+                    finish();
                 }
             }
 

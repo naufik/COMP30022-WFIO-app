@@ -4,6 +4,8 @@
     package="com.navigation.wfio_dlyw.navigation">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -56,6 +58,9 @@
         <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
+
+        <activity android:name=".RecordVoice"
+            android:label="Record voice" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -75,9 +80,6 @@
         <activity
             android:name=".Maps"
             android:label="@string/title_activity_maps" />
-        <activity
-            android:name="com.navigation.wfio_dlyw.navigation.MapActivity"
-            android:label="Map Activity" />
 
         <receiver android:name=".NotificationReceiver" />
 

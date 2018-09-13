@@ -52,7 +52,7 @@ public class ElderNavigation extends AppCompatActivity {
 
         Button arButton = (Button) findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
-            Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
+            Intent startIntent = new Intent(getApplicationContext(), RecordVoice.class);
             startActivity(startIntent);
         });
     }
@@ -140,7 +140,7 @@ public class ElderNavigation extends AppCompatActivity {
     }
 
     public static void Call(Activity activity){
-        Intent intent = new Intent(activity, MapActivity.class);
+        Intent intent = new Intent(activity, Maps.class);
         activity.startActivity(intent);
     }
 }
