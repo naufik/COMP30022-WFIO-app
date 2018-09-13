@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -14,6 +15,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.navigation.wfio_dlyw.viewmap.MapSwitch;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +37,8 @@ public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     public static final String channel_1_ID = "channel 1";
+
+   private final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class ElderNavigation extends AppCompatActivity {
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
+
     }
 
     public void sendOnChannel(View v){
@@ -133,4 +139,8 @@ public class ElderNavigation extends AppCompatActivity {
         }
     }
 
+    public static void Call(Activity activity){
+        Intent intent = new Intent(activity, MapActivity.class);
+        activity.startActivity(intent);
+    }
 }
