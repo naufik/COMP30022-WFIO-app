@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1047982008382",
+    "firebase_url": "https://communication-94a9d.firebaseio.com",
+    "project_id": "communication-94a9d",
+    "storage_bucket": "communication-94a9d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1047982008382:android:7abba0f12fe41d9a",
+        "android_client_info": {
+          "package_name": "com.navigation.wfio_dlyw.navigation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1047982008382-u5l81s0u136eh4fvb82k16fnibhu4t64.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUX_k_c5etZiqQtq7QzIgcNVhYFrLc83o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
