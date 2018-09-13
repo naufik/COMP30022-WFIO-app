@@ -63,7 +63,6 @@ public class ElderNavigation extends AppCompatActivity {
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
-
     }
 
     public void sendOnChannel(View v){
