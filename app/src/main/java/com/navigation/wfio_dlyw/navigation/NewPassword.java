@@ -3,9 +3,12 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class NewPassword extends AppCompatActivity {
@@ -36,6 +39,19 @@ public class NewPassword extends AppCompatActivity {
                     Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
                     startActivity(startIntent);
                 }
+            }
+        });
+
+        //for use outside of onclicklistener scope
+        EditText retypeNewPasswordEnter = (EditText) findViewById(R.id.retypeNewPassword);
+        retypeNewPasswordEnter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    //do what you want on the press of 'done'
+                    newPasswordBtn.performClick();
+                }
+                return false;
             }
         });
     }
