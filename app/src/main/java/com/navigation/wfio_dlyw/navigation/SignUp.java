@@ -67,7 +67,7 @@ public class SignUp extends AppCompatActivity {
                 }else{
                     try {
                         JSONObject params = new JSONObject();
-                        params.put("username", usernameSS).put("fullname", fullnameSS)
+                        params.put("username", usernameSS).put("fullName", fullnameSS)
                                 .put("password", passwordSS).put("email", emailSS)
                                 .put("accountType", type);
 
