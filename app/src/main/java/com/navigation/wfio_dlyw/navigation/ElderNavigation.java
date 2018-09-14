@@ -15,24 +15,16 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
-import com.navigation.wfio_dlyw.comms.Client;
-import com.navigation.wfio_dlyw.viewmap.MapSwitch;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.concurrent.locks.ReadWriteLock;
+import com.navigation.wfio_dlyw.comms.Token;
 
 public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
@@ -44,8 +36,8 @@ public class ElderNavigation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Client appState = ((Client)this.getApplication());
-        Toast.makeText(this , appState.getToken().getValue(), Toast.LENGTH_LONG).show();
+        Token token = Token.getInstance();
+        Toast.makeText(this , token.getValue(), Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_elder_navigation);
         createNotificationChannels();
         notificationManager = NotificationManagerCompat.from(this);

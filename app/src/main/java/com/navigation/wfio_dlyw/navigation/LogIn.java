@@ -21,7 +21,18 @@ public class LogIn extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Client appState = ((Client)this.getApplication());
+        Requester req = Requester.getInstance(this);
+        Token token = Token.getInstance();
+        if (token.getValue() != null) {
+            if (token.getType()== "ELDER") {
+                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                startActivity(startIntent);
+            }
+            else {
+                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                startActivity(startIntent);
+            }
+        }
 
         setContentView(R.layout.activity_log_in);
         EditText username = (EditText) findViewById(R.id.username);
@@ -38,17 +49,21 @@ public class LogIn extends AppCompatActivity {
                     JSONObject params = new JSONObject();
                     params.put("username", user).put("password", pass);
 
-                Requester minta = Requester.getInstance(this);
-
-                minta.requestAction(ServerAction.USER_LOGIN, params,
+                req.requestAction(ServerAction.USER_LOGIN, params,
                         t -> {
                     try {
                         String s = t.getJSONObject("result").getString("token");
-                        appState.setToken(new Token());
-                        appState.getToken().setValue(s);
+                        token.setValue(s);
+                        token.setType(t.getJSONObject("result").getString("accountType"));
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
-                        Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                        startActivity(startIntent);
+                        if (token.getType() == "ELDER") {
+                            Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                            startActivity(startIntent);
+                        }
+                        else {
+                            Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                            startActivity(startIntent);
+                        }
                     } catch (JSONException e) {}
                         });
                 } catch (JSONException e) {

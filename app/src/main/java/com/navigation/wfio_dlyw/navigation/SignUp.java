@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +21,7 @@ public class SignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
+        Token token = Token.getInstance();
 
         setContentView(R.layout.activity_sign_up);
         Button submitBtn = (Button) findViewById(R.id.submitBtn);
@@ -77,6 +79,8 @@ public class SignUp extends AppCompatActivity {
                                 t -> {
                                     try {
                                         String s = t.getJSONObject("result").getString("token");
+                                        token.setValue(s);
+                                        token.setType(extras.getString("Type"));
                                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
                                     } catch (JSONException e) {}
                                 });
