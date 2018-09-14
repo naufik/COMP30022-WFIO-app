@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.navigation.wfio_dlyw.comms.Client;
 import com.navigation.wfio_dlyw.viewmap.MapSwitch;
 
 import org.json.JSONException;
@@ -43,6 +44,8 @@ public class ElderNavigation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Client appState = ((Client)this.getApplication());
+        Toast.makeText(this , appState.getToken().getValue(), Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_elder_navigation);
         createNotificationChannels();
         notificationManager = NotificationManagerCompat.from(this);

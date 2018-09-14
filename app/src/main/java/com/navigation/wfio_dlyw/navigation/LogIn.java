@@ -21,6 +21,8 @@ public class LogIn extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Client appState = ((Client)this.getApplication());
+
         setContentView(R.layout.activity_log_in);
         EditText username = (EditText) findViewById(R.id.username);
         EditText password = (EditText) findViewById(R.id.password);
@@ -42,7 +44,11 @@ public class LogIn extends AppCompatActivity {
                         t -> {
                     try {
                         String s = t.getJSONObject("result").getString("token");
+                        appState.setToken(new Token());
+                        appState.getToken().setValue(s);
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                        Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                        startActivity(startIntent);
                     } catch (JSONException e) {}
                         });
                 } catch (JSONException e) {
