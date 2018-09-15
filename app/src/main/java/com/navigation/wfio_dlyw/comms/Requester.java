@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public class Requester {
 
-    public static String SERVER_URL = "http://rawon.naufik.net:3000/";
+    public static String SERVER_URL = "https://rawon.naufik.net";
 
     private static Requester instance;
     private Context context;
