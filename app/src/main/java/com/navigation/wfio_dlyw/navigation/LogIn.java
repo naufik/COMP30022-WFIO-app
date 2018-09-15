@@ -54,7 +54,7 @@ public class LogIn extends AppCompatActivity {
                     try {
                         String s = t.getJSONObject("result").getString("token");
                         token.setValue(s);
-                        token.setType(t.getJSONObject("result").getString("accountType"));
+                        token.setType(t.getJSONObject("result").getJSONObject("accountType").getString("accountType"));
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
                         if (token.getType() == "ELDER") {
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);

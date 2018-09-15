@@ -78,10 +78,10 @@ public class SignUp extends AppCompatActivity {
                         minta.requestAction(ServerAction.USER_SIGN_UP, params,
                                 t -> {
                                     try {
-                                        String s = t.getJSONObject("result").getString("token");
-                                        token.setValue(s);
-                                        token.setType(extras.getString("Type"));
-                                        Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                                        String tkn = t.getJSONObject("result").getString("token");
+                                        token.setValue(tkn);
+                                        token.setType(t.getJSONObject("result").getJSONObject("account").getString("accountType"));
+                                        Toast.makeText(this , tkn, Toast.LENGTH_LONG).show();
                                     } catch (JSONException e) {}
                                 });
 
