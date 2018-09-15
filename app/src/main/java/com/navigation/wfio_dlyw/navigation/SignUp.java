@@ -73,9 +73,9 @@ public class SignUp extends AppCompatActivity {
                                 .put("password", passwordSS).put("email", emailSS)
                                 .put("accountType", type);
 
-                        Requester minta = Requester.getInstance(this);
+                        Requester req = Requester.getInstance(this);
 
-                        minta.requestAction(ServerAction.USER_SIGN_UP, params,
+                        req.requestAction(ServerAction.USER_SIGN_UP, params,
                                 t -> {
                                     try {
                                         String tkn = t.getJSONObject("result").getString("token");
