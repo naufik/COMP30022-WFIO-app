@@ -9,6 +9,7 @@ public class Token{
     private String value = null;
     private String type;
     private int id;
+    private String email;
 
     // Restrict the constructor from being instantiated
     private Token(){}
@@ -34,6 +35,14 @@ public class Token{
 
     public int getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public static synchronized Token getInstance(){

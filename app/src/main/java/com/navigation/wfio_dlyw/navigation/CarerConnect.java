@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.comms.Credentials;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +40,20 @@ public class CarerConnect extends AppCompatActivity {
         String code = input.getText().toString();
         Button link = (Button) findViewById(R.id.link);
 
-        
+        link.setOnClickListener(view -> {
+            try {
+                JSONObject linkRequest = new JSONObject();
+                linkRequest.put("code", code);
+
+                req.requestAction(ServerAction.CARER_LINK, linkRequest,
+                        t-> {
+                            try {
+                                String s = t.getJSONObject("result").getString("elderId");
+                                Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                            } catch (JSONException e) {}
+                        }, new Credentials(token.getEmail(), token.getValue()));
+            } catch (JSONException e) {}
+        });
 
 
     }

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
@@ -37,13 +38,13 @@ public class ElderConnect extends AppCompatActivity {
             JSONObject codeRequest = new JSONObject();
             try {
                 codeRequest.put("elderId", token.getId());
-                req.requestAction(ServerAction.ELDER_REQUEST_CODE, codeRequest,
+                req.requestAction(ServerAction.ELDER_REQUEST_LINK, codeRequest,
                         t -> {
                             try {
                                 String code = t.getJSONObject("result").getString("code");
                                 connectCode.setText(code);
                             } catch (JSONException e) {}
-                        }, token.getValue());
+                        }, new Credentials(token.getEmail(), token.getValue()));
             } catch (JSONException e) {}
         });
     }
