@@ -23,7 +23,7 @@ public class LogIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Requester req = Requester.getInstance(this);
         Token token = Token.getInstance();
-        if (token.getValue() != null) {
+        /*if (token.getValue() != null) {
             if (token.getType().equals("ELDER")) {
                 Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                 startActivity(startIntent);
@@ -32,7 +32,7 @@ public class LogIn extends AppCompatActivity {
                 Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                 startActivity(startIntent);
             }
-        }
+        }*/
 
         setContentView(R.layout.activity_log_in);
         EditText username = (EditText) findViewById(R.id.username);
