@@ -104,6 +104,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="15dp"
             android:text="Enter"
+            android:background="@drawable/input_background"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
