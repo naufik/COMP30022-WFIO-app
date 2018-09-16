@@ -37,10 +37,10 @@ public class CarerConnect extends AppCompatActivity {
 
         Button getCode = (Button) findViewById(R.id.newCodeBtn);
         EditText input = (EditText) findViewById(R.id.verificationCodeCC);
-        String code = input.getText().toString();
         Button link = (Button) findViewById(R.id.link);
 
         link.setOnClickListener(view -> {
+            String code = input.getText().toString();
             try {
                 JSONObject linkRequest = new JSONObject();
                 linkRequest.put("code", code);
