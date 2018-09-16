@@ -32,25 +32,14 @@ public class CarerConnect extends AppCompatActivity {
         Requester req = Requester.getInstance(this);
         Token token = Token.getInstance();
 
+        Toast.makeText(this , token.getType(), Toast.LENGTH_LONG).show();
+
         Button getCode = (Button) findViewById(R.id.newCodeBtn);
         EditText input = (EditText) findViewById(R.id.verificationCodeCC);
         String code = input.getText().toString();
         Button link = (Button) findViewById(R.id.link);
 
-        link.setOnClickListener(view -> {
-            try {
-                JSONObject linkRequest = new JSONObject();
-                linkRequest.put("code", code);
-
-                req.requestAction(ServerAction.ELDER_REQUEST_CODE, linkRequest,
-                        t-> {
-                            try {
-                                String s = t.getJSONObject("result").getString("elderId");
-                                Toast.makeText(this , s, Toast.LENGTH_LONG).show();
-                            } catch (JSONException e) {}
-                        }, token.getValue());
-            } catch (JSONException e) {}
-        });
+        
 
 
     }

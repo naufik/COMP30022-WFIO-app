@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
@@ -29,12 +30,20 @@ public class ElderConnect extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         Button getCode = (Button) findViewById(R.id.newCodeBtn);
+        TextView connectCode = (TextView) findViewById(R.id.elderConnectCode);
+
         getCode.setOnClickListener(view -> {
+            connectCode.setText("LOADING CODE");
             JSONObject codeRequest = new JSONObject();
             try {
-                codeRequest.put("elderId", token.getId()).put("code", "42069322");
+                codeRequest.put("elderId", token.getId());
                 req.requestAction(ServerAction.ELDER_REQUEST_CODE, codeRequest,
-                        t -> {}, token.getValue());
+                        t -> {
+                            try {
+                                String code = t.getJSONObject("result").getString("code");
+                                connectCode.setText(code);
+                            } catch (JSONException e) {}
+                        }, token.getValue());
             } catch (JSONException e) {}
         });
     }
