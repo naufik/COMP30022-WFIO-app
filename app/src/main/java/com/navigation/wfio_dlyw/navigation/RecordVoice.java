@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.File;
 import java.io.IOException;
 
 public class RecordVoice extends AppCompatActivity {
@@ -25,6 +26,8 @@ public class RecordVoice extends AppCompatActivity {
 
     private Button mRecord;
     private Button mPlay;
+
+    private File mFile;
 
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
@@ -69,7 +72,7 @@ public class RecordVoice extends AppCompatActivity {
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
+        mRecorder.setOutputFile(mFile);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
@@ -82,9 +85,14 @@ public class RecordVoice extends AppCompatActivity {
     }
 
     private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
+        try{
+            mRecorder.stop();
+        } catch (Exception e){
+            mFile.delete();
+        } finally {
+            mRecorder.release();
+            mRecorder = null;
+        }
     }
 
     @Override
@@ -94,6 +102,8 @@ public class RecordVoice extends AppCompatActivity {
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest.3gp";
+
+        mFile = new File(mFileName);
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
         setContentView(R.layout.activity_record_voice);
