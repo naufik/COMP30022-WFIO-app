@@ -42,7 +42,7 @@ public class CarerConnect extends AppCompatActivity {
                 JSONObject linkRequest = new JSONObject();
                 linkRequest.put("code", code);
 
-                req.requestAction(ServerAction.CARER_REQUEST_LINK, linkRequest,
+                req.requestAction(ServerAction.ELDER_REQUEST_CODE, linkRequest,
                         t-> {
                             try {
                                 String s = t.getJSONObject("result").getString("elderId");

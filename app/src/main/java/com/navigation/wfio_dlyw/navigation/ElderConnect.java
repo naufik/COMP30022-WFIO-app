@@ -32,7 +32,7 @@ public class ElderConnect extends AppCompatActivity {
         getCode.setOnClickListener(view -> {
             JSONObject codeRequest = new JSONObject();
             try {
-                codeRequest.put("elderId", token.getValue()).put("code", "42069322");
+                codeRequest.put("elderId", token.getId()).put("code", "42069322");
                 req.requestAction(ServerAction.ELDER_REQUEST_CODE, codeRequest,
                         t -> {}, token.getValue());
             } catch (JSONException e) {}

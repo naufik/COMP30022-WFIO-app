@@ -8,6 +8,7 @@ public class Token{
     // Global variable
     private String value = null;
     private String type;
+    private int id;
 
     // Restrict the constructor from being instantiated
     private Token(){}
@@ -25,6 +26,14 @@ public class Token{
 
     public String getType() {
         return type;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public static synchronized Token getInstance(){
