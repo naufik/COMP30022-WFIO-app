@@ -21,28 +21,51 @@ public class LogIn extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Requester req = Requester.getInstance(this);
+        Token token = Token.getInstance();
+        /*if (token.getValue() != null) {
+            if (token.getType().equals("ELDER")) {
+                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                startActivity(startIntent);
+            }
+            else {
+                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                startActivity(startIntent);
+            }
+        }*/
+
         setContentView(R.layout.activity_log_in);
+        EditText username = (EditText) findViewById(R.id.username);
+        EditText password = (EditText) findViewById(R.id.password);
 
         //for the moment it only redirects to the elder's home page
         Button enterBtn = (Button)findViewById(R.id.enterBtn);
         enterBtn.setOnClickListener(view -> {
-                EditText username = (EditText) findViewById(R.id.username);
-                EditText password = (EditText) findViewById(R.id.password);
 
                 String user = username.getText().toString();
                 String pass = password.getText().toString();
 
                 try {
                     JSONObject params = new JSONObject();
-                    params.put("username", username).put("password", password);
+                    params.put("username", user).put("password", pass);
 
-                Requester minta = Requester.getInstance(this);
-
-                minta.requestAction(ServerAction.USER_LOGIN, params,
+                req.requestAction(ServerAction.USER_LOGIN, params,
                         t -> {
                     try {
                         String s = t.getJSONObject("result").getString("token");
+                        token.setValue(s);
+                        token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
+                        token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
+                        token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                        if (token.getType().equals("ELDER")) {
+                            Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                            startActivity(startIntent);
+                        }
+                        else {
+                            Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                            startActivity(startIntent);
+                        }
                     } catch (JSONException e) {}
                         });
                 } catch (JSONException e) {
@@ -67,9 +90,7 @@ public class LogIn extends AppCompatActivity {
             }
         });
 
-        EditText edittext = (EditText)findViewById(R.id.password);
-
-        edittext.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {

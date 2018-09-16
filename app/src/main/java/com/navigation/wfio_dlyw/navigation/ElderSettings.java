@@ -9,6 +9,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class ElderSettings extends AppCompatActivity {
 
@@ -16,6 +18,33 @@ public class ElderSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_settings);
+        //instead of doing this, setHint "onCreate" by grabbing the user's current data
+
+        EditText fullname = (EditText) findViewById(R.id.fullNameES);
+        EditText lastname = (EditText) findViewById(R.id.usernameES);
+        EditText email = (EditText) findViewById(R.id.emailES);
+
+        String fullnameS = fullname.getText().toString();
+        String lastnameS = lastname.getText().toString();
+        String emailS = email.getText().toString();
+
+        Button applyChangesES = (Button) findViewById(R.id.applyChangesES);
+        applyChangesES.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!fullnameS.isEmpty()) {
+                    fullname.setHint(fullnameS);
+                    Toast.makeText(getApplicationContext(), "Changes Applied", Toast.LENGTH_LONG).show();
+                }
+                if (!lastnameS.isEmpty()) {
+                    lastname.setHint(lastnameS);
+                }
+                if (!emailS.isEmpty()) {
+                    email.setHint(emailS);
+                }
+            }
+        });
+
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarES);
         setSupportActionBar(myToolbar);
@@ -28,6 +57,26 @@ public class ElderSettings extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        Button changePassword = (Button)findViewById(R.id.changePasswordES);
+        changePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), EnterCurrentPassword.class);
+                startActivity(startIntent);
+            }
+        });
+
+        Button applicationAppearrance = (Button) findViewById(R.id.changeAppearrance);
+        applicationAppearrance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), ApplicationAppearrance.class);
+                startActivity(startIntent);
+            }
+        });
+
+
     }
 
     @Override

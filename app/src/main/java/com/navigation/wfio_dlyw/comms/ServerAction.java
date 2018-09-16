@@ -9,7 +9,8 @@ public enum ServerAction {
     USER_GET_INFO("user.details", Request.Method.GET),
     USER_MODIFY_RECORD("user.modify", Request.Method.POST),
     USER_GET_FAVORITES("user.getfavs", Request.Method.GET),
-    ELDER_REQUEST_CODE("auth.codelink", Request.Method.POST),
+    ELDER_REQUEST_LINK("user.genlink", Request.Method.POST),
+    CARER_LINK("user.link", Request.Method.POST),
     MESSAGE_PULL("msg.pull", Request.Method.GET),
     MESSAGE_SEND("msg.send", Request.Method.POST);
 

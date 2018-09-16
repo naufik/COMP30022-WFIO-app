@@ -18,7 +18,8 @@ import java.util.function.Function;
 
 public class Requester {
 
-    public static String SERVER_URL = "https://rawon.naufik.net";
+    public static String SERVER_URL = "http://rawon.naufik.net/";
+    public static String VALIDATION = "";
 
     private static Requester instance;
     private Context context;
@@ -43,7 +44,8 @@ public class Requester {
     }
 
     public void post(String endpoint, JSONObject body,
-                      Response.Listener<JSONObject> onResponse, String auth) {
+                     Response.Listener<JSONObject> onResponse,
+                     @Nullable Credentials auth) {
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST,
                 SERVER_URL + endpoint,
                 body,
@@ -57,7 +59,7 @@ public class Requester {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json");
                 if (auth != null) {
-                    params.put("WFIO-AUTH", auth);
+                    params.put("WFIO-AUTH", Requester.VALIDATION);
                 }
                 return params;
             }
@@ -65,7 +67,7 @@ public class Requester {
         this.addRequest(req);
     }
 
-    public void get(String endpoint, Response.Listener<JSONObject> onResponse, String auth) {
+    public void get(String endpoint, Response.Listener<JSONObject> onResponse, @Nullable Credentials auth) {
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,
                 SERVER_URL + endpoint,
                 null,
@@ -79,7 +81,7 @@ public class Requester {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json");
                 if (auth != null) {
-                    params.put("WFIO-AUTH", auth);
+                    params.put("WFIO-AUTH", Requester.VALIDATION);
                 }
                 return params;
             }
@@ -99,7 +101,8 @@ public class Requester {
     }
 
     public void requestAction(ServerAction action, @Nullable JSONObject params,
-                              Response.Listener<JSONObject> onFinish, String token) {
+                              Response.Listener<JSONObject> onFinish,
+                              @Nullable Credentials auth) {
         JSONObject jsonObj = new JSONObject();
         try {
             jsonObj.put("action", action.getPrompt());
@@ -108,8 +111,8 @@ public class Requester {
             } else {
                 jsonObj.put("params", new JSONObject());
             }
-            if (token != null) {
-                jsonObj.put("auth", token);
+            if (auth != null) {
+                jsonObj.put("identity", auth.toJSONObject());
             }
         } catch (JSONException e) {
             Toast.makeText(this.context, "Invalid Request Sent -- Contact Developer!",
@@ -117,9 +120,9 @@ public class Requester {
         }
 
         if (action.getRequestMethod() == Request.Method.POST) {
-            this.post(action.mapEndpoint(), jsonObj, onFinish, token);
+            this.post(action.mapEndpoint(), jsonObj, onFinish, auth);
         } else if (action.getRequestMethod() == Request.Method.GET) {
-            this.get(action.mapEndpoint(),onFinish, token);
+            this.get(action.mapEndpoint(),onFinish, auth);
         }
 
     }

@@ -6,22 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ChooseAccountType">
 
-    <View
-        android:id="@+id/divider"
-        style="@style/Divider"
-        android:layout_width="2dp"
-        android:layout_height="300dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="127dp"
@@ -40,64 +24,60 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.09" />
 
-    <ImageView
-        android:id="@+id/chooseCarer"
-        android:layout_width="113dp"
-        android:layout_height="157dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginLeft="38dp"
-        android:layout_marginRight="40dp"
-        android:layout_marginStart="38dp"
-        android:layout_marginTop="180dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/divider"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/toast_frame" />
-
-    <ImageView
-        android:id="@+id/chooseElder"
-        android:layout_width="113dp"
-        android:layout_height="157dp"
-        android:layout_marginEnd="88dp"
-        android:layout_marginLeft="38dp"
-        android:layout_marginRight="88dp"
-        android:layout_marginStart="38dp"
-        android:layout_marginTop="180dp"
-        app:layout_constraintEnd_toStartOf="@+id/chooseCarer"
-        app:layout_constraintHorizontal_bias="0.0"
+    <TextView
+        android:id="@+id/carerText"
+        android:layout_width="52dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="164dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginTop="19dp"
+        android:text="Carer"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/toast_frame" />
+        app:layout_constraintTop_toBottomOf="@+id/chooseCarer"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="148dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:id="@+id/elderText"
+        android:layout_width="45dp"
+        android:layout_height="26dp"
+        android:layout_marginBottom="144dp"
+        android:layout_marginEnd="68dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Elder"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/textView4"
-        app:layout_constraintHorizontal_bias="0.3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chooseElder"
-        app:layout_constraintVertical_bias="0.571" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginRight="80dp"
-        android:layout_marginTop="8dp"
-        android:text="Carer"
+        android:textAlignment="center"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chooseCarer"
-        app:layout_constraintVertical_bias="0.027" />
+        app:layout_constraintHorizontal_bias="0.966"
+        app:layout_constraintStart_toEndOf="@+id/carerText"
+        app:layout_constraintTop_toBottomOf="@+id/chooseElder"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/chooseElder"
+        android:layout_width="123dp"
+        android:layout_height="238dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="140dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/elder" />
+
+    <ImageView
+        android:id="@+id/chooseCarer"
+        android:layout_width="123dp"
+        android:layout_height="233dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="144dp"
+        app:layout_constraintEnd_toStartOf="@+id/chooseElder"
+        app:layout_constraintHorizontal_bias="0.44"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/carer" />
+
 </android.support.constraint.ConstraintLayout>
