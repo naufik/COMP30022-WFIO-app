@@ -36,7 +36,13 @@ public class NotificationSocket {
         connection.on("notification", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+                JSONObject notifContents = (JSONObject) args[0];
+                try {
+                    String message = notifContents.getString("message");
+                    String action = notifContents.getString("action");
+                } catch (Exception e) {
 
+                }
             }
         });
     }
