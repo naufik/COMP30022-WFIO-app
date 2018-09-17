@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public class Requester {
 
-    public static String SERVER_URL = "https://rawon.naufik.net";
+    public static String SERVER_URL = "https://rawon.naufik.net/";
     public static String VALIDATION = "";
 
     private static Requester instance;

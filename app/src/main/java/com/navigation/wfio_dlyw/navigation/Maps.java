@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 
@@ -188,7 +189,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
                             message.put("recipient", 1).put("location", location);
 
                             Requester req = Requester.getInstance(this);
-                            req.requestAction(ServerAction.MESSAGE_SEND, message, t -> {});
+                            req.requestAction(ServerAction.MESSAGE_SEND, message, t -> {}, new Credentials("dropcomputing@gmail.com","kontol"));
                         } catch(JSONException e) {
                             Log.e(TAG, e.getMessage());
                         }
