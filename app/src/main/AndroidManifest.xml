@@ -91,7 +91,7 @@
             android:label="@string/ApplicationAppearrance" />
         <activity android:name=".MessageList" />
         <activity android:name=".MessageListElder" />
-        <activity android:name=".ConnectToAnElder"></activity>
+        <activity android:name=".MyElders"></activity>
     </application>
 
 </manifest>

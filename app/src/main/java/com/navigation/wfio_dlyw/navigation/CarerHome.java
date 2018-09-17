@@ -29,6 +29,15 @@ public class CarerHome extends AppCompatActivity{
             }
         });
 
+        Button myElders = (Button) findViewById(R.id.myElders);
+        myElders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MyElders.class);
+                startActivity(startIntent);
+            }
+        });
+
         Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
         connectToElderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
