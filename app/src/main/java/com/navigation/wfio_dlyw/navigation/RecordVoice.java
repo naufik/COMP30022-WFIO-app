@@ -8,10 +8,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,12 +24,11 @@ public class RecordVoice extends AppCompatActivity {
 
     private static final int REQUEST_AUDIO_RECORD = 200;
     private static String mFileName = null;
-    private boolean onPlay = false;
 
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
 
-    private ImageButton mRecord;
+    private Button mRecord;
 
     private File mFile;
 
@@ -85,13 +88,32 @@ public class RecordVoice extends AppCompatActivity {
     }
 
     private void stopRecording() {
+        boolean success = false;
         try{
             mRecorder.stop();
+            success = true;
         } catch (Exception e){
             mFile.delete();
         } finally {
             mRecorder.release();
             mRecorder = null;
+        }
+        if(success){
+            Button playButton = new Button(this);
+            playButton.setText("Play");
+
+            LinearLayout ll = (LinearLayout) findViewById(R.id.textLayout);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ll.addView(playButton, lp);
+
+            playButton.setOnClickListener(new View.OnClickListener() {
+                private boolean isPlaying = false;
+                @Override
+                public void onClick(View v) {
+                    playButton(isPlaying);
+                    isPlaying = !isPlaying;
+                }
+            });
         }
     }
 
@@ -106,14 +128,15 @@ public class RecordVoice extends AppCompatActivity {
         mFile = new File(mFileName);
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
-        setContentView(R.layout.activity_message_list);
-        mRecord = findViewById(R.id.sendClip);
+        //setContentView(R.layout.activity_message_list);
+        //mRecord = findViewById(R.id.recordButton);
 
         mRecord.setOnTouchListener(new View.OnTouchListener(){
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    Log.d("Interactions","Recording");
                     startRecording();
                 } else if(event.getAction() == MotionEvent.ACTION_UP){
                     stopRecording();
@@ -129,7 +152,6 @@ public class RecordVoice extends AppCompatActivity {
         if (mRecorder != null) {
             mRecorder.release();
             mRecorder = null;
-
         }
 
         if (mPlayer != null) {
