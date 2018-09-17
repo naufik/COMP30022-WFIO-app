@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.lang.reflect.Array;
@@ -16,6 +17,7 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
 
     public interface OnItemClickListener{
         void onItemClick(int position);
+        void onDeleteClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -25,10 +27,14 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
     public static class ExampleViewHolder extends RecyclerView.ViewHolder{
         public TextView mTextView1;
         public TextView mTextView2;
+        public ImageView mDeleteImage;
+
+
         public ExampleViewHolder(View itemView, OnItemClickListener listener){
             super(itemView);
             mTextView1 = itemView.findViewById(R.id.fullnameEI);
             mTextView2 = itemView.findViewById(R.id.usernameEI);
+            mDeleteImage = itemView.findViewById(R.id.image_delete);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -37,6 +43,18 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
                         int position = getAdapterPosition();
                         if(position!=RecyclerView.NO_POSITION){
                             listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            mDeleteImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(listener !=null){
+                        int position = getAdapterPosition();
+                        if(position!=RecyclerView.NO_POSITION){
+                            listener.onDeleteClick(position);
                         }
                     }
                 }
