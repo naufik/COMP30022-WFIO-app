@@ -10,6 +10,14 @@
     android:orientation="vertical"
     tools:context=".MessageList">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarML"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/aluminum"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+         />
 
     <ListView
         android:id="@+id/messages_view"

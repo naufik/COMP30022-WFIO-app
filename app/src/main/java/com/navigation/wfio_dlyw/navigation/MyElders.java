@@ -1,5 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -64,10 +65,19 @@ public class MyElders extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnItemClickListener(new ConnectAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(int position) {
+//                changeItem(position, "clicked");
+//            }
+
             @Override
-            public void onItemClick(int position) {
-                changeItem(position, "clicked");
+            public void onItemClick(int position){
+                Intent intent = new Intent(MyElders.this, MessageList.class);
+                intent.putExtra("Example Item", elders.get(position));
+                startActivity(intent);
             }
+
+
 
             @Override
             public void onDeleteClick(int position) {

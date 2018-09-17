@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -52,6 +54,17 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
+
+        Intent intent = getIntent();
+        ElderItem elderItem = intent.getParcelableExtra("Example Item");
+        String name = elderItem.getmText1();
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarML);
+        myToolbar.setTitle("");
+        setSupportActionBar(myToolbar);
+        myToolbar.setTitle(name);
+
+
 
         // This is where we write the message
         editText = findViewById(R.id.messageInput);
