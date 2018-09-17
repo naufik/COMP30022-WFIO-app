@@ -51,4 +51,9 @@ public class Token{
         }
         return instance;
     }
+
+    public static synchronized Token reset() {
+        instance = new Token();
+        return instance;
+    }
 }

@@ -70,6 +70,7 @@ public class ElderSettings extends AppCompatActivity {
         elderLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Token.reset();
                 Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
                 startActivity(startIntent);
             }
