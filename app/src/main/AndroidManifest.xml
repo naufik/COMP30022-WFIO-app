@@ -58,8 +58,8 @@
         <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
-
-        <activity android:name=".RecordVoice"
+        <activity
+            android:name=".RecordVoice"
             android:label="Record voice" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -86,8 +86,10 @@
         <activity android:name=".AnswerHelp" />
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
-        <activity android:name=".ApplicationAppearrance"
-                  android:label="@string/ApplicationAppearrance" />
+        <activity
+            android:name=".ApplicationAppearrance"
+            android:label="@string/ApplicationAppearrance" />
+        <activity android:name=".MessageList"></activity>
     </application>
 
 </manifest>

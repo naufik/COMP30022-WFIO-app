@@ -61,6 +61,15 @@ public class ElderNavigation extends AppCompatActivity {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startActivity(startIntent);
         });
+
+        Button msgButton = (Button) findViewById(R.id.messagingBtn);
+        msgButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MessageList.class);
+                startActivity(startIntent);
+            }
+        });
     }
 
     public void sendDestination(View view) {
