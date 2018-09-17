@@ -14,7 +14,7 @@ public class MyElders extends AppCompatActivity {
     private ArrayList<ElderItem> elders;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private ConnectAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private Button buttonInsert;
@@ -50,9 +50,6 @@ public class MyElders extends AppCompatActivity {
             }
         });
 
-
-
-
     }
 
     public void insertItem(int position){
@@ -63,6 +60,11 @@ public class MyElders extends AppCompatActivity {
     public void removeItem(int position){
         elders.remove(position);
         mAdapter.notifyItemRemoved(position);
+    }
+
+    public void changeItem(int position, String text){
+        elders.get(position).changeText1(text);
+        mAdapter.notifyItemChanged(position);
     }
 
     public void createElders(){
@@ -80,6 +82,13 @@ public class MyElders extends AppCompatActivity {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+
+        mAdapter.setOnItemClickListener(new ConnectAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                changeItem(position, "clicked");
+            }
+        });
     }
 
 

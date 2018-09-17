@@ -13,6 +13,10 @@ public class ElderItem {
         return mText1;
     }
 
+    public void changeText1(String text){
+        mText1 = text;
+    }
+
     public String getmText2() {
         return mText2;
     }
