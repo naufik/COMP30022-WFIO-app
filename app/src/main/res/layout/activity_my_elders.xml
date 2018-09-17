@@ -13,5 +13,41 @@
         android:padding="4dp"
         android:scrollbars="vertical"
         android:background="@android:color/darker_gray"
+        android:layout_marginBottom="100dp"
         />
+
+    <EditText
+        android:id="@+id/edittext_insert"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="27dp"
+        android:layout_marginStart="35dp"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/button_insert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/edittext_insert"
+        android:layout_toEndOf="@+id/edittext_insert"
+        android:text="insert" />
+
+    <EditText
+        android:id="@+id/edittext_remove"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/edittext_insert"
+        android:layout_toStartOf="@+id/button_remove"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/button_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/edittext_insert"
+        android:layout_marginEnd="29dp"
+        android:text="remove" />
 </RelativeLayout>
