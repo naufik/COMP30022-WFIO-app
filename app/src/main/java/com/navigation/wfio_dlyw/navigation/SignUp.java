@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +21,7 @@ public class SignUp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
+        Token token = Token.getInstance();
 
         setContentView(R.layout.activity_sign_up);
         Button submitBtn = (Button) findViewById(R.id.submitBtn);
@@ -62,22 +64,26 @@ public class SignUp extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
                 }else if(usernameSS.contains(" ")){
                     Toast.makeText(getApplicationContext(), "Username cannot contain spaces", Toast.LENGTH_LONG).show();
-                }else if(emailSS.contains(" ") && !emailSS.contains("@")){
+                }else if(emailSS.contains(" ") || !emailSS.contains("@")){
                     Toast.makeText(getApplicationContext(), "Invalid E-mail address", Toast.LENGTH_LONG).show();
                 }else{
                     try {
                         JSONObject params = new JSONObject();
-                        params.put("username", usernameSS).put("fullname", fullnameSS)
+                        params.put("username", usernameSS).put("fullName", fullnameSS)
                                 .put("password", passwordSS).put("email", emailSS)
                                 .put("accountType", type);
 
-                        Requester minta = Requester.getInstance(this);
+                        Requester req = Requester.getInstance(this);
 
-                        minta.requestAction(ServerAction.USER_SIGN_UP, params,
+                        req.requestAction(ServerAction.USER_SIGN_UP, params,
                                 t -> {
                                     try {
-                                        String s = t.getJSONObject("result").getString("token");
-                                        Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                                        String tkn = t.getJSONObject("result").getString("token");
+                                        token.setValue(tkn);
+                                        token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
+                                        token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
+                                        token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
+                                        Toast.makeText(this , tkn, Toast.LENGTH_LONG).show();
                                     } catch (JSONException e) {}
                                 });
 

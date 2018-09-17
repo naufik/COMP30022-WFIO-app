@@ -1,10 +1,12 @@
 package com.navigation.wfio_dlyw.navigation;
 
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -22,21 +24,32 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.navigation.wfio_dlyw.comms.Token;
 
 public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     public static final String channel_1_ID = "channel 1";
 
+   private final Context context = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Token token = Token.getInstance();
+        Toast.makeText(this , token.getValue(), Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_elder_navigation);
         createNotificationChannels();
         notificationManager = NotificationManagerCompat.from(this);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
+
+        Button recordButton = (Button) findViewById(R.id.recVoice);
+        recordButton.setOnClickListener(view -> {
+            Intent startIntent = new Intent(getApplicationContext(), RecordVoice.class);
+            startActivity(startIntent);
+        });
 
         Button arButton = (Button) findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
@@ -51,6 +64,7 @@ public class ElderNavigation extends AppCompatActivity {
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
+
     }
 
     public void sendOnChannel(View v){
@@ -58,7 +72,7 @@ public class ElderNavigation extends AppCompatActivity {
         String message = "yeet";
 
         //start an activity, then choose intent
-        Intent activityIntent = new Intent(this, AnswerHelp.class);
+        Intent activityIntent = new Intent(this,     AnswerHelp.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0, activityIntent, 0);
 
@@ -126,4 +140,8 @@ public class ElderNavigation extends AppCompatActivity {
         }
     }
 
+    public static void Call(Activity activity){
+        Intent intent = new Intent(activity, ElderMaps.class);
+        activity.startActivity(intent);
+    }
 }

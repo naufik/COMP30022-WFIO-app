@@ -4,6 +4,8 @@
     package="com.navigation.wfio_dlyw.navigation">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google ElderMaps Android API v2, but you must specify either coarse or fine
@@ -51,8 +53,14 @@
             android:name=".CarerConnect"
             android:label="@string/CarerConnect" />
         <activity
+            android:name=".ElderConnect"
+            android:label="@string/ElderConnect" />
+        <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
+
+        <activity android:name=".RecordVoice"
+            android:label="Record voice" />
         <!--
              The API key for Google ElderMaps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -71,23 +79,18 @@
 
         <activity
             android:name=".ElderMaps"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_elder_maps" />
         <activity
-            android:name="com.navigation.wfio_dlyw.viewmap.MapActivity"
-            android:label="Map Activity" />
-        <activity
-            android:name="com.navigation.wfio_dlyw.viewmap.MapSwitch"
-            android:label="Map Switch" />
+            android:name=".CarerMaps"
+            android:label="@string/title_activity_carer_maps" />
 
         <receiver android:name=".NotificationReceiver" />
 
         <activity android:name=".AnswerHelp" />
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
-        <activity android:name=".ElderConnect" />
-        <activity
-            android:name=".CarerMaps"
-            android:label="@string/title_activity_carer_maps"></activity>
+        <activity android:name=".ApplicationAppearrance"
+                  android:label="@string/ApplicationAppearrance" />
     </application>
 
 </manifest>

@@ -88,8 +88,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
-                    mCurrentLocation = location;
-                    sendLocToServer();
+                    sendLocToServer(location);
                 }
             }
         };
@@ -104,8 +103,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         eventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if (event.values[2] < 1 && event.values[1] > 8) {
-                    Log.d(TAG, "Listening");
+                if(event.values[2] < 2 && event.values[1] > 8){
+                    finish();
                 }
             }
 
@@ -220,8 +219,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                                 new LatLng(mCurrentLocation.getLatitude(),
                                         mCurrentLocation.getLongitude()), 15));
 
-                        sendLocToServer();
-
                         Log.d(TAG, "Running getRoute()");
                         getRoute();
                     } else {
@@ -243,11 +240,11 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private void sendLocToServer() {
+    private void sendLocToServer(Location loc) {
         try {
             JSONObject message = new JSONObject();
             JSONObject location = new JSONObject();
-            location.put("lat", mCurrentLocation.getLatitude()).put("long", mCurrentLocation.getLongitude());
+            location.put("lat", loc.getLatitude()).put("long", loc.getLongitude());
             message.put("recipient", 1).put("location", location);
 
             Requester req = Requester.getInstance(this);
@@ -258,8 +255,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void getRoute() {
-        LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-
         String formatDest = destination.replace(" ", "+");
         String formatUrl = String.format(ROUTE_URL, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), formatDest, API_KEY);
         Log.d(TAG, formatUrl);
@@ -294,6 +289,13 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 LatLng latLngStep = new LatLng(Double.parseDouble(step.getString("lat")),
                         Double.parseDouble(step.getString("lng")));
                 polylineOptions.add(latLngStep);
+
+                if(i == steps.length() - 1) {
+                    Location destination = new Location("destination");
+                    destination.setLatitude(Double.parseDouble(step.getString("lat")));
+                    destination.setLongitude(Double.parseDouble(step.getString("lng")));
+                    sendLocToServer(destination);
+                }
             }
 
             Polyline polyline = mMap.addPolyline(polylineOptions);

@@ -7,6 +7,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.comms.Credentials;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 
 public class CarerConnect extends AppCompatActivity {
@@ -18,6 +30,32 @@ public class CarerConnect extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCC);
         setSupportActionBar(myToolbar);
+        Requester req = Requester.getInstance(this);
+        Token token = Token.getInstance();
+
+        Toast.makeText(this , token.getType(), Toast.LENGTH_LONG).show();
+
+        Button getCode = (Button) findViewById(R.id.newCodeBtn);
+        EditText input = (EditText) findViewById(R.id.verificationCodeCC);
+        Button link = (Button) findViewById(R.id.link);
+
+        link.setOnClickListener(view -> {
+            String code = input.getText().toString();
+            try {
+                JSONObject linkRequest = new JSONObject();
+                linkRequest.put("code", code);
+
+                req.requestAction(ServerAction.CARER_LINK, linkRequest,
+                        t-> {
+                            try {
+                                String s = t.getJSONObject("result").getString("elderId");
+                                Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                            } catch (JSONException e) {}
+                        }, new Credentials(token.getEmail(), token.getValue()));
+            } catch (JSONException e) {}
+        });
+
+
     }
 
     @Override
