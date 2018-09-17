@@ -1,7 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -9,25 +8,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 
+import java.io.File;
 import java.io.IOException;
 
 public class RecordVoice extends AppCompatActivity {
 
-    private static final String LOG_TAG = "AudioRecordTest";
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private static final int REQUEST_AUDIO_RECORD = 200;
     private static String mFileName = null;
+    private boolean onPlay = false;
 
-    private RecordButton mRecordButton = null;
     private MediaRecorder mRecorder = null;
-
-    private PlayButton   mPlayButton = null;
     private MediaPlayer   mPlayer = null;
+
+    private ImageButton mRecord;
+
+    private File mFile;
 
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
@@ -37,7 +37,7 @@ public class RecordVoice extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
-            case REQUEST_RECORD_AUDIO_PERMISSION:
+            case REQUEST_AUDIO_RECORD:
                 permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
@@ -45,20 +45,11 @@ public class RecordVoice extends AppCompatActivity {
 
     }
 
-    private void onRecord(boolean start) {
-        if (start) {
-            startRecording();
-        } else {
-            stopRecording();
-        }
-    }
-
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();
-        } else {
+    private void playButton(boolean isPlaying){
+        if(isPlaying)
             stopPlaying();
-        }
+        else
+            startPlaying();
     }
 
     private void startPlaying() {
@@ -68,7 +59,7 @@ public class RecordVoice extends AppCompatActivity {
             mPlayer.prepare();
             mPlayer.start();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            e.printStackTrace();
         }
     }
 
@@ -81,65 +72,26 @@ public class RecordVoice extends AppCompatActivity {
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
+        mRecorder.setOutputFile(mFile);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
             mRecorder.prepare();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            e.printStackTrace();
         }
 
         mRecorder.start();
     }
 
     private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
-    }
-
-    class RecordButton extends Button {
-        boolean mStartRecording = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onRecord(mStartRecording);
-                if (mStartRecording) {
-                    setText("Stop recording");
-                } else {
-                    setText("Start recording");
-                }
-                mStartRecording = !mStartRecording;
-            }
-        };
-
-        public RecordButton(Context ctx) {
-            super(ctx);
-            setText("Start recording");
-            setOnClickListener(clicker);
-        }
-    }
-
-    class PlayButton extends Button {
-        boolean mStartPlaying = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onPlay(mStartPlaying);
-                if (mStartPlaying) {
-                    setText("Stop playing");
-                } else {
-                    setText("Start playing");
-                }
-                mStartPlaying = !mStartPlaying;
-            }
-        };
-
-        public PlayButton(Context ctx) {
-            super(ctx);
-            setText("Start playing");
-            setOnClickListener(clicker);
+        try{
+            mRecorder.stop();
+        } catch (Exception e){
+            mFile.delete();
+        } finally {
+            mRecorder.release();
+            mRecorder = null;
         }
     }
 
@@ -151,22 +103,24 @@ public class RecordVoice extends AppCompatActivity {
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest.3gp";
 
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+        mFile = new File(mFileName);
 
-        LinearLayout ll = new LinearLayout(this);
-        mRecordButton = new RecordButton(this);
-        ll.addView(mRecordButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0));
-        mPlayButton = new PlayButton(this);
-        ll.addView(mPlayButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0));
-        setContentView(ll);
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
+        setContentView(R.layout.activity_message_list);
+        mRecord = findViewById(R.id.sendClip);
+
+        mRecord.setOnTouchListener(new View.OnTouchListener(){
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    startRecording();
+                } else if(event.getAction() == MotionEvent.ACTION_UP){
+                    stopRecording();
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -175,6 +129,7 @@ public class RecordVoice extends AppCompatActivity {
         if (mRecorder != null) {
             mRecorder.release();
             mRecorder = null;
+
         }
 
         if (mPlayer != null) {
@@ -182,5 +137,4 @@ public class RecordVoice extends AppCompatActivity {
             mPlayer = null;
         }
     }
-
 }

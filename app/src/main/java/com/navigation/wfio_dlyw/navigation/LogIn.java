@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,7 +11,6 @@ import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.view.KeyEvent;
-
 import com.navigation.wfio_dlyw.comms.*;
 
 import org.json.JSONException;
@@ -77,6 +77,5 @@ public class LogIn extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 }
