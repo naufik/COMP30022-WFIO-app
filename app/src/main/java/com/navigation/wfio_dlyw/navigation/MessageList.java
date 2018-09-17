@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -24,9 +26,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
-public class MessageList extends AppCompatActivity implements View.OnClickListener{
+public class MessageList extends AppCompatActivity{
 
     private EditText editText;
     private MessageAdapter messageAdapter;
@@ -43,6 +46,8 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
     private MediaPlayer mPlayer = null;
     private Button mRecord;
 
+    private ArrayList<String> fileNames = new ArrayList<>();
+    private Button viewClips;
     private Button playButton;
     private int fileCount = 0;
 
@@ -53,6 +58,15 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
 
         // This is where we write the message
         editText = findViewById(R.id.messageInput);
+
+        Intent intent = getIntent();
+        ElderItem elderItem = intent.getParcelableExtra("Example Item");
+        String name = elderItem.getmText1();
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarML);
+        myToolbar.setTitle("");
+        setSupportActionBar(myToolbar);
+        myToolbar.setTitle(name);
 
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
@@ -77,26 +91,17 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
                 return false;
             }
         });
-    }
+        viewClips = findViewById(R.id.viewClips);
 
-    private void startPlaying(Object file) {
+        viewClips.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), StoreClips.class);
+                intent.putExtra("fileNames", fileNames);
+                startActivity(intent);
+            }
+        });
 
-        if(mPlayer != null && mPlayer.isPlaying())
-            stopPlaying();
-
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setDataSource(file.toString());
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void stopPlaying() {
-        mPlayer.release();
-        mPlayer = null;
     }
 
     private void startRecording() {
@@ -119,20 +124,12 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
 
         try{
             mRecorder.stop();
-            playButton = new Button(MessageList.this);
-            playButton.setId(fileCount-1);
-            playButton.setText("Play");
-            playButton.setTag(mFileName);
+            fileNames.add(mFileName);
 
             // Record to the external cache directory for visibility
             mFileName = getExternalCacheDir().getAbsolutePath();
             mFileName += "/audiorecordtest" + (++fileCount) + ".3gp";
 
-            LinearLayout ll = findViewById(R.id.textLayout);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            ll.addView(playButton, lp);
-
-            playButton.setOnClickListener(MessageList.this);
         } catch (Exception e){
             mFileName = "";
         } finally {
@@ -176,13 +173,5 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
-    }
-
-    @Override
-    public void onClick(View v) {
-        String str = v.getTag().toString();
-        Log.d("Interactions",str);
-
-        startPlaying(v.getTag());
     }
 }
