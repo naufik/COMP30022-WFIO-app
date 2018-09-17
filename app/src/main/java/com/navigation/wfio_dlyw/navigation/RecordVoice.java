@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,8 +25,7 @@ public class RecordVoice extends AppCompatActivity {
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
 
-    private Button mRecord;
-    private Button mPlay;
+    private ImageButton mRecord;
 
     private File mFile;
 
@@ -106,9 +106,8 @@ public class RecordVoice extends AppCompatActivity {
         mFile = new File(mFileName);
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
-        setContentView(R.layout.activity_record_voice);
-        mRecord = findViewById(R.id.recordVoice);
-        mPlay = findViewById(R.id.play);
+        setContentView(R.layout.activity_message_list);
+        mRecord = findViewById(R.id.sendClip);
 
         mRecord.setOnTouchListener(new View.OnTouchListener(){
 
@@ -120,14 +119,6 @@ public class RecordVoice extends AppCompatActivity {
                     stopRecording();
                 }
                 return false;
-            }
-        });
-
-        mPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playButton(onPlay);
-                onPlay = !onPlay;
             }
         });
     }

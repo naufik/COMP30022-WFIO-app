@@ -11,10 +11,6 @@ import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.view.KeyEvent;
-
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.navigation.wfio_dlyw.comms.*;
 
 import org.json.JSONException;
