@@ -37,9 +37,12 @@ public class MessageList extends AppCompatActivity {
     private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
-    private MediaPlayer   mPlayer = null;
+    private MediaPlayer mPlayer = null;
     private Button mRecord;
+    private Button playButton;
+
     private File mFile;
+    private boolean isPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,19 +81,21 @@ public class MessageList extends AppCompatActivity {
 
     }
 
-    private void playButton(boolean isPlaying){
-        if(isPlaying)
-            stopPlaying();
-        else
-            startPlaying();
-    }
-
     private void startPlaying() {
         mPlayer = new MediaPlayer();
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                isPlaying = false;
+                playButton.setText("Play");
+            }
+        });
         try {
             mPlayer.setDataSource(mFileName);
             mPlayer.prepare();
             mPlayer.start();
+            isPlaying = true;
+            playButton.setText("Stop");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,7 +104,8 @@ public class MessageList extends AppCompatActivity {
     private void stopPlaying() {
         mPlayer.release();
         mPlayer = null;
-
+        isPlaying = false;
+        playButton.setText("Play");
     }
 
     private void startRecording() {
@@ -130,7 +136,8 @@ public class MessageList extends AppCompatActivity {
             mRecorder = null;
         }
         if(success){
-            Button playButton = new Button(this);
+
+            playButton = new Button(this);
             playButton.setText("Play");
 
             LinearLayout ll = (LinearLayout) findViewById(R.id.textLayout);
@@ -138,16 +145,12 @@ public class MessageList extends AppCompatActivity {
             ll.addView(playButton, lp);
 
             playButton.setOnClickListener(new View.OnClickListener() {
-                private boolean isPlaying = false;
                 @Override
                 public void onClick(View v) {
-                    playButton(isPlaying);
-                    isPlaying = !isPlaying;
-                    if(isPlaying){
-                        playButton.setText("Stop");
-                    }else{
-                        playButton.setText("Play");
-                    }
+                    if(!isPlaying)
+                        startPlaying();
+                    else
+                        stopPlaying();
                 }
             });
         }
