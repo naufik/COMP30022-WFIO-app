@@ -87,7 +87,8 @@
             android:name=".ApplicationAppearrance"
             android:label="@string/ApplicationAppearrance" />
         <activity android:name=".MessageList" />
-        <activity android:name=".MessageListElder"></activity>
+        <activity android:name=".MessageListElder" />
+        <activity android:name=".ConnectToAnElder"></activity>
     </application>
 
 </manifest>

@@ -20,6 +20,15 @@ public class CarerHome extends AppCompatActivity{
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCH);
         setSupportActionBar(myToolbar);
 
+        Button msgButton = (Button) findViewById(R.id.messagingBtn);
+        msgButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MessageList.class);
+                startActivity(startIntent);
+            }
+        });
+
         Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
         connectToElderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
