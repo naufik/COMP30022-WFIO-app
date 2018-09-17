@@ -34,6 +34,8 @@ public class CarerHome extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
+            }
+        });
 
         Button myElders = (Button)findViewById(R.id.myElders);
         myElders.setOnClickListener(new View.OnClickListener() {
