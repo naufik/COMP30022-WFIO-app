@@ -42,9 +42,10 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
 
     private MediaRecorder mRecorder = null;
     private MediaPlayer mPlayer = null;
-    private Button mRecord;
 
+    private Button mRecord;
     private Button playButton;
+
     private int fileCount = 0;
 
     @Override
@@ -129,9 +130,7 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
             mFileName = getExternalCacheDir().getAbsolutePath();
             mFileName += "/audiorecordtest" + (++fileCount) + ".3gp";
 
-            LinearLayout ll = findViewById(R.id.textLayout);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            ll.addView(playButton, lp);
+            onClip(playButton,"voiceClip");
 
             playButton.setOnClickListener(MessageList.this);
         } catch (Exception e){
@@ -175,6 +174,14 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
         //if false, dialog pops on the left, set name to the carer's/elder's username
         Message message1 = new Message(message, "astuti", true);
         messageAdapter.add(message1);
+        // scroll the ListView to the last added element
+        messagesView.setSelection(messagesView.getCount() - 1);
+    }
+
+    public void onClip(Button clip, String message){
+        VoiceClip clip1 = new VoiceClip(message,"keks", true);
+        clip1.setClip(clip);
+        messageAdapter.add(clip1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
     }

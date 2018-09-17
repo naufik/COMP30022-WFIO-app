@@ -25,18 +25,13 @@
         android:paddingBottom="4dp"
         android:text="Rose"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Button
         android:id="@+id/message_body"
+        android:layout_width="258dp"
+        android:layout_height="91dp"
+        android:layout_alignStart="@+id/name"
         android:layout_below="@+id/name"
-        android:layout_alignLeft="@+id/name"
-        android:background="@drawable/their_message"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
-        android:elevation="2dp"
-        android:textSize="18dp"
-        android:text="How are you doing? This is a long message that should probably wrap."
-        />
+        android:text="Play"
+        android:background="@color/black"/>
 
 </RelativeLayout>
