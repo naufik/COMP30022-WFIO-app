@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -20,15 +19,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.concurrent.locks.ReadWriteLock;
 
 public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
@@ -53,7 +46,7 @@ public class ElderNavigation extends AppCompatActivity {
     }
 
     public void sendDestination(View view) {
-        Intent intent = new Intent(this, Maps.class);
+        Intent intent = new Intent(this, ElderMaps.class);
         EditText editText = (EditText) findViewById(R.id.navigationSearchField);
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);

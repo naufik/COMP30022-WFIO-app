@@ -28,6 +28,15 @@ public class CarerHome extends AppCompatActivity{
                 startActivity(startIntent);
             }
         });
+
+        Button findElderBtn = (Button)findViewById(R.id.findElderBtn);
+        findElderBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
+                startActivity(startIntent);
+            }
+        });
     }
 
     @Override
