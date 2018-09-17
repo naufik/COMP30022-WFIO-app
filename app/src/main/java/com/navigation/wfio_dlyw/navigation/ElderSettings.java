@@ -10,7 +10,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class ElderSettings extends AppCompatActivity {
 
@@ -18,31 +28,38 @@ public class ElderSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_settings);
+        Requester req = Requester.getInstance(this);
+        Token token = Token.getInstance();
+
         //instead of doing this, setHint "onCreate" by grabbing the user's current data
 
         EditText fullname = (EditText) findViewById(R.id.fullNameES);
-        EditText lastname = (EditText) findViewById(R.id.usernameES);
-        EditText email = (EditText) findViewById(R.id.emailES);
+        TextView email = (TextView) findViewById(R.id.emailES);
+        TextView username = (TextView) findViewById(R.id.usernameES);
+
+        //get Information from server :)
+        req.requestAction(ServerAction.USER_GET_INFO, null,
+                t-> {
+                    try {
+                        fullname.setHint(t.getJSONObject("result").getString("fullname"));
+                        email.setText(t.getJSONObject("result").getString("email"));
+                        username.setText(t.getJSONObject("result").getString("username"));
+
+                    } catch (JSONException e) {
+                    }
+                }, new Credentials(token.getEmail(), token.getValue()));
 
         String fullnameS = fullname.getText().toString();
-        String lastnameS = lastname.getText().toString();
-        String emailS = email.getText().toString();
 
         Button applyChangesES = (Button) findViewById(R.id.applyChangesES);
-        applyChangesES.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        applyChangesES.setOnClickListener(view -> {
+            try {
+                JSONObject params = new JSONObject();
                 if (!fullnameS.isEmpty()) {
-                    fullname.setHint(fullnameS);
-                    Toast.makeText(getApplicationContext(), "Changes Applied", Toast.LENGTH_LONG).show();
+                    params.put("fullname", fullnameS);
                 }
-                if (!lastnameS.isEmpty()) {
-                    lastname.setHint(lastnameS);
-                }
-                if (!emailS.isEmpty()) {
-                    email.setHint(emailS);
-                }
-            }
+                req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {}, new Credentials(token.getEmail(), token.getValue()));
+            } catch (JSONException e) {}
         });
 
 
@@ -53,6 +70,7 @@ public class ElderSettings extends AppCompatActivity {
         elderLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Token.reset();
                 Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
                 startActivity(startIntent);
             }

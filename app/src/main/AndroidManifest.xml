@@ -58,6 +58,9 @@
         <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
+        <activity
+            android:name=".RecordVoice"
+            android:label="Record voice" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -86,7 +89,7 @@
         <activity
             android:name=".ApplicationAppearrance"
             android:label="@string/ApplicationAppearrance" />
-        <activity android:name=".MessageList"></activity>
+        <activity android:name=".connectionsList"></activity>
     </application>
 
 </manifest>
