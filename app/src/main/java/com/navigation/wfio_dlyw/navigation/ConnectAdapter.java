@@ -18,6 +18,7 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
     public interface OnItemClickListener{
         void onItemClick(int position);
         void onDeleteClick(int position);
+        void onMapClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -28,6 +29,7 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
         public TextView mTextView1;
         public TextView mTextView2;
         public ImageView mDeleteImage;
+        public ImageView mOpenMap;
 
 
         public ExampleViewHolder(View itemView, OnItemClickListener listener){
@@ -35,6 +37,7 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
             mTextView1 = itemView.findViewById(R.id.fullnameEI);
             mTextView2 = itemView.findViewById(R.id.usernameEI);
             mDeleteImage = itemView.findViewById(R.id.image_delete);
+            mOpenMap = itemView.findViewById(R.id.image_map);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -55,6 +58,18 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
                         int position = getAdapterPosition();
                         if(position!=RecyclerView.NO_POSITION){
                             listener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
+
+            mOpenMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(listener !=null){
+                        int position = getAdapterPosition();
+                        if(position!=RecyclerView.NO_POSITION){
+                            listener.onMapClick(position);
                         }
                     }
                 }

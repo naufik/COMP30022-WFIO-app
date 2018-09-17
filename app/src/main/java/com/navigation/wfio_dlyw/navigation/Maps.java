@@ -65,6 +65,10 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+//        Intent intent = getIntent();
+//        ElderItem elderItem = intent.getParcelableExtra("Example Item");
+//        String name = elderItem.getmText1();
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         mDefaultLocation = new Location("Zen Apartments");
