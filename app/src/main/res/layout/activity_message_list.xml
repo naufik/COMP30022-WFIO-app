@@ -30,11 +30,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:backgroundTint="#0c53e2"
             android:ems="10"
             android:inputType="textPersonName"
-            android:textColor="@color/black"
-            android:backgroundTint="#0c53e2"
-            android:text="" />
+            android:text=""
+            android:textColor="@color/black" />
 
         <ImageButton
             android:layout_width="wrap_content"
