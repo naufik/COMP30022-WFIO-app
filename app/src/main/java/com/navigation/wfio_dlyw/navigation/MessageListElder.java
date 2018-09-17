@@ -2,6 +2,7 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -25,7 +26,8 @@ public class MessageListElder extends AppCompatActivity {
         messagesView = findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
         Requester req = Requester.getInstance(this);
-        while(true) {
+        Button refresh = (Button) findViewById(R.id.refresh);
+        refresh.setOnClickListener(view -> {
             req.requestAction(ServerAction.MESSAGE_PULL, null, t->{
                 try {
                     JSONArray messages = t.getJSONObject("result").getJSONArray("messages");
@@ -35,7 +37,7 @@ public class MessageListElder extends AppCompatActivity {
                     }
                 } catch (JSONException e) {}
             });
-        }
+        });
     }
 
     public void onMessage(String message) {
