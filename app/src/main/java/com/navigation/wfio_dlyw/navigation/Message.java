@@ -3,21 +3,19 @@ package com.navigation.wfio_dlyw.navigation;
 // Message.java
 public class Message {
     private String text; // message body
-    private MemberData data; // data of the user that sent this message
     private boolean belongsToCurrentUser; // is this message sent by us?
+    private String name;
 
-    public Message(String text, MemberData data, boolean belongsToCurrentUser) {
+    public Message(String text, String name, boolean belongsToCurrentUser) {
         this.text = text;
-        this.data = data;
         this.belongsToCurrentUser = belongsToCurrentUser;
+        this.name = name;
     }
+
+    public String getUsername() {return name;}
 
     public String getText() {
         return text;
-    }
-
-    public MemberData getData() {
-        return data;
     }
 
     public boolean isBelongsToCurrentUser() {
