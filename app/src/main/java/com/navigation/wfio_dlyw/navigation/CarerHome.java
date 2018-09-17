@@ -28,6 +28,12 @@ public class CarerHome extends AppCompatActivity{
                 startActivity(startIntent);
             }
         });
+
+        Button chat = (Button) findViewById(R.id.chat);
+        chat.setOnClickListener(view ->{
+            Intent startIntent = new Intent(getApplicationContext(), MessageList.class);
+            startActivity(startIntent);
+        });
     }
 
     @Override
