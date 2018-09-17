@@ -1,5 +1,7 @@
 package com.navigation.wfio_dlyw.comms;
 
+import org.json.JSONArray;
+
 import java.util.Date;
 
 public class Token{
@@ -10,6 +12,7 @@ public class Token{
     private String type;
     private int id;
     private String email;
+    private JSONArray connections;
 
     // Restrict the constructor from being instantiated
     private Token(){}
@@ -43,6 +46,12 @@ public class Token{
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public JSONArray getConnections() { return connections; }
+
+    public void setConnections(JSONArray connections) {
+        this.connections = connections;
     }
 
     public static synchronized Token getInstance(){

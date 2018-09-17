@@ -63,10 +63,23 @@ public class LogIn extends AppCompatActivity {
                         token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
                         if (token.getType().equals("ELDER")) {
+
+                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                                try {
+                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
+                                    } catch (JSONException e) {}
+                             }, new Credentials(token.getEmail(), token.getValue()));
+
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
                         }
                         else {
+                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                                try {
+                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
+                                } catch (JSONException e) {}
+                            }, new Credentials(token.getEmail(), token.getValue()));
+
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);
                         }
