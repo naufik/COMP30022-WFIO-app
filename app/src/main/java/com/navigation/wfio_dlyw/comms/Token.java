@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.comms;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Date;
 
@@ -12,7 +13,9 @@ public class Token{
     private String type;
     private int id;
     private String email;
+    private String fullname;
     private JSONArray connections;
+    private JSONObject currentConnection;
 
     // Restrict the constructor from being instantiated
     private Token(){}
@@ -54,6 +57,14 @@ public class Token{
         this.connections = connections;
     }
 
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
     public static synchronized Token getInstance(){
         if(instance==null){
             instance=new Token();
@@ -64,5 +75,13 @@ public class Token{
     public static synchronized Token reset() {
         instance = new Token();
         return instance;
+    }
+
+    public JSONObject getCurrentConnection() {
+        return currentConnection;
+    }
+
+    public void setCurrentConnection(JSONObject currentConnection) {
+        this.currentConnection = currentConnection;
     }
 }

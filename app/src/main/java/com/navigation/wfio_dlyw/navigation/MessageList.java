@@ -19,8 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.navigation.wfio_dlyw.comms.Requester;
-import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +53,6 @@ public class MessageList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
-        Token token = Token.getInstance();
         // This is where we write the mesage
         editText = (EditText) findViewById(R.id.messageInput);
 
@@ -177,13 +175,15 @@ public class MessageList extends AppCompatActivity {
 
     public void sendMessage(View view) {
         String message = editText.getText().toString();
+        Token token = Token.getInstance();
         Requester req = Requester.getInstance(this);
         try {
             JSONObject param = new JSONObject();
-            param.put().put();
-            req.requestAction(ServerAction.MESSAGE_SEND, param);
+            //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
+            param.put("recipient",0).put("content", message);
+            req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
         } catch (JSONException e) {}
-        Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         if (message.length() > 0) {
             onMessage(message);
             editText.getText().clear();
@@ -193,7 +193,7 @@ public class MessageList extends AppCompatActivity {
     public void onMessage(String message) {
         //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
         //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "astuti", false);
+        Message message1 = new Message(message, "You", false);
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
