@@ -15,7 +15,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 
@@ -46,6 +51,106 @@ public class MessageList extends AppCompatActivity {
         messageAdapter = new MessageAdapter(this);
         messagesView = (ListView) findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
+
+        // Record to the external cache directory for visibility
+        mFileName = getExternalCacheDir().getAbsolutePath();
+        mFileName += "/audiorecordtest.3gp";
+
+        mFile = new File(mFileName);
+
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
+        mRecord = findViewById(R.id.recordButton);
+
+        mRecord.setOnTouchListener(new View.OnTouchListener(){
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    Log.d("Interactions","Recording");
+                    startRecording();
+                } else if(event.getAction() == MotionEvent.ACTION_UP){
+                    stopRecording();
+                }
+                return false;
+            }
+        });
+
+
+    }
+
+    private void playButton(boolean isPlaying){
+        if(isPlaying)
+            stopPlaying();
+        else
+            startPlaying();
+    }
+
+    private void startPlaying() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopPlaying() {
+        mPlayer.release();
+        mPlayer = null;
+
+    }
+
+    private void startRecording() {
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mRecorder.setOutputFile(mFile);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mRecorder.start();
+    }
+
+    private void stopRecording() {
+        boolean success = false;
+        try{
+            mRecorder.stop();
+            success = true;
+        } catch (Exception e){
+            mFile.delete();
+        } finally {
+            mRecorder.release();
+            mRecorder = null;
+        }
+        if(success){
+            Button playButton = new Button(this);
+            playButton.setText("Play");
+
+            LinearLayout ll = (LinearLayout) findViewById(R.id.textLayout);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ll.addView(playButton, lp);
+
+            playButton.setOnClickListener(new View.OnClickListener() {
+                private boolean isPlaying = false;
+                @Override
+                public void onClick(View v) {
+                    playButton(isPlaying);
+                    isPlaying = !isPlaying;
+                    if(isPlaying){
+                        playButton.setText("Stop");
+                    }else{
+                        playButton.setText("Play");
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -62,6 +167,7 @@ public class MessageList extends AppCompatActivity {
 
     public void sendMessage(View view) {
         String message = editText.getText().toString();
+        Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
         if (message.length() > 0) {
             onMessage(message);
             editText.getText().clear();
