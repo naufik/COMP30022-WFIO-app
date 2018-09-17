@@ -68,7 +68,7 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
                     getLocationsFromServer();
                 });
             }
-        }, 0, 5000);
+        }, 0, 1000);
     }
 
     private void getLocationsFromServer() {
@@ -121,13 +121,13 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
             mMap.addCircle(new CircleOptions().center(latLngLoc));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 15));
 
             if(dest != null) {
                 LatLng latLngDest = new LatLng(dest.getLatitude(), dest.getLongitude());
                 this.dest = latLngDest;
-
-                mMap.addMarker(new MarkerOptions().position(this.dest));
             }
+            mMap.addMarker(new MarkerOptions().position(this.dest));
         }
     }
 }
