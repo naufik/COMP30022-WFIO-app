@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private LatLng dest;
 
     private static final String TAG = CarerMaps.class.getSimpleName();
 
@@ -56,7 +57,6 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng[] dest = new LatLng[1];
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -65,78 +65,69 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
                 CarerMaps.this.runOnUiThread(() -> {
                     Log.d(TAG, "Starting loop...");
                     Log.d(TAG, "Getting Loc and Dest from server...");
-                    Location[] locAndDest = getLocAndDestFromServer();
-
-                    if(locAndDest[0] != null){
-                        Log.d(TAG, "New location found");
-                        mMap.clear();
-
-                        LatLng latLngLoc = new LatLng(locAndDest[0].getLatitude(), locAndDest[0].getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(latLngLoc));
-
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 15));
-
-                        if(locAndDest[1] != null) {
-                            Log.d(TAG, "New destination found");
-                            dest[0] = new LatLng(locAndDest[1].getLatitude(), locAndDest[1].getLongitude());
-                        }
-                        mMap.addCircle(new CircleOptions().center(dest[0]));
-                    }
+                    getLocationsFromServer();
                 });
             }
         }, 0, 5000);
     }
 
-    private Location[] getLocAndDestFromServer() {
-        Location[] locAndDest = new Location[2];
+    private void getLocationsFromServer() {
 
         Requester req = Requester.getInstance(this);
         req.requestAction(ServerAction.MESSAGE_PULL, null, t -> {
             try {
+                Location location = null;
+                Location destination = null;
+
                 JSONArray locations = t.getJSONObject("result").getJSONArray("messages");
 
-                if(locations.length() == 0){
-                    return;
-                }
-
-                Log.d(TAG, "Getting location...");
-                JSONArray JSONlocation = locations
-                        .getJSONObject(0)
-                        .getJSONObject("location")
-                        .getJSONArray("coordinates");
-
-                Log.d(TAG, "Converting location...");
-                Location location = new Location("location");
-                location.setLatitude(JSONlocation.getDouble(0));
-                location.setLongitude(JSONlocation.getDouble(1));
-
-                Log.d(TAG, "Setting location to array...");
-                locAndDest[0] = location;
-
-                if(locations.length() != 1) {
-                    Log.d(TAG, "Getting destination...");
-                    JSONArray JSONdest = locations
-                            .getJSONObject(locations.length() - 1)
+                if(locations.length() != 0){
+                    Log.d(TAG, "Getting location...");
+                    JSONArray JSONlocation = locations
+                            .getJSONObject(0)
                             .getJSONObject("location")
                             .getJSONArray("coordinates");
 
-                    Log.d(TAG, "Converting destination...");
-                    Location destination = new Location("destination");
-                    destination.setLatitude(JSONdest.getDouble(0));
-                    destination.setLongitude(JSONdest.getDouble(1));
+                    Log.d(TAG, "Converting location...");
+                    location = new Location("location");
+                    location.setLatitude(JSONlocation.getDouble(0));
+                    location.setLongitude(JSONlocation.getDouble(1));
 
-                    Log.d(TAG, "Setting destination to array...");
-                    locAndDest[1] = destination;
+                    if(locations.length() != 1) {
+                        Log.d(TAG, "Getting destination...");
+                        JSONArray JSONdest = locations
+                                .getJSONObject(locations.length() - 1)
+                                .getJSONObject("location")
+                                .getJSONArray("coordinates");
+
+                        Log.d(TAG, "Converting destination...");
+                        destination = new Location("destination");
+                        destination.setLatitude(JSONdest.getDouble(0));
+                        destination.setLongitude(JSONdest.getDouble(1));
+                    }
                 }
+
+                renderLocs(location, destination);
 
             } catch(JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
         }, new Credentials("dropcomputing@gmail.com","kontol"));
+    }
 
-        if(locAndDest[0] == null){
-            Log.d(TAG, "Location empty after requester action");
+    private void renderLocs(Location loc, Location dest) {
+        if(loc != null) {
+            mMap.clear();
+
+            LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
+            mMap.addCircle(new CircleOptions().center(latLngLoc));
+
+            if(dest != null) {
+                LatLng latLngDest = new LatLng(dest.getLatitude(), dest.getLongitude());
+                this.dest = latLngDest;
+
+                mMap.addMarker(new MarkerOptions().position(this.dest));
+            }
         }
-        return locAndDest;
     }
 }
