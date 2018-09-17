@@ -68,19 +68,23 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
                     Location[] locAndDest = getLocAndDestFromServer();
 
                     if(locAndDest[0] != null){
+                        Log.d(TAG, "New location found");
                         mMap.clear();
 
                         LatLng latLngLoc = new LatLng(locAndDest[0].getLatitude(), locAndDest[0].getLongitude());
                         mMap.addMarker(new MarkerOptions().position(latLngLoc));
 
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 15));
+
                         if(locAndDest[1] != null) {
+                            Log.d(TAG, "New destination found");
                             dest[0] = new LatLng(locAndDest[1].getLatitude(), locAndDest[1].getLongitude());
                         }
                         mMap.addCircle(new CircleOptions().center(dest[0]));
                     }
                 });
             }
-        }, 0, 1000);
+        }, 0, 5000);
     }
 
     private Location[] getLocAndDestFromServer() {
@@ -130,6 +134,9 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
             }
         }, new Credentials("dropcomputing@gmail.com","kontol"));
 
+        if(locAndDest[0] == null){
+            Log.d(TAG, "Location empty after requester action");
+        }
         return locAndDest;
     }
 }
