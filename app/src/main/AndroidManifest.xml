@@ -88,6 +88,8 @@
         <activity android:name=".NewPassword" />
         <activity android:name=".ApplicationAppearrance"
                   android:label="@string/ApplicationAppearrance" />
+
+
     </application>
 
 </manifest>
