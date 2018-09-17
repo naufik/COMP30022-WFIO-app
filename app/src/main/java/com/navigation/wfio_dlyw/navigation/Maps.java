@@ -182,6 +182,8 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
                                 new LatLng(mLastKnownLocation.getLatitude(),
                                         mLastKnownLocation.getLongitude()), 15));
 
+                        getRoute(mLastKnownLocation, destination);
+
                         try {
                             JSONObject message = new JSONObject();
                             JSONObject location = new JSONObject();
@@ -201,7 +203,7 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
                         Log.e(TAG, "Exception: %s", task.getException());
                         // mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, 15));
-                        getRoute(mDefaultLatLng, destination);
+                        getRoute(mDefaultLocation, destination);
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
                 });
@@ -211,8 +213,11 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private void getRoute(LatLng loc, String dest) {
-        String formatUrl = String.format(ROUTE_URL, loc.latitude + "," + loc.longitude, dest, "AIzaSyBbm1wwfULDJFvSC44OoTa_G8XAnGgV6XM");
+    private void getRoute(Location loc, String dest) {
+        LatLng latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+
+        String formatDest = dest.replace(" ", "+");
+        String formatUrl = String.format(ROUTE_URL, loc.getLatitude() + "," + loc.getLongitude(), formatDest, "AIzaSyBbm1wwfULDJFvSC44OoTa_G8XAnGgV6XM");
         Log.d(TAG, formatUrl);
 
         // Instantiate the RequestQueue.
