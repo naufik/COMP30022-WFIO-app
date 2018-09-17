@@ -159,7 +159,7 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
         try {
             JSONObject param = new JSONObject();
             //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
-            param.put("recipient",1).put("content", message);
+            param.put("recipient",5).put("content", message);
             req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
         } catch (JSONException e) {}
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();

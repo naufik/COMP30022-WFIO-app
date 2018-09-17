@@ -2,10 +2,13 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ListView;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,11 +24,13 @@ public class MessageListElder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list_elder);
 
+        Token token = Token.getInstance();
         messageAdapter = new MessageAdapter(this);
         messagesView = findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
         Requester req = Requester.getInstance(this);
-        while(true) {
+        Button refresh = (Button) findViewById(R.id.refresh);
+        refresh.setOnClickListener(view -> {
             req.requestAction(ServerAction.MESSAGE_PULL, null, t->{
                 try {
                     JSONArray messages = t.getJSONObject("result").getJSONArray("messages");
@@ -34,8 +39,8 @@ public class MessageListElder extends AppCompatActivity {
                         onMessage(currentMessage.getString("content"));
                     }
                 } catch (JSONException e) {}
-            });
-        }
+            }, new Credentials(token.getEmail(), token.getValue()));
+        });
     }
 
     public void onMessage(String message) {
