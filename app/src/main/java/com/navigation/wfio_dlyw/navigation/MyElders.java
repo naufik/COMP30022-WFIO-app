@@ -9,6 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class MyElders extends AppCompatActivity {
@@ -25,6 +33,7 @@ public class MyElders extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        elders = new ArrayList<>();
         setContentView(R.layout.activity_my_elders);
 
         createElders();
@@ -49,10 +58,20 @@ public class MyElders extends AppCompatActivity {
     }
 
     public void createElders(){
-        elders = new ArrayList<>();
-        elders.add(new ElderItem("stacy", "stacy"));
-        elders.add(new ElderItem("Damn", "stacy"));
-        elders.add(new ElderItem("John", "stacy"));
+        Token t = Token.getInstance();
+        Requester.getInstance(this).requestAction(ServerAction.USER_GET_INFO, null, res -> {
+            try {
+                JSONArray eList = res.getJSONObject("result").getJSONArray("eldersList");
+                for (int i = 0; i < eList.length(); ++i) {
+                    JSONObject currentElder = eList.getJSONObject(i);
+                    elders.add(
+                            new ElderItem("" + currentElder.getInt("id"), "" + currentElder.getInt("id"))
+                    );
+                }
+            } catch (Exception e) {
+
+            }
+        }, new Credentials(t.getEmail(), t.getValue()));
     }
 
     public void buildRecyclerViewer(){
