@@ -157,4 +157,9 @@ public class ElderNavigation extends AppCompatActivity {
         Intent intent = new Intent(activity, Maps.class);
         activity.startActivity(intent);
     }
+
+    public static void CallAgain(Activity activity){
+        Intent intent = new Intent(activity, ElderNavigation.class);
+        activity.startActivity(intent);
+    }
 }
