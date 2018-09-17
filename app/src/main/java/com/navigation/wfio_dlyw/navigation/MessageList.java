@@ -19,6 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
@@ -48,6 +54,7 @@ public class MessageList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
+        Token token = Token.getInstance();
         // This is where we write the mesage
         editText = (EditText) findViewById(R.id.messageInput);
 
@@ -170,6 +177,12 @@ public class MessageList extends AppCompatActivity {
 
     public void sendMessage(View view) {
         String message = editText.getText().toString();
+        Requester req = Requester.getInstance(this);
+        try {
+            JSONObject param = new JSONObject();
+            param.put().put();
+            req.requestAction(ServerAction.MESSAGE_SEND, param);
+        } catch (JSONException e) {}
         Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
         if (message.length() > 0) {
             onMessage(message);
