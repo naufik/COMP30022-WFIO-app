@@ -55,7 +55,7 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
         ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
 
         ses.scheduleAtFixedRate(() -> {
-            Location loc = getLocFromServer();
+            //Location loc = getLocFromServer();
             mMap.clear();
 
         }, 0, 1, TimeUnit.SECONDS);
