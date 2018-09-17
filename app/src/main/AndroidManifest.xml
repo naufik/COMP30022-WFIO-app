@@ -58,9 +58,6 @@
         <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
-        <activity
-            android:name=".StoreClips"
-            android:label="Store Clips" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -91,7 +88,8 @@
             android:label="@string/ApplicationAppearrance" />
         <activity android:name=".MessageList" />
         <activity android:name=".MessageListElder" />
-        <activity android:name=".MyElders"></activity>
+        <activity android:name=".ConnectToAnElder"></activity>
+        <service android:name=".MsgUpdateService" />
     </application>
 
 </manifest>

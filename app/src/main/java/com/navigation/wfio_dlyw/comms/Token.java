@@ -15,10 +15,13 @@ public class Token{
     private String email;
     private String fullname;
     private JSONArray connections;
+    private JSONArray messages;
     private JSONObject currentConnection;
 
     // Restrict the constructor from being instantiated
-    private Token(){}
+    private Token(){
+        this.messages = new JSONArray();
+    }
 
     public void setValue(String data){
         this.value = data;
@@ -83,5 +86,13 @@ public class Token{
 
     public void setCurrentConnection(JSONObject currentConnection) {
         this.currentConnection = currentConnection;
+    }
+
+    public JSONArray getMessages() {
+        return messages;
+    }
+
+    public void setMessages(JSONArray messages) {
+        this.messages = messages;
     }
 }

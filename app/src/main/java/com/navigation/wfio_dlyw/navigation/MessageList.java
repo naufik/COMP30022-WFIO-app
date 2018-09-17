@@ -1,8 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -10,9 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,13 +23,10 @@ import com.navigation.wfio_dlyw.comms.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
-public class MessageList extends AppCompatActivity {
+public class MessageList extends AppCompatActivity implements View.OnClickListener{
 
     private EditText editText;
     private MessageAdapter messageAdapter;
@@ -46,29 +39,17 @@ public class MessageList extends AppCompatActivity {
     private static final int REQUEST_AUDIO_RECORD = 200;
     private static String mFileName = null;
 
-    private ArrayList<String> fileNames = new ArrayList<>();
     private MediaRecorder mRecorder = null;
-
+    private MediaPlayer mPlayer = null;
     private Button mRecord;
-    private Button viewClips;
 
+    private Button playButton;
     private int fileCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
-
-        Intent intent = getIntent();
-        ElderItem elderItem = intent.getParcelableExtra("Example Item");
-        String name = elderItem.getmText1();
-
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarML);
-        myToolbar.setTitle("");
-        setSupportActionBar(myToolbar);
-        myToolbar.setTitle(name);
-
-
 
         // This is where we write the message
         editText = findViewById(R.id.messageInput);
@@ -96,17 +77,26 @@ public class MessageList extends AppCompatActivity {
                 return false;
             }
         });
+    }
 
-        viewClips = findViewById(R.id.viewClips);
+    private void startPlaying(Object file) {
 
-        viewClips.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), StoreClips.class);
-                intent.putExtra("fileNames", fileNames);
-                startActivity(intent);
-            }
-        });
+        if(mPlayer != null && mPlayer.isPlaying())
+            stopPlaying();
+
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(file.toString());
+            mPlayer.prepare();
+            mPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopPlaying() {
+        mPlayer.release();
+        mPlayer = null;
     }
 
     private void startRecording() {
@@ -122,19 +112,27 @@ public class MessageList extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private void stopRecording() {
 
         try{
             mRecorder.stop();
-            fileNames.add(mFileName);
-            Log.d("Interactions",fileNames.size()+"");
+            playButton = new Button(MessageList.this);
+            playButton.setId(fileCount-1);
+            playButton.setText("Play");
+            playButton.setTag(mFileName);
+
             // Record to the external cache directory for visibility
             mFileName = getExternalCacheDir().getAbsolutePath();
             mFileName += "/audiorecordtest" + (++fileCount) + ".3gp";
 
+            LinearLayout ll = findViewById(R.id.textLayout);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ll.addView(playButton, lp);
 
+            playButton.setOnClickListener(MessageList.this);
         } catch (Exception e){
             mFileName = "";
         } finally {
@@ -161,7 +159,7 @@ public class MessageList extends AppCompatActivity {
         try {
             JSONObject param = new JSONObject();
             //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
-            param.put("recipient",1).put("content", message);
+            param.put("recipient",5).put("content", message);
             req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
         } catch (JSONException e) {}
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -180,5 +178,11 @@ public class MessageList extends AppCompatActivity {
         messagesView.setSelection(messagesView.getCount() - 1);
     }
 
+    @Override
+    public void onClick(View v) {
+        String str = v.getTag().toString();
+        Log.d("Interactions",str);
 
+        startPlaying(v.getTag());
+    }
 }

@@ -10,15 +10,9 @@
     <ListView
         android:id="@+id/messages_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="673dp"
         android:layout_weight="2"
-        android:divider="#fff" />\
-
-    <Button
-        android:id="@+id/refresh"
-        android:layout_width="wrap_content"
-        android:layout_height="783dp"
-        android:text="refresh" />
+        android:divider="#fff" />
 
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+
 public class ChooseAccountType extends AppCompatActivity {
 
     @Override

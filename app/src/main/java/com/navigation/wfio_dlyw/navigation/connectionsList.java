@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
 import java.util.Random;
 
 public class connectionsList extends AppCompatActivity {
