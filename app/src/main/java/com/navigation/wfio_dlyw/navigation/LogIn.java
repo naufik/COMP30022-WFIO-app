@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,12 +58,26 @@ public class LogIn extends AppCompatActivity {
                         token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
                         token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
                         token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
+                        token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
                         Toast.makeText(this , s, Toast.LENGTH_LONG).show();
                         if (token.getType().equals("ELDER")) {
+
+                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                                try {
+                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
+                                    } catch (JSONException e) {}
+                             }, new Credentials(token.getEmail(), token.getValue()));
+
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
                         }
                         else {
+                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                                try {
+                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
+                                } catch (JSONException e) {}
+                            }, new Credentials(token.getEmail(), token.getValue()));
+
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);
                         }
@@ -100,6 +115,5 @@ public class LogIn extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 }

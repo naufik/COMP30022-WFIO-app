@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.support.v7.widget.Toolbar;
 
-public class CarerHome extends AppCompatActivity{
+public class CarerHome extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,12 @@ public class CarerHome extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
+
+        Button myElders = (Button)findViewById(R.id.myElders);
+        myElders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MyElders.class);
                 startActivity(startIntent);
             }
         });

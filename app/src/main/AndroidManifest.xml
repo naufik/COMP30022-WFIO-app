@@ -58,9 +58,12 @@
         <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
-
-        <activity android:name=".RecordVoice"
-            android:label="Record voice" />
+        <activity
+            android:name=".MyElders"
+            android:label="MyElders" />
+        <activity
+            android:name=".StoreClips"
+            android:label="StoreClips" />
         <!--
              The API key for Google ElderMaps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -89,8 +92,13 @@
         <activity android:name=".AnswerHelp" />
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
-        <activity android:name=".ApplicationAppearrance"
-                  android:label="@string/ApplicationAppearrance" />
+        <activity
+            android:name=".ApplicationAppearrance"
+            android:label="@string/ApplicationAppearrance" />
+        <activity android:name=".MessageList" />
+        <activity android:name=".MessageListElder" />
+
+        <service android:name=".MsgUpdateService" />
     </application>
 
 </manifest>

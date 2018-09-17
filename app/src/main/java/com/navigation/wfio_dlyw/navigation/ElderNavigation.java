@@ -45,10 +45,13 @@ public class ElderNavigation extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
 
-        Button recordButton = (Button) findViewById(R.id.recVoice);
-        recordButton.setOnClickListener(view -> {
-            Intent startIntent = new Intent(getApplicationContext(), RecordVoice.class);
-            startActivity(startIntent);
+        Button elderMessage = (Button) findViewById(R.id.eldermsg);
+        elderMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MessageListElder.class);
+                startActivity(startIntent);
+            }
         });
 
         Button arButton = (Button) findViewById(R.id.AR);
@@ -56,6 +59,8 @@ public class ElderNavigation extends AppCompatActivity {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startActivity(startIntent);
         });
+
+
     }
 
     public void sendDestination(View view) {
@@ -64,7 +69,6 @@ public class ElderNavigation extends AppCompatActivity {
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
-
     }
 
     public void sendOnChannel(View v){
@@ -142,6 +146,11 @@ public class ElderNavigation extends AppCompatActivity {
 
     public static void Call(Activity activity){
         Intent intent = new Intent(activity, ElderMaps.class);
+        activity.startActivity(intent);
+    }
+
+    public static void CallAgain(Activity activity){
+        Intent intent = new Intent(activity, ElderNavigation.class);
         activity.startActivity(intent);
     }
 }
