@@ -173,7 +173,7 @@ public class MessageList extends AppCompatActivity implements View.OnClickListen
     public void onMessage(String message) {
         //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
         //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "astuti", false);
+        Message message1 = new Message(message, "astuti", true);
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
