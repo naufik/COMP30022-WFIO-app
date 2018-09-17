@@ -45,6 +45,15 @@ public class ElderNavigation extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
 
+        Button elderMessage = (Button) findViewById(R.id.eldermsg);
+        elderMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MessageListElder.class);
+                startActivity(startIntent);
+            }
+        });
+
         Button arButton = (Button) findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);

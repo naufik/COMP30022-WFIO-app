@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -26,10 +25,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 
-public class MessageList extends AppCompatActivity {
+public class MessageList extends AppCompatActivity implements View.OnClickListener{
 
     private EditText editText;
     private MessageAdapter messageAdapter;
@@ -38,33 +36,32 @@ public class MessageList extends AppCompatActivity {
     // Requesting permission to RECORD_AUDIO
     private boolean permissionToRecordAccepted = false;
     private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+
     private static final int REQUEST_AUDIO_RECORD = 200;
     private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
     private MediaPlayer mPlayer = null;
     private Button mRecord;
-    private Button playButton;
 
-    private File mFile;
-    private boolean isPlaying = false;
+    private Button playButton;
+    private int fileCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
-        // This is where we write the mesage
-        editText = (EditText) findViewById(R.id.messageInput);
 
-        messageAdapter = new MessageAdapter(this);
-        messagesView = (ListView) findViewById(R.id.messages_view);
-        messagesView.setAdapter(messageAdapter);
+        // This is where we write the message
+        editText = findViewById(R.id.messageInput);
 
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
-        mFileName += "/audiorecordtest.3gp";
+        mFileName += "/audiorecordtest" + fileCount + ".3gp";
 
-        mFile = new File(mFileName);
+        messageAdapter = new MessageAdapter(this);
+        messagesView = findViewById(R.id.messages_view);
+        messagesView.setAdapter(messageAdapter);
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
         mRecord = findViewById(R.id.recordButton);
@@ -74,7 +71,6 @@ public class MessageList extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    Log.d("Interactions","Recording");
                     startRecording();
                 } else if(event.getAction() == MotionEvent.ACTION_UP){
                     stopRecording();
@@ -82,25 +78,18 @@ public class MessageList extends AppCompatActivity {
                 return false;
             }
         });
-
-
     }
 
-    private void startPlaying() {
+    private void startPlaying(Object file) {
+
+        if(mPlayer != null && mPlayer.isPlaying())
+            stopPlaying();
+
         mPlayer = new MediaPlayer();
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                isPlaying = false;
-                playButton.setText("Play");
-            }
-        });
         try {
-            mPlayer.setDataSource(mFileName);
+            mPlayer.setDataSource(file.toString());
             mPlayer.prepare();
             mPlayer.start();
-            isPlaying = true;
-            playButton.setText("Stop");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,55 +98,47 @@ public class MessageList extends AppCompatActivity {
     private void stopPlaying() {
         mPlayer.release();
         mPlayer = null;
-        isPlaying = false;
-        playButton.setText("Play");
     }
 
     private void startRecording() {
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFile);
+        mRecorder.setOutputFile(mFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
             mRecorder.prepare();
+            mRecorder.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        mRecorder.start();
     }
 
     private void stopRecording() {
-        boolean success = false;
+
         try{
             mRecorder.stop();
-            success = true;
-        } catch (Exception e){
-            mFile.delete();
-        } finally {
-            mRecorder.release();
-            mRecorder = null;
-        }
-        if(success){
-
-            playButton = new Button(this);
+            playButton = new Button(MessageList.this);
+            playButton.setId(fileCount-1);
             playButton.setText("Play");
+            playButton.setTag(mFileName);
 
-            LinearLayout ll = (LinearLayout) findViewById(R.id.textLayout);
+            // Record to the external cache directory for visibility
+            mFileName = getExternalCacheDir().getAbsolutePath();
+            mFileName += "/audiorecordtest" + (++fileCount) + ".3gp";
+
+            LinearLayout ll = findViewById(R.id.textLayout);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             ll.addView(playButton, lp);
 
-            playButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!isPlaying)
-                        startPlaying();
-                    else
-                        stopPlaying();
-                }
-            });
+            playButton.setOnClickListener(MessageList.this);
+        } catch (Exception e){
+            mFileName = "";
+        } finally {
+            mRecorder.release();
+            mRecorder = null;
         }
     }
 
@@ -170,7 +151,6 @@ public class MessageList extends AppCompatActivity {
                 break;
         }
         if (!permissionToRecordAccepted ) finish();
-
     }
 
     public void sendMessage(View view) {
@@ -193,9 +173,17 @@ public class MessageList extends AppCompatActivity {
     public void onMessage(String message) {
         //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
         //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "You", false);
+        Message message1 = new Message(message, "astuti", false);
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String str = v.getTag().toString();
+        Log.d("Interactions",str);
+
+        startPlaying(v.getTag());
     }
 }

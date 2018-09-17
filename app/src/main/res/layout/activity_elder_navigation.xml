@@ -111,16 +111,15 @@
         app:layout_constraintTop_toBottomOf="@+id/favoritesButton" />
 
     <Button
-        android:id="@+id/messagingBtn"
+        android:id="@+id/eldermsg"
         android:layout_width="wrap_content"
-        android:layout_height="59dp"
-        android:layout_marginEnd="116dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="1dp"
-        android:text="Msg"
+        android:text="Elder Message"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.864"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarEN" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
