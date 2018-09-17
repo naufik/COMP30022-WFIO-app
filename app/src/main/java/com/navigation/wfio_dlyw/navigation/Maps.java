@@ -32,6 +32,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -172,17 +174,31 @@ public class Maps extends FragmentActivity implements OnMapReadyCallback {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
+                        Log.d(TAG, "Current location found. Rendering...");
                         // Set the map's camera position to the current location of the device.
                         mLastKnownLocation = (Location) task.getResult();
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(mLastKnownLocation.getLatitude(),
                                         mLastKnownLocation.getLongitude()), 15));
+
+                        try {
+                            JSONObject message = new JSONObject();
+                            JSONObject location = new JSONObject();
+                            location.put("lat", mLastKnownLocation.getLatitude()).put("long", mLastKnownLocation.getLongitude());
+                            message.put("recipient", 1).put("location", location);
+
+                            Requester req = Requester.getInstance(this);
+                            req.requestAction(ServerAction.MESSAGE_SEND, message, t -> {});
+                        } catch(JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+
                     } else {
                         LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
                                 mDefaultLocation.getLongitude());
                         Log.d(TAG, "Current location is null. Using defaults.");
                         Log.e(TAG, "Exception: %s", task.getException());
-                        mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
+                        // mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, 15));
                         getRoute(mDefaultLatLng, destination);
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);
