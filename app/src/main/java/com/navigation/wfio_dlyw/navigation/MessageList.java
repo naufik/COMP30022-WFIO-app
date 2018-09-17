@@ -151,6 +151,7 @@ public class MessageList extends AppCompatActivity{
 
     public void sendMessage(View view) {
         String message = editText.getText().toString();
+
         Token token = Token.getInstance();
         Requester req = Requester.getInstance(this);
         try {
