@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 public class Requester {
 
-    public static String SERVER_URL = "http://rawon.naufik.net/";
+    public static String SERVER_URL = "https://rawon.naufik.net/";
     public static String VALIDATION = "";
 
     private static Requester instance;
@@ -59,7 +59,8 @@ public class Requester {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json");
                 if (auth != null) {
-                    params.put("WFIO-AUTH", Requester.VALIDATION);
+                    params.put("XWfio-Identity", auth.getEmail());
+                    params.put("XWfio-Secret", auth.getPrivateToken());
                 }
                 return params;
             }
@@ -81,7 +82,8 @@ public class Requester {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("Content-Type", "application/json");
                 if (auth != null) {
-                    params.put("WFIO-AUTH", Requester.VALIDATION);
+                    params.put("XWfio-Identity", auth.getEmail());
+                    params.put("XWfio-Secret", auth.getPrivateToken());
                 }
                 return params;
             }

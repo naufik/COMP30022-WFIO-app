@@ -4,13 +4,9 @@
     package="com.navigation.wfio_dlyw.navigation">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:remove="android:maxSdkVersion"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
-    -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -58,11 +54,14 @@
         <activity
             android:name=".CarerSettings"
             android:label="@string/settings" />
-
-        <activity android:name=".RecordVoice"
-            android:label="Record voice" />
+        <activity
+            android:name=".MyElders"
+            android:label="MyElders" />
+        <activity
+            android:name=".StoreClips"
+            android:label="StoreClips" />
         <!--
-             The API key for Google Maps-based APIs is defined as a string resource.
+             The API key for Google ElderMaps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
@@ -78,16 +77,24 @@
             android:required="false" />
 
         <activity
-            android:name=".Maps"
-            android:label="@string/title_activity_maps" />
+            android:name=".ElderMaps"
+            android:label="@string/title_activity_elder_maps" />
+        <activity
+            android:name=".CarerMaps"
+            android:label="@string/title_activity_carer_maps" />
 
         <receiver android:name=".NotificationReceiver" />
 
         <activity android:name=".AnswerHelp" />
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
-        <activity android:name=".ApplicationAppearrance"
-                  android:label="@string/ApplicationAppearrance" />
+        <activity
+            android:name=".ApplicationAppearrance"
+            android:label="@string/ApplicationAppearrance" />
+        <activity android:name=".MessageList" />
+        <activity android:name=".MessageListElder" />
+
+        <service android:name=".MsgUpdateService" />
     </application>
 
 </manifest>

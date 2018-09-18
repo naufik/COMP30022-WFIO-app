@@ -21,8 +21,6 @@ public class ElderHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_home);
         Token token = Token.getInstance();
-        Toast.makeText(this , token.getValue(), Toast.LENGTH_LONG).show();
-
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEH);
         setSupportActionBar(myToolbar);
 
@@ -67,4 +65,6 @@ public class ElderHome extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 }
