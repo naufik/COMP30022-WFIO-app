@@ -2,7 +2,7 @@
 
 Team "We'll Figure It Out" presents... Don't Lose Your Way.
 
-An application to help the elderly people help reach their destination.
+An application to help the elderly reach their destination.
 
 ## Team Information
 
