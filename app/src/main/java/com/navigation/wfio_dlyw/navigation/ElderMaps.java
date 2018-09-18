@@ -71,6 +71,11 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
+//        Intent intent = getIntent();
+//        ElderItem elderItem = intent.getParcelableExtra("Example Item");
+//        String name = elderItem.getmText1();
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         mDefaultLocation = new Location("Zen Apartments");
