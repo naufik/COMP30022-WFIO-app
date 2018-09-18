@@ -58,20 +58,20 @@ public class MyElders extends AppCompatActivity {
     }
 
     public void createElders(){
-//        Token t = Token.getInstance();
-//        Requester.getInstance(this).requestAction(ServerAction.USER_GET_INFO, null, res -> {
-//            try {
-//                JSONArray eList = res.getJSONObject("result").getJSONArray("eldersList");
-//                for (int i = 0; i < eList.length(); ++i) {
-//                    JSONObject currentElder = eList.getJSONObject(i);
-//                    elders.add(
-//                            new ElderItem("" + currentElder.getInt("id"), "" + currentElder.getInt("id"))
-//                    );
-//                }
-//            } catch (Exception e) {
-//
-//            }
-//        }, new Credentials(t.getEmail(), t.getValue()));
+        Token t = Token.getInstance();
+        Requester.getInstance(this).requestAction(ServerAction.USER_GET_INFO, null, res -> {
+            try {
+                JSONArray eList = res.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList");
+                for (int i = 0; i < eList.length(); ++i) {
+                    JSONObject currentElder = eList.getJSONObject(i);
+                    elders.add(
+                            new ElderItem("" + currentElder.getInt("id"), "" + currentElder.getInt("id"))
+                    );
+                }
+            } catch (Exception e) {
+
+            }
+        }, new Credentials(t.getEmail(), t.getValue()));
         elders.add(new ElderItem("test", "stacy"));
     }
 
