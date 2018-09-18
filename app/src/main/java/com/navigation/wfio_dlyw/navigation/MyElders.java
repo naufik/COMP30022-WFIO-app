@@ -99,7 +99,7 @@ public class MyElders extends AppCompatActivity {
 
             @Override
             public void onMapClick(int position){
-                Intent intent = new Intent(MyElders.this, Maps.class);
+                Intent intent = new Intent(MyElders.this, ElderMaps.class);
                 intent.putExtra("Example Item", elders.get(position));
                 startActivity(intent);
             }

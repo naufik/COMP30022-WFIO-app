@@ -72,13 +72,17 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void getLocationsFromServer() {
+        Log.d(TAG, "Running getLocationsFromServer()");
 
         Requester req = Requester.getInstance(this);
+        Log.d(TAG, "Requester created");
         req.requestAction(ServerAction.MESSAGE_PULL, null, t -> {
             try {
+                Log.d(TAG, "Lambda function...");
                 Location location = null;
                 Location destination = null;
 
+                Log.d(TAG, "Grabbing JSONArray...");
                 JSONArray locations = t.getJSONObject("result").getJSONArray("messages");
 
                 if(locations.length() != 0){
@@ -105,6 +109,8 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
                         destination.setLatitude(JSONdest.getDouble(0));
                         destination.setLongitude(JSONdest.getDouble(1));
                     }
+                } else {
+                    Log.d(TAG, "0 location length");
                 }
 
                 renderLocs(location, destination);
@@ -113,15 +119,16 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
                 Log.e(TAG, e.getMessage());
             }
         }, new Credentials("dropcomputing@gmail.com","kontol"));
+        Log.d(TAG, "After lambda function");
     }
 
-    private void renderLocs(Location loc, Location dest) {
+    private void renderLocs(Location dest, Location loc) {
         if(loc != null) {
             mMap.clear();
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
             mMap.addCircle(new CircleOptions().center(latLngLoc));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 15));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 25));
 
             if(dest != null) {
                 LatLng latLngDest = new LatLng(dest.getLatitude(), dest.getLongitude());

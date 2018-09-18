@@ -142,11 +142,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        // LatLng sydney = new LatLng(-34, 151);
-        // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
         getLocationPermission();
         updateLocationUI();
         getLocation();
@@ -213,12 +208,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 locationResult.addOnCompleteListener(this, task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         Log.d(TAG, "Current location found. Rendering...");
-                        // Set the map's camera position to the current location of the device.
                         mCurrentLocation = (Location) task.getResult();
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(mCurrentLocation.getLatitude(),
-                                        mCurrentLocation.getLongitude()), 15));
-
                         Log.d(TAG, "Running getRoute()");
                         getRoute();
                     } else {
@@ -227,10 +217,11 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                         LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
                                 mDefaultLocation.getLongitude());
                         mCurrentLocation = mDefaultLocation;
-                        // mMap.addMarker(new MarkerOptions().position(mDefaultLatLng));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLatLng, 15));
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(mCurrentLocation.getLatitude(),
+                                    mCurrentLocation.getLongitude()), 15));
                 });
             } else {
                 Log.d(TAG, "Location permission not granted.");
