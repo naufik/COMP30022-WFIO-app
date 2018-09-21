@@ -44,7 +44,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private boolean mLocationPermission;
+    private boolean mLocationPermissionGranted;
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
@@ -55,12 +55,12 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private Sensor sensor;
     private SensorManager sensorManager;
 
-    private static final int CASE_ACCESS_FINE_LOCATION = 1;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = ElderMaps.class.getSimpleName();
     //private final LatLng mDefaultLocation = new LatLng(-37.8070, 144.9612);
 
-    private final String ROUTE_URL = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&key=%s";
-    private final String API_KEY = "AIzaSyBbm1wwfULDJFvSC44OoTa_G8XAnGgV6XM";
+    private String ROUTE_URL;
+    private String API_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +70,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        ROUTE_URL = getResources().getString(R.string.route_url_format);
+        API_KEY = getResources().getString(R.string.google_maps_key);
 
         //should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
 //        Intent intent = getIntent();
@@ -150,21 +153,23 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         getLocationPermission();
         updateLocationUI();
         getLocation();
-
-        startLocationUpdates();
+        //startLocationUpdates();
     }
 
     private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Location permission granted.");
-            mLocationPermission = true;
+            mLocationPermissionGranted = true;
         } else {
-            Log.d(TAG, "Requesting location permission...");
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    CASE_ACCESS_FINE_LOCATION);
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
 
@@ -172,14 +177,13 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
-        mLocationPermission = false;
+        mLocationPermissionGranted = false;
         switch (requestCode) {
-            case CASE_ACCESS_FINE_LOCATION: {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Location permission granted.");
-                    mLocationPermission = true;
+                    mLocationPermissionGranted = true;
                 }
             }
         }
@@ -191,24 +195,23 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
             return;
         }
         try {
-            if (mLocationPermission) {
+            if (mLocationPermissionGranted) {
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                Log.d(TAG, "Location permission not granted, setting to null");
                 mCurrentLocation = null;
                 getLocationPermission();
             }
-        } catch (SecurityException e) {
+        } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
     }
 
     private void getLocation() {
         try {
-            if (mLocationPermission) {
+            if (mLocationPermissionGranted) {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -218,6 +221,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                         getRoute();
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.");
+                        Log.d(TAG, "Task successful: " + String.valueOf(task.isSuccessful()));
+                        Log.d(TAG, "Task result: " + String.valueOf(task.getResult()));
                         Log.e(TAG, String.format("Exception: %s", task.getException()));
                         LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
                                 mDefaultLocation.getLongitude());
@@ -304,12 +309,12 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
+        // sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(eventListener);
+        // sensorManager.unregisterListener(eventListener);
     }
 }

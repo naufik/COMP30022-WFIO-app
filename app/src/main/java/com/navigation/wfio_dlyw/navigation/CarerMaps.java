@@ -1,5 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.graphics.Color;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -122,13 +123,13 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
         Log.d(TAG, "After lambda function");
     }
 
-    private void renderLocs(Location dest, Location loc) {
+    private void renderLocs(Location loc, Location dest) {
         if(loc != null) {
             mMap.clear();
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
-            mMap.addCircle(new CircleOptions().center(latLngLoc));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 25));
+            mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(3).fillColor(Color.BLUE));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 20));
 
             if(dest != null) {
                 LatLng latLngDest = new LatLng(dest.getLatitude(), dest.getLongitude());

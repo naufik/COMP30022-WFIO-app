@@ -4,8 +4,8 @@
     package="com.navigation.wfio_dlyw.navigation">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:remove="android:maxSdkVersion"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -21,15 +21,16 @@
         <activity
             android:name=".LogIn"
             android:label="Login">
+        </activity>
+        <activity
+            android:name=".ElderNavigation"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ElderNavigation"
-            android:label="@string/app_name" />
         <activity
             android:name=".ElderSettings"
             android:label="@string/settings" />
@@ -78,7 +79,9 @@
 
         <activity
             android:name=".ElderMaps"
-            android:label="@string/title_activity_elder_maps" />
+            android:label="@string/title_activity_elder_maps">
+
+        </activity>
         <activity
             android:name=".CarerMaps"
             android:label="@string/title_activity_carer_maps" />
@@ -95,6 +98,11 @@
         <activity android:name=".MessageListElder" />
 
         <service android:name=".MsgUpdateService" />
+
+        <activity
+            android:name=".MapsPermissionTest"
+            android:label="@string/title_activity_maps_permission_test">
+        </activity>
     </application>
 
 </manifest>
