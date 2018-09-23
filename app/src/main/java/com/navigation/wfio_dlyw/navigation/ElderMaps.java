@@ -41,6 +41,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
 
     // Location variables
@@ -51,7 +53,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
     private Location mDefaultLocation;
-    private JSONObject mCurrentRoute;
+    private PolylineOptions mCurrentRoute;
     private String destination;
     private boolean updateRoute;
     private String ROUTE_URL;
@@ -67,6 +69,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
     private static final int DEFAULT_ZOOM = 15;
+    private static final int CHECKPOINT_PROXIMITY = 10;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
@@ -99,6 +102,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         ROUTE_URL = getResources().getString(R.string.route_url_format);
         API_KEY = getResources().getString(R.string.google_maps_key);
 
+        // Initialize other variables
+        updateRoute = true;
+
         // Initialize location polling
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(TIME_INTERVAL);
@@ -113,15 +119,21 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
+                    mCurrentLocation = location;
                     //sendLocToServer(location);
                     Log.d(TAG, String.valueOf(location));
                     if (updateRoute) {
+                        Log.d(TAG, "Route requires updating");
+                        mMap.clear();
                         getRoute(location, destination, response -> {
-                            mCurrentRoute = response;
-
+                            Log.d(TAG, "Route acquired");
+                            mCurrentRoute = convertRoute(response);
+                            mMap.addPolyline(mCurrentRoute);
+                            updateRoute = false;
                         });
-                        checkNextRouteUpdate();
                     }
+                    Log.d(TAG, "Checking next route update");
+                    checkNextRouteUpdate();
                 }
             }
         };
@@ -283,8 +295,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         queue.add(jsonObjectRequest);
     }
 
-    private void drawRoute(JSONObject route) {
-        mMap.clear();
+    private PolylineOptions convertRoute(JSONObject route) {
         PolylineOptions polylineOptions = new PolylineOptions();
 
         try {
@@ -314,15 +325,31 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 }
             }
 
-            mMap.addPolyline(polylineOptions);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        return polylineOptions;
     }
 
     private void checkNextRouteUpdate() {
-        
+        // Set to true once current position is within proximity of 2nd polyline point
+        try {
+            List<LatLng> pointList = mCurrentRoute.getPoints();
+            LatLng checkpoint = pointList.get(1);
+            Location locationCheckpoint = new Location("checkpoint");
+            locationCheckpoint.setLatitude(checkpoint.latitude);
+            locationCheckpoint.setLongitude(checkpoint.longitude);
+            float distance = mCurrentLocation.distanceTo(locationCheckpoint);
+            Log.d(TAG, "Distance to next checkpoint: " + distance + "m");
+
+            if (distance <= CHECKPOINT_PROXIMITY) {
+                updateRoute = true;
+            }
+
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     @SuppressLint("MissingPermission")
