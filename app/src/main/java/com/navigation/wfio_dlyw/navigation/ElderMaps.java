@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -49,8 +50,10 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
-    private String destination;
     private Location mDefaultLocation;
+    private JSONObject mCurrentRoute;
+    private String destination;
+    private boolean updateRoute;
     private String ROUTE_URL;
     private String API_KEY;
 
@@ -63,6 +66,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
+    private static final int DEFAULT_ZOOM = 15;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
@@ -80,9 +84,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Default location if live location inaccessible
-        //mDefaultLocation = new Location("Zen Apartments");
-        //mDefaultLocation.setLatitude(-37.8070);
-        //mDefaultLocation.setLongitude(144.9612);
+        mDefaultLocation = new Location("Zen Apartments");
+        mDefaultLocation.setLatitude(-37.8070);
+        mDefaultLocation.setLongitude(144.9612);
 
         // Should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
         /*Intent intent = getIntent();
@@ -100,6 +104,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         mLocationRequest.setInterval(TIME_INTERVAL);
         mLocationRequest.setFastestInterval(TIME_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        // Initialize location callback
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -109,6 +115,13 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 for (Location location : locationResult.getLocations()) {
                     //sendLocToServer(location);
                     Log.d(TAG, String.valueOf(location));
+                    if (updateRoute) {
+                        getRoute(location, destination, response -> {
+                            mCurrentRoute = response;
+
+                        });
+                        checkNextRouteUpdate();
+                    }
                 }
             }
         };
@@ -132,6 +145,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
             }
         };
 
+        // Upon reopening activity
         if (savedInstanceState != null) {
             mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             //mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
@@ -142,15 +156,11 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        Log.d(TAG, "Getting location permission");
         getLocationPermission();
-        Log.d(TAG, "Getting location permission on main thread complete.");
     }
 
     private void onPermissionGranted() {
         updateLocationUI();
-        //getLocation();
         startLocationUpdates();
     }
 
@@ -232,7 +242,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     }
                     //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             //new LatLng(mCurrentLocation.getLatitude(),
-                                    //mCurrentLocation.getLongitude()), 15));
+                                    //mCurrentLocation.getLongitude()), DEFAULT_ZOOM));
                 });
             } else {
                 Log.d(TAG, "Location permission not granted.");
@@ -256,9 +266,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private void getRoute() {
+    private void getRoute(Location location, String destination, final VolleyCallback callback) {
         String formatDest = destination.replace(" ", "+");
-        String formatUrl = String.format(ROUTE_URL, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), formatDest, API_KEY);
+        String formatUrl = String.format(ROUTE_URL, location.getLatitude() + "," + location.getLongitude(), formatDest, API_KEY);
         Log.d(TAG, formatUrl);
 
         // Instantiate the RequestQueue.
@@ -266,7 +276,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
 
         // Request a string response from the provided URL.
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, formatUrl,
-                null, response -> drawRoute(response),
+                null, response -> callback.onSuccess(response),
                 error -> Log.e(TAG, "Volley Error"));
 
         // Add the request to the RequestQueue.
@@ -274,8 +284,11 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void drawRoute(JSONObject route) {
+        mMap.clear();
         PolylineOptions polylineOptions = new PolylineOptions();
+
         try {
+
             JSONObject legs = route.getJSONArray("routes")
                     .getJSONObject(0)
                     .getJSONArray("legs")
@@ -308,6 +321,11 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
+    private void checkNextRouteUpdate() {
+        
+    }
+
+    @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
