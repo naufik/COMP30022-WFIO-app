@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class ApplicationAppearrance extends AppCompatActivity {
+public class ApplicationAppearance extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

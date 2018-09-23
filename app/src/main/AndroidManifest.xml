@@ -92,8 +92,8 @@
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
         <activity
-            android:name=".ApplicationAppearrance"
-            android:label="@string/ApplicationAppearrance" />
+            android:name=".ApplicationAppearance"
+            android:label="@string/ApplicationAppearance" />
         <activity android:name=".MessageList" />
         <activity android:name=".MessageListElder" />
 

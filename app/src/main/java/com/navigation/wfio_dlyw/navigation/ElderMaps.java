@@ -63,6 +63,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,14 +80,14 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Default location if live location inaccessible
-        mDefaultLocation = new Location("Zen Apartments");
-        mDefaultLocation.setLatitude(-37.8070);
-        mDefaultLocation.setLongitude(144.9612);
+        //mDefaultLocation = new Location("Zen Apartments");
+        //mDefaultLocation.setLatitude(-37.8070);
+        //mDefaultLocation.setLongitude(144.9612);
 
         // Should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
         /*Intent intent = getIntent();
         ElderItem elderItem = intent.getParcelableExtra("Example Item");
-        String name = elderItem.getmText1();*/
+        String name = elderItem.getText1();*/
 
         // Initialize strings
         Intent intent = getIntent();
@@ -129,6 +131,12 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 // empty
             }
         };
+
+        if (savedInstanceState != null) {
+            mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            //mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+        }
+
     }
 
     @Override
@@ -174,6 +182,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     mLocationPermissionGranted = true;
                     Log.d(TAG, "Permission granted on callback");
                     onPermissionGranted();
+                } else {
+                    finish();
                 }
             }
         }
@@ -220,9 +230,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                         mCurrentLocation = mDefaultLocation;
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                            new LatLng(mCurrentLocation.getLatitude(),
-                                    mCurrentLocation.getLongitude()), 15));
+                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            //new LatLng(mCurrentLocation.getLatitude(),
+                                    //mCurrentLocation.getLongitude()), 15));
                 });
             } else {
                 Log.d(TAG, "Location permission not granted.");
@@ -256,7 +266,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
 
         // Request a string response from the provided URL.
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, formatUrl,
-                null, response -> drawRoute(response), error -> Log.e(TAG, "Volley Error"));
+                null, response -> drawRoute(response),
+                error -> Log.e(TAG, "Volley Error"));
 
         // Add the request to the RequestQueue.
         queue.add(jsonObjectRequest);
@@ -290,7 +301,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 }
             }
 
-            Polyline polyline = mMap.addPolyline(polylineOptions);
+            mMap.addPolyline(polylineOptions);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -301,6 +312,15 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
                 null /* Looper */);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, mCurrentLocation);
+            super.onSaveInstanceState(outState);
+        }
     }
 
     @Override
