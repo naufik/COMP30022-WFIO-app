@@ -43,4 +43,8 @@ dependencies {
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation ('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
 }
