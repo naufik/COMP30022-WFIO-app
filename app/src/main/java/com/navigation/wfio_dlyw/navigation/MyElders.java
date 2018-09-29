@@ -28,10 +28,6 @@ public class MyElders extends AppCompatActivity {
     private ConnectAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    private Button buttonInsert;
-    private Button buttonRemove;
-    private EditText editTextInsert;
-    private EditText editTextRemove;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +39,6 @@ public class MyElders extends AppCompatActivity {
 
         createElders();
         buildRecyclerViewer();
-        setButtons();
-
     }
 
     public void insertItem(int position, ElderItem item){
@@ -116,28 +110,5 @@ public class MyElders extends AppCompatActivity {
                 removeItem(position);
             }
         });
-    }
-
-    public void setButtons(){
-        buttonInsert = findViewById(R.id.button_insert);
-        buttonRemove = findViewById(R.id.button_remove);
-        editTextInsert = findViewById(R.id.edittext_insert);
-        editTextRemove = findViewById(R.id.edittext_remove);
-
-        buttonInsert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
-        buttonRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = Integer.parseInt(editTextRemove.getText().toString());
-                removeItem(position);
-            }
-        });
-
     }
 }
