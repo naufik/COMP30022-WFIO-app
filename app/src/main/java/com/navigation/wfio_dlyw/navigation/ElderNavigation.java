@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     public static final String channel_1_ID = "channel 1";
+    private Intent favouriteIntent;
 
    private final Context context = this;
 
@@ -64,8 +66,8 @@ public class ElderNavigation extends AppCompatActivity {
         favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), Favourites.class);
-                startActivity(startIntent);
+                favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
+                startActivity(favouriteIntent);
             }
         });
 
