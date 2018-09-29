@@ -69,6 +69,7 @@ public class LogIn extends AppCompatActivity {
                                     } catch (JSONException e) {}
                              }, new Credentials(token.getEmail(), token.getValue()));
 
+                            finish();
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
                         }
@@ -79,6 +80,7 @@ public class LogIn extends AppCompatActivity {
                                 } catch (JSONException e) {}
                             }, new Credentials(token.getEmail(), token.getValue()));
 
+                            finish();
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);
                         }
