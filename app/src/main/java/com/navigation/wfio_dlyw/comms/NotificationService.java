@@ -2,8 +2,11 @@ package com.navigation.wfio_dlyw.comms;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
@@ -22,32 +25,59 @@ import com.navigation.wfio_dlyw.navigation.AnswerHelp;
 import com.navigation.wfio_dlyw.navigation.NotificationReceiver;
 import com.navigation.wfio_dlyw.navigation.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NotificationService extends JobIntentService {
+import java.util.TimerTask;
+
+public class NotificationService extends IntentService {
     public NotificationService() {
-        super();
+        super("Notification Services");
+        createNotificationChannels();
     }
 
-    @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-
-    }
+    private Handler h = new Handler();
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId){
         Token t = Token.getInstance();
-        Requester.getInstance(this).requestAction(ServerAction.NOTIFICATION_POLL, null, res -> {
-            displayNotification();
-        },new Credentials(t.getEmail(), t.getValue()));
+        Requester req = Requester.getInstance(this);
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                h.post(() -> {
+                    req.requestAction(ServerAction.NOTIFICATION_POLL, null, res -> {
+                        try {
+                            JSONArray notifs = res.getJSONObject("result")
+                                .getJSONArray("notifications");
+
+                            for (int i = 0; i < notifs.length(); ++i) {
+                                String title = "Hey";
+                                String subtitle = notifs.getJSONObject(0)
+                                        .getJSONObject("content").getJSONObject("from")
+                                        .getString("fullname");
+                                displayNotification(title, subtitle);
+                            }
+                        } catch (JSONException e) {
+
+                        }
+                    }, new Credentials(t.getEmail(), t.getValue()));
+                });
+            }
+        };
+
         return super.onStartCommand(intent, flags, startId);
     }
 
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+
+    }
 
 
-    public void displayNotification() {
-        String title = "New Notif";
-        String message = "yeet";
+    public void displayNotification(@NonNull String title, @NonNull String message) {
 
         //start an activity, then choose intent
         Intent activityIntent = new Intent(this, AnswerHelp.class);
@@ -60,7 +90,7 @@ public class NotificationService extends JobIntentService {
         PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0,
                 broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(this, "channel 1")
+        Notification notification = new NotificationCompat.Builder(this, "wfio_channel1")
                 .setSmallIcon(R.drawable.ic_child)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -75,5 +105,19 @@ public class NotificationService extends JobIntentService {
                 .build();
         //need to give different id's if you want to give multiple notifications instanteneously
         NotificationManagerCompat.from(this).notify(1, notification);
+    }
+
+    private void createNotificationChannels() {
+        NotificationChannel channel1= new NotificationChannel(
+                "wfio_channel1",
+                "some notification channel",
+                NotificationManager.IMPORTANCE_HIGH
+        );
+        channel1.setDescription("This is Channel 1");
+        channel1.enableVibration(true);
+        channel1.enableLights(true);
+
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel1);
     }
 }
