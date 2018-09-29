@@ -11,7 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
 
 
 public class ElderHome extends AppCompatActivity {
@@ -41,6 +46,13 @@ public class ElderHome extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        Requester req = Requester.getInstance(this);
+        req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+            try {
+                token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
+            } catch (JSONException e) {}
+        }, new Credentials(token.getEmail(), token.getValue()));
     }
 
     @Override
