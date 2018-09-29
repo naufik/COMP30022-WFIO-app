@@ -73,12 +73,14 @@ public class MessageListElder extends AppCompatActivity {
     @Override
     public void onPause(){
         super.onPause();
+        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
         stopService(serviceIntent);
     }
 
     @Override
     public void onStop(){
         super.onStop();
+        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
         stopService(serviceIntent);
     }
 }
