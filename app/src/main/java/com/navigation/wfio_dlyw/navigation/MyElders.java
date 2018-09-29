@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,13 +66,17 @@ public class MyElders extends AppCompatActivity {
                 for (int i = 0; i < eList.length(); ++i) {
                     JSONObject currentElder = eList.getJSONObject(i);
                     elders.add(
-                            new ElderItem("" + currentElder.getInt("id"), "" + currentElder.getInt("id"))
+                            new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getInt("id"))
                     );
+                }
+                for (int i=0; i<elders.size(); i++){
+                    Log.d("hey", elders.get(i).getmText1());
                 }
             } catch (Exception e) {
 
             }
         }, new Credentials(t.getEmail(), t.getValue()));
+
         elders.add(new ElderItem("test", "stacy"));
     }
 
@@ -136,7 +141,4 @@ public class MyElders extends AppCompatActivity {
         });
 
     }
-
-
-
 }
