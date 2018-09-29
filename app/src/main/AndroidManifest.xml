@@ -56,7 +56,7 @@
             android:label="@string/settings" />
         <activity
             android:name=".MyElders"
-            android:label="MyElders" />
+            android:label="@string/MyElders" />
         <activity
             android:name=".StoreClips"
             android:label="StoreClips" />
