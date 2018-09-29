@@ -65,7 +65,7 @@ public class MyElders extends AppCompatActivity {
                 JSONArray eList = res.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList");
                 for (int i = 0; i < eList.length(); ++i) {
                     JSONObject currentElder = eList.getJSONObject(i);
-                    insertItem(i, new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getInt("id")));
+                    insertItem(i, new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getString("username"), currentElder.getInt("id")));
                 }
                 for (int i=0; i<elders.size(); i++){
                     Log.d("hey", elders.get(i).getmText1());

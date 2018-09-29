@@ -51,6 +51,8 @@ public class MessageList extends AppCompatActivity{
     private Button playButton;
     private int fileCount = 0;
 
+    private int recipientID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,7 @@ public class MessageList extends AppCompatActivity{
         Intent intent = getIntent();
         ElderItem elderItem = intent.getParcelableExtra("Example Item");
         String name = elderItem.getmText1();
+        recipientID = elderItem.getmId();
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarML);
         myToolbar.setTitle("");
@@ -157,7 +160,7 @@ public class MessageList extends AppCompatActivity{
         try {
             JSONObject param = new JSONObject();
             //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
-            param.put("recipient",5).put("content", message);
+            param.put("recipient",recipientID).put("content", message);
             req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
         } catch (JSONException e) {}
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
