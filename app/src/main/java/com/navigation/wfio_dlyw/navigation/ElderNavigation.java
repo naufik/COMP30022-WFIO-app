@@ -15,23 +15,16 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
-import com.navigation.wfio_dlyw.viewmap.MapSwitch;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.concurrent.locks.ReadWriteLock;
+import com.navigation.wfio_dlyw.comms.Token;
 
 public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
@@ -43,6 +36,8 @@ public class ElderNavigation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Token token = Token.getInstance();
+        Toast.makeText(this , token.getValue(), Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_elder_navigation);
         createNotificationChannels();
         notificationManager = NotificationManagerCompat.from(this);
@@ -50,10 +45,13 @@ public class ElderNavigation extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
 
-        Button recordButton = (Button) findViewById(R.id.recVoice);
-        recordButton.setOnClickListener(view -> {
-            Intent startIntent = new Intent(getApplicationContext(), RecordVoice.class);
-            startActivity(startIntent);
+        Button elderMessage = (Button) findViewById(R.id.eldermsg);
+        elderMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), MessageListElder.class);
+                startActivity(startIntent);
+            }
         });
 
         Button arButton = (Button) findViewById(R.id.AR);
@@ -61,15 +59,16 @@ public class ElderNavigation extends AppCompatActivity {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startActivity(startIntent);
         });
+
+
     }
 
     public void sendDestination(View view) {
-        Intent intent = new Intent(this, Maps.class);
+        Intent intent = new Intent(this, ElderMaps.class);
         EditText editText = (EditText) findViewById(R.id.navigationSearchField);
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
-
     }
 
     public void sendOnChannel(View v){
@@ -146,7 +145,12 @@ public class ElderNavigation extends AppCompatActivity {
     }
 
     public static void Call(Activity activity){
-        Intent intent = new Intent(activity, Maps.class);
+        Intent intent = new Intent(activity, ElderMaps.class);
+        activity.startActivity(intent);
+    }
+
+    public static void CallAgain(Activity activity){
+        Intent intent = new Intent(activity, ElderNavigation.class);
         activity.startActivity(intent);
     }
 }

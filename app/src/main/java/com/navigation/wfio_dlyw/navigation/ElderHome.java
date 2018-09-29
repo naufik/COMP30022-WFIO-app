@@ -9,6 +9,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.navigation.wfio_dlyw.comms.Token;
 
 
 public class ElderHome extends AppCompatActivity {
@@ -17,7 +20,7 @@ public class ElderHome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_home);
-
+        Token token = Token.getInstance();
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEH);
         setSupportActionBar(myToolbar);
 
@@ -62,4 +65,6 @@ public class ElderHome extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
 }

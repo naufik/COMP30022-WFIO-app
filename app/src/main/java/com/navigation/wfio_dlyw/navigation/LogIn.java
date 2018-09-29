@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,9 +19,23 @@ import org.json.JSONObject;
 
 public class LogIn extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Requester req = Requester.getInstance(this);
+        Token token = Token.getInstance();
+        /*if (token.getValue() != null) {
+            if (token.getType().equals("ELDER")) {
+                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                startActivity(startIntent);
+            }
+            else {
+                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                startActivity(startIntent);
+            }
+        }*/
+
         setContentView(R.layout.activity_log_in);
         EditText username = (EditText) findViewById(R.id.username);
         EditText password = (EditText) findViewById(R.id.password);
@@ -36,13 +51,37 @@ public class LogIn extends AppCompatActivity {
                     JSONObject params = new JSONObject();
                     params.put("username", user).put("password", pass);
 
-                Requester minta = Requester.getInstance(this);
-
-                minta.requestAction(ServerAction.USER_LOGIN, params,
+                req.requestAction(ServerAction.USER_LOGIN, params,
                         t -> {
                     try {
                         String s = t.getJSONObject("result").getString("token");
-                        Toast.makeText(this , s, Toast.LENGTH_LONG).show();
+                        token.setValue(s);
+                        token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
+                        Toast.makeText(this.getApplicationContext(),  token.getType(), Toast.LENGTH_LONG).show();
+                        token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
+                        token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
+                        token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
+                        if (token.getType().equals("ELDER")) {
+
+                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                                try {
+                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
+                                    } catch (JSONException e) {}
+                             }, new Credentials(token.getEmail(), token.getValue()));
+
+                            Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
+                            startActivity(startIntent);
+                        }
+                        else {
+                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                                try {
+                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
+                                } catch (JSONException e) {}
+                            }, new Credentials(token.getEmail(), token.getValue()));
+
+                            Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                            startActivity(startIntent);
+                        }
                     } catch (JSONException e) {}
                         });
                 } catch (JSONException e) {
@@ -77,6 +116,5 @@ public class LogIn extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 }
