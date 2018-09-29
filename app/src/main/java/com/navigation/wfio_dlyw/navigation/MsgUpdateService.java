@@ -26,7 +26,7 @@ public class MsgUpdateService extends IntentService {
     public MsgUpdateService() {
         super("MsgUpdateService");
     }
-    public Handler h = new Handler();
+    private Handler h = new Handler();
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
