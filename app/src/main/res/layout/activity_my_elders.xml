@@ -6,15 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".MyElders">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarME"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="4dp"
-        android:scrollbars="vertical"
+        android:layout_height="381dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toolbarME"
         android:background="@android:color/transparent"
-        android:layout_marginBottom="100dp"
-        />
+        android:padding="4dp"
+        android:scrollbars="vertical" />
 
     <EditText
         android:id="@+id/edittext_insert"

@@ -14,7 +14,7 @@
         android:id="@+id/toolbarML"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@color/aluminum"
+        android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
          />
