@@ -78,7 +78,8 @@ public class Favourites extends AppCompatActivity {
             @Override
             public void onMapClick(int position) {
                 Intent intent = new Intent(Favourites.this, CarerHome.class);
-//                intent.putExtra("Example Item", favourites.get(position));
+                //gives a favorite item for you to parse get info from
+                intent.putExtra("Example Item", favourites.get(position));
                 startActivity(intent);
             }
         });

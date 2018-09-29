@@ -44,6 +44,17 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Fa
                     }
                 }
             });
+            mOpenMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(listener !=null){
+                        int position = getAdapterPosition();
+                        if(position!=RecyclerView.NO_POSITION){
+                            listener.onMapClick(position);
+                        }
+                    }
+                }
+            });
         }
 
     }
@@ -62,7 +73,7 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Fa
     public void onBindViewHolder(@NonNull FavouriteViewHolder holder, int position) {
         FavouriteItem currentItem = mFavourites.get(position);
         //provider is the name
-        holder.mFavourite.setText(currentItem.getLocation().getProvider());
+        holder.mFavourite.setText(currentItem.getName());
     }
 
     @Override
