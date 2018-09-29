@@ -16,7 +16,8 @@ public enum ServerAction {
     ELDER_REQUEST_LINK("user.genlink", Request.Method.POST),
     CARER_LINK("user.link", Request.Method.POST),
     MESSAGE_PULL("msg.pull", Request.Method.GET),
-    MESSAGE_SEND("msg.send", Request.Method.POST);
+    MESSAGE_SEND("msg.send", Request.Method.POST),
+    CARER_SIGNAL("msg.sos", Request.Method.POST);
 
     private String actionString;
     private int method;
