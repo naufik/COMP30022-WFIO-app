@@ -4,8 +4,10 @@
     package="com.navigation.wfio_dlyw.navigation">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:remove="android:maxSdkVersion"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:remove="android:maxSdkVersion" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -58,6 +60,9 @@
             android:name=".MyElders"
             android:label="@string/MyElders" />
         <activity
+            android:name=".Favourites"
+            android:label="@string/favourites" />
+        <activity
             android:name=".StoreClips"
             android:label="StoreClips" />
         <!--
@@ -92,9 +97,11 @@
             android:name=".ApplicationAppearrance"
             android:label="@string/ApplicationAppearrance" />
         <activity android:name=".MessageList" />
+
         <activity android:name=".MessageListElder" />
 
         <service android:name=".MsgUpdateService" />
+
     </application>
 
 </manifest>

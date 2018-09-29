@@ -65,9 +65,6 @@ public class MyElders extends AppCompatActivity {
                     JSONObject currentElder = eList.getJSONObject(i);
                     insertItem(i, new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getString("username"), currentElder.getInt("id")));
                 }
-                for (int i=0; i<elders.size(); i++){
-                    Log.d("hey", elders.get(i).getmText1());
-                }
             } catch (Exception e) {
 
             }

@@ -60,6 +60,15 @@ public class ElderNavigation extends AppCompatActivity {
             startActivity(startIntent);
         });
 
+        Button favouriteButton = (Button) findViewById(R.id.favoritesButton);
+        favouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startIntent = new Intent(getApplicationContext(), Favourites.class);
+                startActivity(startIntent);
+            }
+        });
+
 
     }
 
