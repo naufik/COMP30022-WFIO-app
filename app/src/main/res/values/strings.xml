@@ -2,6 +2,7 @@
     <string name="app_name">Navigation</string>
     <string name="home">Home</string>
     <string name="settings">Settings</string>
+    <string name="MyElders">My Elders</string>
     <string name="back">back</string>
     <string name="CarerConnect">Connect to an Elder</string>
     <string name="ElderConnect">Connect to a Carer</string>
@@ -11,4 +12,5 @@
     <string name="ApplicationAppearrance">Application Appearrance</string>
     <string name="title_activity_elder_maps">Elder Maps</string>
     <string name="title_activity_carer_maps">Carer Maps</string>
+
 </resources>
