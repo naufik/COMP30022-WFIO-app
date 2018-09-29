@@ -116,8 +116,8 @@ public class ElderNavigation extends AppCompatActivity {
 
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel1);
+        }
     }
-}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
