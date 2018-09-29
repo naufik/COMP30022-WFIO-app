@@ -48,7 +48,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     // Location variables
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private boolean mLocationPermissionGranted;
+    private boolean mLocationPermissionGranted = true;
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
@@ -84,7 +84,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         // Live location provider
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        // mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Default location if live location inaccessible
         mDefaultLocation = new Location("Zen Apartments");
@@ -97,22 +97,22 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         String name = elderItem.getText1();*/
 
         // Initialize strings
-        Intent intent = getIntent();
-        destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
-        ROUTE_URL = getResources().getString(R.string.route_url_format);
-        API_KEY = getResources().getString(R.string.google_maps_key);
+        // Intent intent = getIntent();
+        // destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
+        // ROUTE_URL = getResources().getString(R.string.route_url_format);
+        // API_KEY = getResources().getString(R.string.google_maps_key);
 
         // Initialize other variables
-        updateRoute = true;
+        // updateRoute = true;
 
         // Initialize location polling
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(TIME_INTERVAL);
-        mLocationRequest.setFastestInterval(TIME_INTERVAL);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        // mLocationRequest = new LocationRequest();
+        // mLocationRequest.setInterval(TIME_INTERVAL);
+        // mLocationRequest.setFastestInterval(TIME_INTERVAL);
+        // mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         // Initialize location callback
-        mLocationCallback = new LocationCallback() {
+        /*mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
@@ -136,7 +136,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     checkNextRouteUpdate();
                 }
             }
-        };
+        };*/
 
         // Initialize sensor
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -168,10 +168,12 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        getLocationPermission();
+        //getLocationPermission();
+        updateLocationUI();
+        //startLocationUpdates();
     }
 
-    private void onPermissionGranted() {
+    /*private void onPermissionGranted() {
         updateLocationUI();
         startLocationUpdates();
     }
@@ -210,7 +212,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
             }
         }
         //updateLocationUI();
-    }
+    }*/
 
     private void updateLocationUI() {
         Log.d(TAG, "updateLocationUI() started");
@@ -232,7 +234,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private void getLocation() {
+    /*private void getLocation() {
         try {
             if (mLocationPermissionGranted) {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
@@ -262,9 +264,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         } catch(SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
-    }
+    }*/
 
-    private void sendLocToServer(Location loc) {
+    /*private void sendLocToServer(Location loc) {
         try {
             JSONObject message = new JSONObject();
             JSONObject location = new JSONObject();
@@ -321,7 +323,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     Location destination = new Location("destination");
                     destination.setLatitude(Double.parseDouble(step.getString("lat")));
                     destination.setLongitude(Double.parseDouble(step.getString("lng")));
-                    sendLocToServer(destination);
+                    //sendLocToServer(destination);
                 }
             }
 
@@ -350,7 +352,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         } catch (NullPointerException | IndexOutOfBoundsException e) {
             Log.e(TAG, e.getMessage());
         }
-    }
+    }*/
 
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {

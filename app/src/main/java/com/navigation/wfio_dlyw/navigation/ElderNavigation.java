@@ -8,13 +8,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +35,8 @@ public class ElderNavigation extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     public static final String channel_1_ID = "channel 1";
+    private static final String TAG = ElderNavigation.class.getSimpleName();
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
    private final Context context = this;
 
@@ -59,15 +66,49 @@ public class ElderNavigation extends AppCompatActivity {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startActivity(startIntent);
         });
-
-
     }
 
-    public void sendDestination(View view) {
-        Intent intent = new Intent(this, ElderMaps.class);
+    public void getLocationPermission(View view) {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            onPermissionGranted();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onPermissionGranted();
+                } else {
+                    // Do nothing, try to notify user to accept else can't do shit
+                }
+            }
+        }
+    }
+
+    private void onPermissionGranted() {
         EditText editText = (EditText) findViewById(R.id.navigationSearchField);
         String destination = editText.getText().toString();
-        intent.putExtra(EXTRA_DESTINATION, destination);
+
+        Intent intent = new Intent(this, ElderMaps.class);
+        Intent serviceIntent = new Intent(this, GeoStatService.class);
+
+        serviceIntent.putExtra(EXTRA_DESTINATION, destination);
+
+        Log.d(TAG, "startService()");
+        startService(serviceIntent);
+        Log.d(TAG, "startActivity()");
         startActivity(intent);
     }
 
