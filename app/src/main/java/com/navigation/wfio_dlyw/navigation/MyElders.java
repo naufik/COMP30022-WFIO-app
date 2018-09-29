@@ -43,8 +43,8 @@ public class MyElders extends AppCompatActivity {
 
     }
 
-    public void insertItem(int position){
-        elders.add(position, new ElderItem("New Item At Position"+position, "This is Line 2"));
+    public void insertItem(int position, ElderItem item){
+        elders.add(position, item);
         mAdapter.notifyItemInserted(position);
     }
 
@@ -65,9 +65,7 @@ public class MyElders extends AppCompatActivity {
                 JSONArray eList = res.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList");
                 for (int i = 0; i < eList.length(); ++i) {
                     JSONObject currentElder = eList.getJSONObject(i);
-                    elders.add(
-                            new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getInt("id"))
-                    );
+                    insertItem(i, new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getInt("id")));
                 }
                 for (int i=0; i<elders.size(); i++){
                     Log.d("hey", elders.get(i).getmText1());
@@ -76,8 +74,6 @@ public class MyElders extends AppCompatActivity {
 
             }
         }, new Credentials(t.getEmail(), t.getValue()));
-
-        elders.add(new ElderItem("test", "stacy"));
     }
 
     public void buildRecyclerViewer(){
@@ -127,8 +123,7 @@ public class MyElders extends AppCompatActivity {
         buttonInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int position = Integer.parseInt(editTextInsert.getText().toString());
-                insertItem(position);
+
             }
         });
 
