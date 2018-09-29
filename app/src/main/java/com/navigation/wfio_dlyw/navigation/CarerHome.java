@@ -1,5 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.app.IntentService;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,7 +11,10 @@ import android.view.View;
 import android.widget.Button;
 import android.support.v7.widget.Toolbar;
 
+import com.navigation.wfio_dlyw.comms.NotificationService;
+
 public class CarerHome extends AppCompatActivity {
+    Intent serviceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,9 @@ public class CarerHome extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        this.serviceIntent = new Intent(this, NotificationService.class);
+        startService(serviceIntent);
     }
 
     @Override

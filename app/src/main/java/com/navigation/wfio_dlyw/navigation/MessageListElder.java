@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.Token;
@@ -72,15 +73,19 @@ public class MessageListElder extends AppCompatActivity {
 
     @Override
     public void onPause(){
-        super.onPause();
-        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
         stopService(serviceIntent);
+        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
+
+        Toast.makeText(MessageListElder.this, "U PAUSED ME", Toast.LENGTH_SHORT).show();
+        super.onPause();
     }
 
     @Override
     public void onStop(){
-        super.onStop();
-        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
         stopService(serviceIntent);
+        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
+
+        Toast.makeText(MessageListElder.this, "U Stopped ME", Toast.LENGTH_SHORT).show();
+        super.onStop();
     }
 }

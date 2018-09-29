@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.view.View;
+import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.navigation.AnswerHelp;
 import com.navigation.wfio_dlyw.navigation.NotificationReceiver;
@@ -29,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Timer;
 import java.util.TimerTask;
 
 public class NotificationService extends IntentService {
@@ -38,6 +40,7 @@ public class NotificationService extends IntentService {
     }
 
     private Handler h = new Handler();
+    private Timer timer;
 
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId){
@@ -48,6 +51,7 @@ public class NotificationService extends IntentService {
             @Override
             public void run() {
                 h.post(() -> {
+                    Toast.makeText(NotificationService.this, "what is this?", Toast.LENGTH_SHORT).show();
                     req.requestAction(ServerAction.NOTIFICATION_POLL, null, res -> {
                         try {
                             JSONArray notifs = res.getJSONObject("result")
@@ -68,6 +72,7 @@ public class NotificationService extends IntentService {
             }
         };
 
+        timer.schedule(task, 1000);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -119,5 +124,11 @@ public class NotificationService extends IntentService {
 
         NotificationManager manager = getSystemService(NotificationManager.class);
         manager.createNotificationChannel(channel1);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        timer = new Timer();
     }
 }
