@@ -29,11 +29,24 @@ public class Favourites extends AppCompatActivity {
 
         createFavourites();
         buildRecyclerViewer();
+
+        setFavorites("hey", 0,0);
     }
 
     public void removeItem(int position){
         favourites.remove(position);
         mAdapter.notifyItemRemoved(position);
+    }
+
+    public void setFavorites(String name, double longitude, double latitude){
+        //inserts the new item at the last position
+        int position = favourites.size();
+        Location hey = new Location(name);
+        hey.setLatitude(longitude);
+        hey.setLongitude(latitude);
+        FavouriteItem item = new FavouriteItem(hey);
+        favourites.add(position, item);
+        mAdapter.notifyItemInserted(position);
     }
 
     public void createFavourites(){
