@@ -7,30 +7,27 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 public class Favourites extends AppCompatActivity {
-    private ArrayList<FavouriteItem> favourites;
+    private static ArrayList<FavouriteItem> favourites = new ArrayList<>();
 
     private RecyclerView mRecyclerView;
-    private FavouritesAdapter mAdapter;
+    private static FavouritesAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        favourites = new ArrayList<>();
         setContentView(R.layout.activity_favourites);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarF);
         setSupportActionBar(myToolbar);
 
-        createFavourites();
         buildRecyclerViewer();
-
-        setFavorites("hey", 0,0);
     }
 
     public void removeItem(int position){
@@ -38,7 +35,7 @@ public class Favourites extends AppCompatActivity {
         mAdapter.notifyItemRemoved(position);
     }
 
-    public void setFavorites(String name, double longitude, double latitude){
+    public static void setFavorites(String name, double longitude, double latitude){
         //inserts the new item at the last position
         int position = favourites.size();
         Location hey = new Location(name);
@@ -47,17 +44,6 @@ public class Favourites extends AppCompatActivity {
         FavouriteItem item = new FavouriteItem(hey);
         favourites.add(position, item);
         mAdapter.notifyItemInserted(position);
-    }
-
-    public void createFavourites(){
-        Location hey = new Location("test");
-        hey.setLatitude(0);
-        hey.setLongitude(0);
-        Location hey2 = new Location("test2");
-        hey.setLatitude(1);
-        hey.setLongitude(1);
-        favourites.add(new FavouriteItem(hey));
-        favourites.add(new FavouriteItem(hey2));
     }
 
     public void buildRecyclerViewer() {
