@@ -51,6 +51,8 @@ public class MessageList extends AppCompatActivity{
     private Button playButton;
     private int fileCount = 0;
 
+    private int recipientID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,7 @@ public class MessageList extends AppCompatActivity{
         Intent intent = getIntent();
         ElderItem elderItem = intent.getParcelableExtra("Example Item");
         String name = elderItem.getmText1();
+        recipientID = elderItem.getmId();
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarML);
         myToolbar.setTitle("");
@@ -152,12 +155,16 @@ public class MessageList extends AppCompatActivity{
     public void sendMessage(View view) {
         String message = editText.getText().toString();
 
+        if (message.equals("")){
+            return;
+        }
+
         Token token = Token.getInstance();
         Requester req = Requester.getInstance(this);
         try {
             JSONObject param = new JSONObject();
             //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
-            param.put("recipient",5).put("content", message);
+            param.put("recipient",recipientID).put("content", message);
             req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
         } catch (JSONException e) {}
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -170,7 +177,7 @@ public class MessageList extends AppCompatActivity{
     public void onMessage(String message) {
         //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
         //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "astuti", true);
+        Message message1 = new Message(message, "You", true);
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);

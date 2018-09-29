@@ -53,6 +53,12 @@ public class CarerConnect extends AppCompatActivity {
                             } catch (JSONException e) {}
                         }, new Credentials(token.getEmail(), token.getValue()));
             } catch (JSONException e) {}
+
+            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                try {
+                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
+                } catch (JSONException e) {}
+            }, new Credentials(token.getEmail(), token.getValue()));
         });
 
 

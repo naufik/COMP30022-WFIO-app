@@ -43,7 +43,15 @@ public class MessageListElder extends AppCompatActivity {
                 runOnUiThread(() -> {
                     try {
                         while (token.getMessages().length() > 0) {
-                            onMessage(token.getMessages().getJSONObject(0).getString("content"));
+                            int senderID = token.getMessages().getJSONObject(0).getInt("from");
+                            String sender = "error";
+                            for (int i =0; i < token.getConnections().length(); i++) {
+                                if (token.getConnections().getJSONObject(i).getInt("id") == senderID){
+                                    sender = token.getConnections().getJSONObject(i).getString("fullname");
+                                }
+                            }
+                            token.getConnections().getJSONObject(0).getInt("id");
+                            onMessage(token.getMessages().getJSONObject(0).getString("content"), sender);
                             token.getMessages().remove(0);
                         }
                     } catch (JSONException e) {}
@@ -53,10 +61,10 @@ public class MessageListElder extends AppCompatActivity {
         };
         timer.schedule(task, 0,1000);
     }
-    public void onMessage(String message) {
+    public void onMessage(String message, String sender) {
         //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
         //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "astuti", false);
+        Message message1 = new Message(message, sender, false);
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);

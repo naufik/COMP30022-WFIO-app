@@ -6,15 +6,18 @@ import android.os.Parcelable;
 public class ElderItem implements Parcelable{
     private String mText1;
     private String mText2;
+    private int mId;
 
-    public ElderItem(String text1, String text2){
+    public ElderItem(String text1, String text2, int id){
         mText1 = text1;
         mText2 = text2;
+        mId = id;
     }
 
     protected ElderItem(Parcel in) {
         mText1 = in.readString();
         mText2 = in.readString();
+        mId = in.readInt();
     }
 
     public static final Creator<ElderItem> CREATOR = new Creator<ElderItem>() {
@@ -38,6 +41,7 @@ public class ElderItem implements Parcelable{
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mText1);
         parcel.writeString(mText2);
+        parcel.writeInt(mId);
     }
 
     public String getmText1() {
@@ -51,4 +55,6 @@ public class ElderItem implements Parcelable{
     public String getmText2() {
         return mText2;
     }
+
+    public int getmId() { return mId;}
 }
