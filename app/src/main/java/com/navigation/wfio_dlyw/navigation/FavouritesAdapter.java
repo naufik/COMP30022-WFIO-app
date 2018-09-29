@@ -61,7 +61,8 @@ public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.Fa
     @Override
     public void onBindViewHolder(@NonNull FavouriteViewHolder holder, int position) {
         FavouriteItem currentItem = mFavourites.get(position);
-        holder.mFavourite.setText(currentItem.getName());
+        //provider is the name
+        holder.mFavourite.setText(currentItem.getLocation().getProvider());
     }
 
     @Override

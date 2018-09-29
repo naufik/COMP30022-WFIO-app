@@ -1,12 +1,15 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.location.Location;
+
 public class FavouriteItem {
-    private String name;
-    public FavouriteItem(String name){
-        this.name = name;
+    private Location location;
+
+    public FavouriteItem(Location location){
+        this.location = location;
     }
 
-    public String getName() {
-        return name;
+    public Location getLocation() {
+        return location;
     }
 }
