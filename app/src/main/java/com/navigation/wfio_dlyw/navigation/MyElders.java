@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,6 +37,9 @@ public class MyElders extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         elders = new ArrayList<>();
         setContentView(R.layout.activity_my_elders);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarME);
+        setSupportActionBar(myToolbar);
 
         createElders();
         buildRecyclerViewer();
