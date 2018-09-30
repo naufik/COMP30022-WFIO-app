@@ -20,8 +20,7 @@
         tools:replace="android:icon,android:theme">
         <activity
             android:name=".LogIn"
-            android:label="Login">
-        </activity>
+            android:label="Login"></activity>
         <activity
             android:name=".ElderNavigation"
             android:label="@string/app_name">
@@ -79,9 +78,7 @@
 
         <activity
             android:name=".ElderMaps"
-            android:label="@string/title_activity_elder_maps">
-
-        </activity>
+            android:label="@string/title_activity_elder_maps"></activity>
         <activity
             android:name=".CarerMaps"
             android:label="@string/title_activity_carer_maps" />
@@ -98,11 +95,12 @@
         <activity android:name=".MessageListElder" />
 
         <service android:name=".MsgUpdateService" />
+        <service android:name=".GeoStatService" />
 
         <activity
             android:name=".MapsPermissionTest"
-            android:label="@string/title_activity_maps_permission_test">
-        </activity>
+            android:label="@string/title_activity_maps_permission_test"></activity>
+
     </application>
 
 </manifest>
