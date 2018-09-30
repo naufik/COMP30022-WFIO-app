@@ -36,6 +36,7 @@ public class MessageListElder extends AppCompatActivity {
         messagesView.setAdapter(messageAdapter);
         Requester req = Requester.getInstance(this);
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("poll");
         startService(serviceIntent);
 
         TimerTask task = new TimerTask() {
@@ -73,19 +74,17 @@ public class MessageListElder extends AppCompatActivity {
 
     @Override
     public void onPause(){
-        stopService(serviceIntent);
-        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
-
-        Toast.makeText(MessageListElder.this, "U PAUSED ME", Toast.LENGTH_SHORT).show();
+        this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("stop");
+        startService(serviceIntent);
         super.onPause();
     }
 
     @Override
     public void onStop(){
-        stopService(serviceIntent);
-        stopService(new Intent(MessageListElder.this, MsgUpdateService.class));
-
-        Toast.makeText(MessageListElder.this, "U Stopped ME", Toast.LENGTH_SHORT).show();
+        this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("stop");
+        startService(serviceIntent);
         super.onStop();
     }
 }
