@@ -37,6 +37,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * This service polls notification from the notification server and creates a notification
+ * if such is needed.
+ */
 public class NotificationService extends IntentService {
     private static Timer timer;
     private static boolean channelsCreated = false;
@@ -87,7 +91,7 @@ public class NotificationService extends IntentService {
             promptIntent.putExtra(entry.getKey(), entry.getValue());
             autoAcceptIntent.putExtra(entry.getKey(), entry.getValue());
         }
-        Log.d("walau", promptIntent.getStringExtra("fromName"));
+
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 (int)System.currentTimeMillis(), promptIntent, 0);
         //instant intent
