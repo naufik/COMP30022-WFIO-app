@@ -19,10 +19,12 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.navigation.AnswerHelp;
+import com.navigation.wfio_dlyw.navigation.CarerMaps;
 import com.navigation.wfio_dlyw.navigation.NotificationReceiver;
 import com.navigation.wfio_dlyw.navigation.R;
 
@@ -38,7 +40,7 @@ import java.util.TimerTask;
 public class NotificationService extends IntentService {
     private static Timer timer;
     private static boolean channelsCreated = false;
-    private static long currentId;
+    private static int currentId = Integer.MIN_VALUE;
 
     private Handler h = new Handler();
 
@@ -77,21 +79,20 @@ public class NotificationService extends IntentService {
                                     HashMap<String, String> params) {
 
         //start an activity, then choose intent
-        Intent activityIntent = new Intent(this, AnswerHelp.class);
-
-        for (Map.Entry<String, String> pair : params.entrySet()) {
-            activityIntent.putExtra(pair.getKey(), pair.getValue());
+        Intent promptIntent = new Intent(this, AnswerHelp.class);
+        Intent autoAcceptIntent = new Intent(this, CarerMaps.class);
+        promptIntent.setAction("acceptHelpPrompt");
+        autoAcceptIntent.setAction("acceptHelpNow");
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            promptIntent.putExtra(entry.getKey(), entry.getValue());
+            autoAcceptIntent.putExtra(entry.getKey(), entry.getValue());
         }
-
+        Log.d("walau", promptIntent.getStringExtra("fromName"));
         PendingIntent contentIntent = PendingIntent.getActivity(this,
-                0, activityIntent, 0);
-
+                (int)System.currentTimeMillis(), promptIntent, 0);
         //instant intent
-        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
-        broadcastIntent.putExtra("toastMessage", message);
-        PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0,
-                broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent actionIntent = PendingIntent.getActivity(this,
+                (int)System.currentTimeMillis(), autoAcceptIntent, 0);
         Notification notification = new NotificationCompat.Builder(this, "wfio_channel1")
                 .setSmallIcon(R.drawable.ic_child)
                 .setContentTitle(title)
@@ -103,10 +104,9 @@ public class NotificationService extends IntentService {
                 .setOnlyAlertOnce(true)
                 //clicks Toast and creates new Intent use this to decline and answer help request immediately
                 .addAction(R.mipmap.ic_launcher, "Accept", actionIntent)
-                .addAction(R.mipmap.ic_launcher, "Decline", actionIntent)
                 .build();
         //need to give different id's if you want to give multiple notifications instanteneously
-        NotificationManagerCompat.from(this).notify(1, notification);
+        NotificationManagerCompat.from(this).notify(currentId++, notification);
     }
 
     private void createNotificationChannels() {
