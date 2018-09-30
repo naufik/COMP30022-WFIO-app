@@ -34,50 +34,39 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class NotificationService extends IntentService {
-    public NotificationService() {
-        super("Notification Services");
-        createNotificationChannels();
-    }
+    private static Timer timer;
+    private static boolean channelsCreated = false;
 
     private Handler h = new Handler();
-    private Timer timer;
+
+    public NotificationService() {
+        super("NotificationServices");
+    }
+
 
     @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId){
-        Token t = Token.getInstance();
-        Requester req = Requester.getInstance(this);
-
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                h.post(() -> {
-                    Toast.makeText(NotificationService.this, "what is this?", Toast.LENGTH_SHORT).show();
-                    req.requestAction(ServerAction.NOTIFICATION_POLL, null, res -> {
-                        try {
-                            JSONArray notifs = res.getJSONObject("result")
-                                .getJSONArray("notifications");
-
-                            for (int i = 0; i < notifs.length(); ++i) {
-                                String title = "Hey";
-                                String subtitle = notifs.getJSONObject(0)
-                                        .getJSONObject("content").getJSONObject("from")
-                                        .getString("fullname");
-                                displayNotification(title, subtitle);
-                            }
-                        } catch (JSONException e) {
-
-                        }
-                    }, new Credentials(t.getEmail(), t.getValue()));
-                });
-            }
-        };
-
-        timer.schedule(task, 1000);
-        return super.onStartCommand(intent, flags, startId);
+    public void onCreate() {
+        if (timer == null) {
+            timer = new Timer();
+        }
+        ;
+        if (!channelsCreated) {
+            createNotificationChannels();
+        }
+        super.onCreate();
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        if (intent.getAction().equals("poll")) {
+            this.startPolling();
+        } else if (intent.getAction().equals("stop")) {
+            this.stopPolling();
+        }
+    }
+
+    private void stopPolling() {
+        timer.cancel();
     }
 
 
@@ -125,9 +114,35 @@ public class NotificationService extends IntentService {
         manager.createNotificationChannel(channel1);
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        timer = new Timer();
+    public void startPolling() {
+        Token t = Token.getInstance();
+        Requester req = Requester.getInstance(this);
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                h.post(() -> {
+                    req.requestAction(ServerAction.NOTIFICATION_POLL, null, res -> {
+                        try {
+                            JSONArray notifs = res.getJSONObject("result")
+                                    .getJSONArray("notifications");
+
+                            for (int i = 0; i < notifs.length(); ++i) {
+                                String title = "Elder needs assistance!";
+                                String subtitle = notifs.getJSONObject(0)
+                                        .getJSONObject("content").getJSONObject("from")
+                                        .getString("fullname");
+                                subtitle += " needs help navigating!!";
+                                displayNotification(title, subtitle);
+                            }
+                        } catch (JSONException e) {
+
+                        }
+                    }, new Credentials(t.getEmail(), t.getValue()));
+                });
+            }
+        };
+
+        timer.schedule(task, 0, 1000);
     }
 }

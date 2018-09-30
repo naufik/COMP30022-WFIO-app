@@ -25,24 +25,20 @@ public class CarerHome extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
-        connectToElderBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        connectToElderBtn.setOnClickListener(view -> {
                 Intent startIntent = new Intent(getApplicationContext(), CarerConnect.class);
                 startActivity(startIntent);
             }
-        });
+        );
 
         Button myElders = (Button)findViewById(R.id.myElders);
-        myElders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), MyElders.class);
-                startActivity(startIntent);
-            }
+        myElders.setOnClickListener(view -> {
+            Intent startIntent = new Intent(getApplicationContext(), MyElders.class);
+            startActivity(startIntent);
         });
 
         this.serviceIntent = new Intent(this, NotificationService.class);
+        serviceIntent.setAction("poll");
         startService(serviceIntent);
     }
 
