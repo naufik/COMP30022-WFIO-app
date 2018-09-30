@@ -83,10 +83,11 @@ public class NotificationService extends IntentService {
                                     HashMap<String, String> params) {
 
         //start an activity, then choose intent
-        Intent promptIntent = new Intent(this, AnswerHelp.class);
-        Intent autoAcceptIntent = new Intent(this, CarerMaps.class);
+        Intent promptIntent = new Intent(getApplicationContext(), AnswerHelp.class);
+        Intent autoAcceptIntent = new Intent(getApplicationContext(), CarerMaps.class);
         promptIntent.setAction("acceptHelpPrompt");
         autoAcceptIntent.setAction("acceptHelpNow");
+
         for (Map.Entry<String, String> entry : params.entrySet()) {
             promptIntent.putExtra(entry.getKey(), entry.getValue());
             autoAcceptIntent.putExtra(entry.getKey(), entry.getValue());
