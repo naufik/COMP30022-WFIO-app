@@ -30,12 +30,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class NotificationService extends IntentService {
     private static Timer timer;
     private static boolean channelsCreated = false;
+    private static long currentId;
 
     private Handler h = new Handler();
 
@@ -70,10 +73,16 @@ public class NotificationService extends IntentService {
     }
 
 
-    public void displayNotification(@NonNull String title, @NonNull String message) {
+    public void displayNotification(@NonNull String title, @NonNull String message,
+                                    HashMap<String, String> params) {
 
         //start an activity, then choose intent
         Intent activityIntent = new Intent(this, AnswerHelp.class);
+
+        for (Map.Entry<String, String> pair : params.entrySet()) {
+            activityIntent.putExtra(pair.getKey(), pair.getValue());
+        }
+
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0, activityIntent, 0);
 
@@ -101,14 +110,13 @@ public class NotificationService extends IntentService {
     }
 
     private void createNotificationChannels() {
-        NotificationChannel channel1= new NotificationChannel(
+        NotificationChannel channel1 = new NotificationChannel(
                 "wfio_channel1",
                 "some notification channel",
                 NotificationManager.IMPORTANCE_HIGH
         );
         channel1.setDescription("This is Channel 1");
         channel1.enableVibration(true);
-        channel1.enableLights(true);
 
         NotificationManager manager = getSystemService(NotificationManager.class);
         manager.createNotificationChannel(channel1);
@@ -129,11 +137,19 @@ public class NotificationService extends IntentService {
 
                             for (int i = 0; i < notifs.length(); ++i) {
                                 String title = "Elder needs assistance!";
-                                String subtitle = notifs.getJSONObject(0)
+                                String subtitle = notifs.getJSONObject(i)
                                         .getJSONObject("content").getJSONObject("from")
                                         .getString("fullname");
+                                String sender = notifs.getJSONObject(i)
+                                        .getJSONObject("content").getJSONObject("from")
+                                        .getString("email");
+
+                                HashMap<String, String> extras = new HashMap<>();
+                                extras.put("from", sender);
+                                extras.put("fromName", subtitle);
+
                                 subtitle += " needs help navigating!!";
-                                displayNotification(title, subtitle);
+                                displayNotification(title, subtitle, extras);
                             }
                         } catch (JSONException e) {
 
