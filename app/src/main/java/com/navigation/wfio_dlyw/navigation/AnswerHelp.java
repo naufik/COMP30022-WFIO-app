@@ -20,7 +20,7 @@ public class AnswerHelp extends AppCompatActivity {
         Button accept = findViewById(R.id.acceptbutton);
         accept.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
-            startIntent.putExtra("elderTracking", getIntent().getStringExtra("from"));
+            startIntent.putExtra("from", getIntent().getStringExtra("from"));
             startActivity(startIntent);
         });
 

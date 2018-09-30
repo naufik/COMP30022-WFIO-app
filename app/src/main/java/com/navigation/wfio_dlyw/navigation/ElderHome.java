@@ -31,6 +31,7 @@ public class ElderHome extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         Intent notifier = new Intent(this, NotificationService.class);
+        notifier.setAction("poll");
         startService(notifier);
 
         Button navigationButton = (Button)findViewById(R.id.navigateButton);
