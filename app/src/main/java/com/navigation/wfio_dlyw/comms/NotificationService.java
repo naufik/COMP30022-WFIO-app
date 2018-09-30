@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Function;
 
 /**
  * This service polls notification from the notification server and creates a notification
@@ -47,6 +48,7 @@ public class NotificationService extends IntentService {
     private static int currentId = Integer.MIN_VALUE;
 
     private Handler h = new Handler();
+    private boolean isElder;
 
     public NotificationService() {
         super("NotificationServices");
@@ -141,19 +143,21 @@ public class NotificationService extends IntentService {
                                     .getJSONArray("notifications");
 
                             for (int i = 0; i < notifs.length(); ++i) {
-                                String title = "Elder needs assistance!";
-                                String subtitle = notifs.getJSONObject(i)
-                                        .getJSONObject("content").getJSONObject("from")
-                                        .getString("fullname");
-                                String sender = notifs.getJSONObject(i)
-                                        .getJSONObject("content").getJSONObject("from")
-                                        .getString("email");
+                                JSONObject currentMessage = notifs.getJSONObject(i)
+                                        .getJSONObject("display");
+                                JSONObject currentSender = notifs.getJSONObject(i)
+                                        .getJSONObject("content")
+                                        .getJSONObject("from");
+
+                                String title = currentMessage.getString("title");
+                                String subtitle = currentMessage.getString("subtitle");
 
                                 HashMap<String, String> extras = new HashMap<>();
-                                extras.put("from", sender);
-                                extras.put("fromName", subtitle);
+                                extras.put("from", currentSender.getString("email"));
+                                extras.put("fromName", currentSender.getString("fullname"));
+                                extras.put("redirect", notifs.getJSONObject(i)
+                                        .getString("redirect"));
 
-                                subtitle += " needs help navigating!!";
                                 displayNotification(title, subtitle, extras);
                             }
                         } catch (JSONException e) {
@@ -166,4 +170,5 @@ public class NotificationService extends IntentService {
 
         timer.schedule(task, 0, 1000);
     }
+
 }

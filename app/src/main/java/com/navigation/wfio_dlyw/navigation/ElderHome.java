@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.NotificationService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
@@ -28,6 +29,9 @@ public class ElderHome extends AppCompatActivity {
         Token token = Token.getInstance();
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEH);
         setSupportActionBar(myToolbar);
+
+        Intent notifier = new Intent(this, NotificationService.class);
+        startService(notifier);
 
         Button navigationButton = (Button)findViewById(R.id.navigateButton);
         navigationButton.setOnClickListener(new View.OnClickListener(){
