@@ -101,7 +101,8 @@
         <activity android:name=".MessageListElder" />
 
         <service android:name=".MsgUpdateService" />
-
+        <service android:name="com.navigation.wfio_dlyw.comms.NotifyService"/>
+        <service android:name="com.navigation.wfio_dlyw.comms.NotificationService"/>
     </application>
 
 </manifest>

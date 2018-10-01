@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Token;
 
@@ -29,6 +30,7 @@ public class MessageListElder extends AppCompatActivity {
         messagesView = findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("poll");
         startService(serviceIntent);
 
         TimerTask task = new TimerTask() {
@@ -66,13 +68,17 @@ public class MessageListElder extends AppCompatActivity {
 
     @Override
     public void onPause(){
+        this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("stop");
+        startService(serviceIntent);
         super.onPause();
-        stopService(serviceIntent);
     }
 
     @Override
     public void onStop(){
+        this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("stop");
+        startService(serviceIntent);
         super.onStop();
-        stopService(serviceIntent);
     }
 }

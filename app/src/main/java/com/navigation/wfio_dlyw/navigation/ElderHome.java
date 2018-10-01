@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.NotificationService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
@@ -28,7 +29,11 @@ public class ElderHome extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarEH);
         setSupportActionBar(myToolbar);
 
-        Button navigationButton = findViewById(R.id.navigateButton);
+        Intent notifier = new Intent(this, NotificationService.class);
+        notifier.setAction("poll");
+        startService(notifier);
+
+        Button navigationButton = (Button)findViewById(R.id.navigateButton);
         navigationButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){

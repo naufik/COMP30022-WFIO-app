@@ -39,8 +39,7 @@ public class ElderNavigation extends AppCompatActivity {
         setContentView(R.layout.activity_elder_navigation);
         createNotificationChannels();
         notificationManager = NotificationManagerCompat.from(this);
-
-        Toolbar myToolbar = findViewById(R.id.toolbarEN);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
 
         Button elderMessage = findViewById(R.id.eldermsg);
