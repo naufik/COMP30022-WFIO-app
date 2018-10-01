@@ -153,10 +153,10 @@ public class NotificationService extends IntentService {
 
                                 // this is pretty hardcoded for a while
                                 HashMap<String, Intent> buttons = new HashMap<>();
-                                buttons.put("Accept", new Intent(getApplicationContext(),
-                                        Token.getInstance().getType().equals("CARER") ?
-                                                CarerMaps.class : ElderMaps.class)
-                                                .setAction("i-can-help"));
+                                notifs.getJSONObject(i).put("redirect", "sos.autoaccept");
+                                Intent testIntent = generateIntent(notifs.getJSONObject(i));
+
+                                buttons.put("Accept", testIntent);
 
                                 displayNotification(title, subtitle, contentIntent, buttons);
                             }
@@ -182,6 +182,13 @@ public class NotificationService extends IntentService {
                 case "sos.respond":
                     x = new Intent(this, AnswerHelp.class);
                     x.setAction("help-accept");
+                    x.putExtra("from", content.getJSONObject("from").getString("email"));
+                    x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
+                    break;
+                case "sos.autoaccept":
+                    x = new Intent(this, Token.getInstance().getType().equals("CARER") ?
+                        CarerMaps.class : ElderMaps.class);
+                    x.setAction("i-can-help");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
                     break;
