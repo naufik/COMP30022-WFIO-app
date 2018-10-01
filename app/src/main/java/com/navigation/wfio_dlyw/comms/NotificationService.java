@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.navigation.AnswerHelp;
 import com.navigation.wfio_dlyw.navigation.CarerMaps;
+import com.navigation.wfio_dlyw.navigation.ElderMaps;
 import com.navigation.wfio_dlyw.navigation.NotificationReceiver;
 import com.navigation.wfio_dlyw.navigation.R;
 
@@ -82,38 +83,37 @@ public class NotificationService extends IntentService {
 
 
     public void displayNotification(@NonNull String title, @NonNull String message,
-                                    HashMap<String, String> params) {
+                                    @Nullable Intent contentIntent,
+                                    @Nullable HashMap<String, Intent> buttonIntents) {
 
-        //start an activity, then choose intent
-        Intent promptIntent = new Intent(getApplicationContext(), AnswerHelp.class);
-        Intent autoAcceptIntent = new Intent(getApplicationContext(), CarerMaps.class);
-        promptIntent.setAction("acceptHelpPrompt");
-        autoAcceptIntent.setAction("acceptHelpNow");
-
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            promptIntent.putExtra(entry.getKey(), entry.getValue());
-            autoAcceptIntent.putExtra(entry.getKey(), entry.getValue());
+        if (buttonIntents == null) {
+            buttonIntents = new HashMap<>();
         }
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this,
-                (int)System.currentTimeMillis(), promptIntent, 0);
+        //start an activity, then choose intent
+
         //instant intent
-        PendingIntent actionIntent = PendingIntent.getActivity(this,
-                (int)System.currentTimeMillis(), autoAcceptIntent, 0);
-        Notification notification = new NotificationCompat.Builder(this, "wfio_channel1")
+        NotificationCompat.Builder newNotification =
+                new NotificationCompat.Builder(this, "wfio_channel1")
                 .setSmallIcon(R.drawable.ic_child)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setColor(Color.BLUE)
-                //click this shows the new activity
-                .setContentIntent(contentIntent)
                 .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
-                //clicks Toast and creates new Intent use this to decline and answer help request immediately
-                .addAction(R.mipmap.ic_launcher, "Accept", actionIntent)
-                .build();
-        //need to give different id's if you want to give multiple notifications instanteneously
-        NotificationManagerCompat.from(this).notify(currentId++, notification);
+                .setOnlyAlertOnce(true);
+
+        if (contentIntent != null) {
+            PendingIntent pendingContent = PendingIntent.getActivity(this,
+                    (int)System.currentTimeMillis(), contentIntent, 0);
+            newNotification.setContentIntent(pendingContent);
+        }
+
+        for (Map.Entry<String, Intent> i : buttonIntents.entrySet()) {
+            newNotification.addAction(R.mipmap.ic_launcher, i.getKey(), PendingIntent.getActivity(this,
+                    (int)System.currentTimeMillis(), i.getValue(), 0));
+        }
+
+        NotificationManagerCompat.from(this).notify(currentId++, newNotification.build());
     }
 
     private void createNotificationChannels() {
@@ -145,20 +145,20 @@ public class NotificationService extends IntentService {
                             for (int i = 0; i < notifs.length(); ++i) {
                                 JSONObject currentMessage = notifs.getJSONObject(i)
                                         .getJSONObject("display");
-                                JSONObject currentSender = notifs.getJSONObject(i)
-                                        .getJSONObject("content")
-                                        .getJSONObject("from");
 
                                 String title = currentMessage.getString("title");
                                 String subtitle = currentMessage.getString("subtitle");
 
-                                HashMap<String, String> extras = new HashMap<>();
-                                extras.put("from", currentSender.getString("email"));
-                                extras.put("fromName", currentSender.getString("fullname"));
-                                extras.put("redirect", notifs.getJSONObject(i)
-                                        .getString("redirect"));
 
-                                displayNotification(title, subtitle, extras);
+                                Intent contentIntent = generateIntent(notifs.getJSONObject(i));
+
+                                // this is pretty hardcoded for a while
+                                HashMap<String, Intent> buttons = new HashMap<>();
+                                buttons.put("Accept", new Intent(getApplicationContext(),
+                                        Token.getInstance().getType() == "CARER" ?
+                                                CarerMaps.class : ElderMaps.class));
+
+                                displayNotification(title, subtitle, contentIntent, buttons);
                             }
                         } catch (JSONException e) {
 
@@ -169,6 +169,30 @@ public class NotificationService extends IntentService {
         };
 
         timer.schedule(task, 0, 1000);
+    }
+
+    private Intent generateIntent(JSONObject thing) {
+        try {
+            String action = thing.getString("redirect");
+            JSONObject content = thing.getJSONObject("content");
+            Intent x = null;
+
+
+            switch (action) {
+                case "sos.respond":
+                    x = new Intent(this, AnswerHelp.class);
+                    x.setAction("help-accept");
+                    x.putExtra("from", content.getJSONObject("from").getString("email"));
+                    x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
+                    break;
+                default:
+                    // pass;
+            }
+
+            return x;
+        } catch (JSONException e) {
+            return null;
+        }
     }
 
 }
