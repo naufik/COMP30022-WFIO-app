@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -59,8 +60,8 @@ public class GeoStatService extends IntentService {
 
     @SuppressLint("MissingPermission")
     @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand()");
+    public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind()");
         // Initialize second route point as checkpoint
         checkpointIndex = 1;
 
@@ -118,7 +119,7 @@ public class GeoStatService extends IntentService {
                 mLocationCallback,
                 null /* Looper */);
 
-        return super.onStartCommand(intent, flags, startId);
+        return super.onBind(intent);
     }
 
     @Override
@@ -131,6 +132,14 @@ public class GeoStatService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy()");
+    }
+
+    public Location getLocation() {
+        return currentLocation;
+    }
+
+    public PolylineOptions getRoute() {
+        return route;
     }
 
     private void sendLocToServer(Location loc) {
