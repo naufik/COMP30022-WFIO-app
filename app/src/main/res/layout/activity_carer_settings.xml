@@ -97,7 +97,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/applyChangesCS"
+        app:layout_constraintTop_toBottomOf="@+id/changeFullName"
         app:layout_constraintVertical_bias="0.017" />
 
     <Button
@@ -125,13 +125,13 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <Button
-        android:id="@+id/applyChangesCS"
+        android:id="@+id/changeFullName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="216dp"
-        android:text="Apply Changes"
+        android:text="Change Full Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toolbarCS" />
