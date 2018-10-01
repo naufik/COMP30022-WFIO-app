@@ -99,7 +99,6 @@ public class NotificationService extends IntentService {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setColor(Color.BLUE)
-                .setAutoCancel(true)
                 .setOnlyAlertOnce(true);
 
         if (contentIntent != null) {
@@ -113,7 +112,7 @@ public class NotificationService extends IntentService {
                     (int)System.currentTimeMillis(), i.getValue(), 0));
         }
 
-        NotificationManagerCompat.from(this).notify(currentId++, newNotification.build());
+        NotificationManagerCompat.from(this).notify(currentId++, newNotification.setAutoCancel(true).build());
     }
 
     private void createNotificationChannels() {
@@ -154,9 +153,10 @@ public class NotificationService extends IntentService {
 
                                 // this is pretty hardcoded for a while
                                 HashMap<String, Intent> buttons = new HashMap<>();
-                                buttons.put("Accept", new Intent(getApplicationContext(),
-                                        Token.getInstance().getType() == "CARER" ?
-                                                CarerMaps.class : ElderMaps.class));
+                                notifs.getJSONObject(i).put("redirect", "sos.autoaccept");
+                                Intent testIntent = generateIntent(notifs.getJSONObject(i));
+
+                                buttons.put("Accept", testIntent);
 
                                 displayNotification(title, subtitle, contentIntent, buttons);
                             }
@@ -182,6 +182,13 @@ public class NotificationService extends IntentService {
                 case "sos.respond":
                     x = new Intent(this, AnswerHelp.class);
                     x.setAction("help-accept");
+                    x.putExtra("from", content.getJSONObject("from").getString("email"));
+                    x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
+                    break;
+                case "sos.autoaccept":
+                    x = new Intent(this, Token.getInstance().getType().equals("CARER") ?
+                        CarerMaps.class : ElderMaps.class);
+                    x.setAction("i-can-help");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
                     break;

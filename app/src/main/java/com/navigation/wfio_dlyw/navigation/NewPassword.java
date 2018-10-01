@@ -52,14 +52,18 @@ public class NewPassword extends AppCompatActivity {
                         params.put("password", newPasswordS);
                     } catch (JSONException e) {}
                     req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t->{
-                        try {
-                            if (t.getBoolean("ok")){
-                                Log.d("KYA", newPasswordS);
-                            }
-                        } catch (JSONException e) {}
                     }, new Credentials(token.getEmail(), token.getValue()));
-                    Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
-                    startActivity(startIntent);
+                    Toast.makeText(NewPassword.this,"Password changes successfully",Toast.LENGTH_SHORT).show();
+                    if (token.getType().equals("ELDER")) {
+                        Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
+                        startActivity(startIntent);
+                        finish();
+                    }
+                    else {
+                        Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
+                        startActivity(startIntent);
+                        finish();
+                    }
                 }
             }
         });

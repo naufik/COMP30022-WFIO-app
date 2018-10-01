@@ -14,6 +14,7 @@ public enum ServerAction {
     MESSAGE_SEND("msg.send", Request.Method.POST),
     CARER_SIGNAL("msg.sos", Request.Method.POST),
     CARER_ACCEPT("msg.sosaccept", Request.Method.POST),
+    DELETE_LINK("user.delete", Request.Method.POST),
     NOTIFICATION_POLL("notif.poll", Request.Method.GET);
 
     private String actionString;
