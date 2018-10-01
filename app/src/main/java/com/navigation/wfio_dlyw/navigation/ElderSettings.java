@@ -22,6 +22,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ElderSettings extends AppCompatActivity {
 
     @Override
@@ -53,22 +56,28 @@ public class ElderSettings extends AppCompatActivity {
         Button applyChangesES = (Button) findViewById(R.id.applyChangesES);
         applyChangesES.setOnClickListener(view -> {
             try {
+                Pattern p = Pattern.compile("^[ A-Za-z]+$");
                 JSONObject params = new JSONObject();
                 if (!fullnameS.isEmpty()) {
-                    params.put("fullname", fullnameS);
+                    if (p.matcher(fullnameS).matches()) {
+                        params.put("fullname", fullnameS);
 
-                    req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
-                        try {
-                            if (t.getBoolean("ok")) {
-                                Toast.makeText(this, "Full name changed successfully", Toast.LENGTH_LONG).show();
-                                fullname.setHint(fullnameS);
+                        req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
+                            try {
+                                if (t.getBoolean("ok")) {
+                                    Toast.makeText(this, "Full name changed successfully", Toast.LENGTH_LONG).show();
+                                    fullname.setHint(fullnameS);
+                                }
+                            } catch (JSONException e) {
                             }
-                        } catch (JSONException e) {
-                        }
-                    }, new Credentials(token.getEmail(), token.getValue()));
+                        }, new Credentials(token.getEmail(), token.getValue()));
+                    }
+                    else {
+                        Toast.makeText(this, "Please only usse alphabets and spaces", Toast.LENGTH_LONG).show();
+                    }
                 }
                 else {
-                    Toast.makeText(this, "Please insert valid full name", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Please insert a valid full name", Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {}
         });
