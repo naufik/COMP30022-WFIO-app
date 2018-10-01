@@ -29,6 +29,7 @@
         android:layout_marginTop="144dp"
         android:ems="10"
         android:inputType="textEmailAddress"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -81,6 +82,7 @@
         android:layout_marginTop="196dp"
         android:ems="10"
         android:inputType="textEmailAddress"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
