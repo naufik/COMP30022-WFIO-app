@@ -155,8 +155,9 @@ public class NotificationService extends IntentService {
                                 // this is pretty hardcoded for a while
                                 HashMap<String, Intent> buttons = new HashMap<>();
                                 buttons.put("Accept", new Intent(getApplicationContext(),
-                                        Token.getInstance().getType() == "CARER" ?
-                                                CarerMaps.class : ElderMaps.class));
+                                        Token.getInstance().getType().equals("CARER") ?
+                                                CarerMaps.class : ElderMaps.class)
+                                                .setAction("i-can-help"));
 
                                 displayNotification(title, subtitle, contentIntent, buttons);
                             }
