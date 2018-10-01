@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +20,9 @@ import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ElderSettings extends AppCompatActivity {
 
@@ -39,24 +43,44 @@ public class ElderSettings extends AppCompatActivity {
         req.requestAction(ServerAction.USER_GET_INFO, null,
                 t-> {
                     try {
-                        fullname.setHint(t.getJSONObject("result").getString("fullname"));
-                        email.setText(t.getJSONObject("result").getString("email"));
-                        username.setText(t.getJSONObject("result").getString("username"));
-
+                        fullname.setHint(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
+                        email.setText(t.getJSONObject("result").getJSONObject("user").getString("email"));
+                        username.setText(t.getJSONObject("result").getJSONObject("user").getString("username"));
+                        Toast.makeText(this, "hehehe", Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                     }
                 }, new Credentials(token.getEmail(), token.getValue()));
 
-        String fullnameS = fullname.getText().toString();
-
-        Button applyChangesES = findViewById(R.id.applyChangesES);
+        Button applyChangesES = (Button) findViewById(R.id.applyChangesES);
         applyChangesES.setOnClickListener(view -> {
+            String fullnameS = fullname.getText().toString();
             try {
+                Pattern p = Pattern.compile("^[ A-Za-z]+$");
                 JSONObject params = new JSONObject();
                 if (!fullnameS.isEmpty()) {
-                    params.put("fullname", fullnameS);
+                    if (p.matcher(fullnameS).matches()) {
+                        params.put("fullName", fullnameS);
+
+                        req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
+                                try {
+                                    if (t.getBoolean("ok")) {
+                                        Toast.makeText(this, "Full name changed successfully", Toast.LENGTH_LONG).show();
+                                        fullname.setHint(fullnameS);
+                                        token.setFullname(fullnameS);
+                                    }
+                                    else {
+                                        Toast.makeText(this, "U fucked up", Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {}
+                        }, new Credentials(token.getEmail(), token.getValue()));
+                    }
+                    else {
+                        Toast.makeText(this, "Please only usse alphabets and spaces", Toast.LENGTH_LONG).show();
+                    }
                 }
-                req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {}, new Credentials(token.getEmail(), token.getValue()));
+                else {
+                    Toast.makeText(this, "Please insert a valid full name", Toast.LENGTH_LONG).show();
+                }
             } catch (JSONException e) {}
         });
 
