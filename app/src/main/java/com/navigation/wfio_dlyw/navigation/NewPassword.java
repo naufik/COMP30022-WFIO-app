@@ -11,12 +11,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class NewPassword extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_password);
+        Token token = Token.getInstance();
+        Requester req = Requester.getInstance(this);
 
         Button newPasswordBtn = (Button)findViewById(R.id.newPasswordBtn);
         newPasswordBtn.setOnClickListener(new View.OnClickListener() {
@@ -36,6 +46,12 @@ public class NewPassword extends AppCompatActivity {
                 }else if(!newPasswordS.equals(retypeNewPasswordS)){
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
                 }else{
+                    JSONObject params = new JSONObject();
+                    try {
+                        params.put("password", newPasswordS);
+                    } catch (JSONException e) {}
+                    req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t->{
+                    }, new Credentials(token.getEmail(), token.getValue()));
                     Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
                     startActivity(startIntent);
                 }
