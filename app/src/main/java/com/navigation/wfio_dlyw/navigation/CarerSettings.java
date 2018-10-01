@@ -10,6 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
 
 public class CarerSettings extends AppCompatActivity {
 
@@ -17,13 +25,24 @@ public class CarerSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_settings);
+        Requester req = Requester.getInstance(this);
+        Token token = Token.getInstance();
 
         EditText fullname = (EditText) findViewById(R.id.fullNameCS);
         EditText username = (EditText) findViewById(R.id.usernameCS);
         EditText email = (EditText) findViewById(R.id.emailCS);
 
         //TO-DO set hints so that it shows the user's current details
-        fullname.setHint("cool");
+        req.requestAction(ServerAction.USER_GET_INFO, null,
+                t-> {
+                    try {
+                        fullname.setHint(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
+                        email.setText(t.getJSONObject("result").getJSONObject("user").getString("email"));
+                        username.setText(t.getJSONObject("result").getJSONObject("user").getString("username"));
+                        Toast.makeText(this, "hehehe", Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                    }
+                }, new Credentials(token.getEmail(), token.getValue()));
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCS);
         setSupportActionBar(myToolbar);

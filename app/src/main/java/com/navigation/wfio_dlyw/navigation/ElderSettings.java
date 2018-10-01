@@ -45,7 +45,7 @@ public class ElderSettings extends AppCompatActivity {
         req.requestAction(ServerAction.USER_GET_INFO, null,
                 t-> {
                     try {
-                        fullname.setText(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
+                        fullname.setHint(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
                         email.setText(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         username.setText(t.getJSONObject("result").getJSONObject("user").getString("username"));
                         Toast.makeText(this, "hehehe", Toast.LENGTH_SHORT).show();
@@ -59,11 +59,8 @@ public class ElderSettings extends AppCompatActivity {
             try {
                 Pattern p = Pattern.compile("^[ A-Za-z]+$");
                 JSONObject params = new JSONObject();
-                Log.d("KYA", "KYAAAAAAA");
                 if (!fullnameS.isEmpty()) {
-                    Log.d("KYA", "BBBBBBBB");
                     if (p.matcher(fullnameS).matches()) {
-                        Log.d("KYA", "CCCCCCCCCC");
                         params.put("fullName", fullnameS);
 
                         req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
@@ -76,12 +73,10 @@ public class ElderSettings extends AppCompatActivity {
                                     else {
                                         Toast.makeText(this, "U fucked up", Toast.LENGTH_SHORT).show();
                                     }
-                                    Log.d("KYA", "DDDDDDDDDDDDD");
                                 } catch (JSONException e) {}
                         }, new Credentials(token.getEmail(), token.getValue()));
                     }
                     else {
-                        Log.d("KYA", "ZZZZZZZZ");
                         Toast.makeText(this, "Please only usse alphabets and spaces", Toast.LENGTH_LONG).show();
                     }
                 }

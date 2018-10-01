@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -51,6 +52,11 @@ public class NewPassword extends AppCompatActivity {
                         params.put("password", newPasswordS);
                     } catch (JSONException e) {}
                     req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t->{
+                        try {
+                            if (t.getBoolean("ok")){
+                                Log.d("KYA", newPasswordS);
+                            }
+                        } catch (JSONException e) {}
                     }, new Credentials(token.getEmail(), token.getValue()));
                     Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
                     startActivity(startIntent);
