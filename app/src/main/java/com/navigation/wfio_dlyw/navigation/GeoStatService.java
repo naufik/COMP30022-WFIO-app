@@ -57,12 +57,18 @@ public class GeoStatService extends IntentService {
         Log.d(TAG, "onCreate()");
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand()");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+        // Try and call this when quitting navigation
+        Log.d(TAG, "onHandleIntent()");
         // Initialize second route point as checkpoint
-        checkpointIndex = 1;
+        /*checkpointIndex = 1;
 
         // Initialize strings
         destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
@@ -88,7 +94,7 @@ public class GeoStatService extends IntentService {
                 for (Location location : locationResult.getLocations()) {
                     currentLocation = location;
                     sendLocToServer(location);
-                    Log.d(TAG, String.valueOf(currentLocation));
+                    Log.d(TAG, String.valueOf(currentLocation));*/
                     /*if (updateRoute) {
                         Log.d(TAG, "Route requires updating");
                         mMap.clear();
@@ -101,7 +107,7 @@ public class GeoStatService extends IntentService {
                     }
                     Log.d(TAG, "Checking next route update");
                     checkNextRouteUpdate();*/
-                    if (firstCycle) {
+                    /*if (firstCycle) {
                         getRoute(location, destination, response -> {
                             route = convertRoute(response);
                             firstCycle = false;
@@ -112,19 +118,11 @@ public class GeoStatService extends IntentService {
                     }
                 }
             }
-        };
+        };*/
 
-        mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
-                mLocationCallback,
-                null /* Looper */);
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        // Try and call this when quitting navigation
-        Log.d(TAG, "onHandleIntent()");
+        //mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
+        //mLocationCallback,
+        //null /* Looper */);
     }
 
     @Override

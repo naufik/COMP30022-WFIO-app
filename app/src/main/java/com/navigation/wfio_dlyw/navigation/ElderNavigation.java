@@ -106,7 +106,7 @@ public class ElderNavigation extends AppCompatActivity {
         Log.d(TAG, "startService()");
         startService(serviceIntent);
         Log.d(TAG, "startActivity()");
-        startActivity(intent);
+        //startActivity(intent);
     }
 
     public void sendOnChannel(View v){
