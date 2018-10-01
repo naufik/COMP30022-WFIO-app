@@ -48,7 +48,6 @@ public class ElderSettings extends AppCompatActivity {
                     } catch (JSONException e) {
                     }
                 }, new Credentials(token.getEmail(), token.getValue()));
-
         String fullnameS = fullname.getText().toString();
 
         Button applyChangesES = (Button) findViewById(R.id.applyChangesES);
@@ -57,8 +56,20 @@ public class ElderSettings extends AppCompatActivity {
                 JSONObject params = new JSONObject();
                 if (!fullnameS.isEmpty()) {
                     params.put("fullname", fullnameS);
+
+                    req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
+                        try {
+                            if (t.getBoolean("ok")) {
+                                Toast.makeText(this, "Full name changed successfully", Toast.LENGTH_LONG).show();
+                                fullname.setHint(fullnameS);
+                            }
+                        } catch (JSONException e) {
+                        }
+                    }, new Credentials(token.getEmail(), token.getValue()));
                 }
-                req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {}, new Credentials(token.getEmail(), token.getValue()));
+                else {
+                    Toast.makeText(this, "Please insert valid full name", Toast.LENGTH_LONG).show();
+                }
             } catch (JSONException e) {}
         });
 
