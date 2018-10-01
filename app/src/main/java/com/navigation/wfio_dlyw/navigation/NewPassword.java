@@ -57,10 +57,12 @@ public class NewPassword extends AppCompatActivity {
                     if (token.getType().equals("ELDER")) {
                         Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
                         startActivity(startIntent);
+                        finish();
                     }
                     else {
                         Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
                         startActivity(startIntent);
+                        finish();
                     }
                 }
             }
