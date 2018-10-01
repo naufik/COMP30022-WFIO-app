@@ -55,6 +55,9 @@ public class EnterCurrentPassword extends AppCompatActivity {
                                         Toast.makeText(EnterCurrentPassword.this,"SERVER_REQUEST_FAILURE",Toast.LENGTH_SHORT).show();
                                     }
                                 }
+                                else {
+                                    Toast.makeText(EnterCurrentPassword.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+                                }
                             } catch (JSONException e) {}
                         }, new Credentials(token.getEmail(), token.getValue()));
                     } catch (JSONException e) {}

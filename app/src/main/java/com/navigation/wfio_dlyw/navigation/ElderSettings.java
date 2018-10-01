@@ -48,7 +48,6 @@ public class ElderSettings extends AppCompatActivity {
                         fullname.setHint(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
                         email.setText(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         username.setText(t.getJSONObject("result").getJSONObject("user").getString("username"));
-                        Toast.makeText(this, "hehehe", Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                     }
                 }, new Credentials(token.getEmail(), token.getValue()));
