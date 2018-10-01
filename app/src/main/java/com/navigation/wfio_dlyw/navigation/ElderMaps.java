@@ -69,7 +69,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
     private static final int DEFAULT_ZOOM = 15;
-    private static final int CHECKPOINT_PROXIMITY = 10;
+    private static final int CHECKPOINT_PROXIMITY = 25;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
@@ -124,10 +124,10 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     Log.d(TAG, String.valueOf(location));
                     if (updateRoute) {
                         Log.d(TAG, "Route requires updating");
-                        mMap.clear();
                         getRoute(location, destination, response -> {
                             Log.d(TAG, "Route acquired");
                             mCurrentRoute = convertRoute(response);
+                            mMap.clear();
                             mMap.addPolyline(mCurrentRoute);
                             updateRoute = false;
                         });

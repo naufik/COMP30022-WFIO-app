@@ -53,12 +53,9 @@ public class ElderNavigation extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         Button elderMessage = (Button) findViewById(R.id.eldermsg);
-        elderMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), MessageListElder.class);
-                startActivity(startIntent);
-            }
+        elderMessage.setOnClickListener(view -> {
+            Intent startIntent = new Intent(getApplicationContext(), MessageListElder.class);
+            startActivity(startIntent);
         });
 
         Button arButton = (Button) findViewById(R.id.AR);
@@ -109,7 +106,8 @@ public class ElderNavigation extends AppCompatActivity {
         Log.d(TAG, "startService()");
         startService(serviceIntent);
         Log.d(TAG, "startActivity()");
-        startActivity(intent);
+        //startActivity(intent);
+
     }
 
     public void sendOnChannel(View v){

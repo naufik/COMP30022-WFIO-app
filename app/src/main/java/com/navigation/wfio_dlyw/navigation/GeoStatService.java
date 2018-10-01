@@ -1,9 +1,10 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.annotation.SuppressLint;
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -29,7 +30,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class GeoStatService extends IntentService {
+public class GeoStatService extends Service {
 
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
@@ -48,22 +49,19 @@ public class GeoStatService extends IntentService {
     private static final int CHECKPOINT_PROXIMITY = 3;
     private static final String TAG = GeoStatService.class.getSimpleName();
 
-    public GeoStatService() {
-        super("GeoStatService");
+    private final IBinder mBinder = new GeoStatBinder();
+
+    public class GeoStatBinder extends Binder {
+        GeoStatService getService() {
+            return GeoStatService.this;
+        }
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "onCreate()");
-    }
-
-    @SuppressLint("MissingPermission")
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "onBind()");
         // Initialize second route point as checkpoint
-        checkpointIndex = 1;
+        /*checkpointIndex = 1;
 
         // Initialize strings
         destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
@@ -89,7 +87,7 @@ public class GeoStatService extends IntentService {
                 for (Location location : locationResult.getLocations()) {
                     currentLocation = location;
                     sendLocToServer(location);
-                    Log.d(TAG, String.valueOf(currentLocation));
+                    Log.d(TAG, String.valueOf(currentLocation));*/
                     /*if (updateRoute) {
                         Log.d(TAG, "Route requires updating");
                         mMap.clear();
@@ -102,7 +100,7 @@ public class GeoStatService extends IntentService {
                     }
                     Log.d(TAG, "Checking next route update");
                     checkNextRouteUpdate();*/
-                    if (firstCycle) {
+                    /*if (firstCycle) {
                         getRoute(location, destination, response -> {
                             route = convertRoute(response);
                             firstCycle = false;
@@ -117,21 +115,8 @@ public class GeoStatService extends IntentService {
 
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
-                null /* Looper */);
-
-        return super.onBind(intent);
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        // Try and call this when quitting navigation
-        Log.d(TAG, "onHandleIntent()");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy()");
+                null);*/
+        return mBinder;
     }
 
     public Location getLocation() {
