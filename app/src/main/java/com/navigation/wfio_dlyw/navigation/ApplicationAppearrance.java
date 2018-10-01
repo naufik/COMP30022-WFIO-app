@@ -15,7 +15,7 @@ public class ApplicationAppearrance extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_application_appearrance);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarAA);
+        Toolbar myToolbar = findViewById(R.id.toolbarAA);
         setSupportActionBar(myToolbar);
     }
 

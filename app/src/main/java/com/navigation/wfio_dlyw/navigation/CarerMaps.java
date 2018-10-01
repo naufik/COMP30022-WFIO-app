@@ -18,13 +18,9 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
 
@@ -63,8 +59,6 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void run() {
                 CarerMaps.this.runOnUiThread(() -> {
-                    Log.d(TAG, "Starting loop...");
-                    Log.d(TAG, "Getting Loc and Dest from server...");
                     getLocationsFromServer();
                 });
             }
@@ -72,45 +66,35 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void getLocationsFromServer() {
-        Log.d(TAG, "Running getLocationsFromServer()");
-
         Requester req = Requester.getInstance(this);
-        Log.d(TAG, "Requester created");
         req.requestAction(ServerAction.MESSAGE_PULL, null, t -> {
             try {
-                Log.d(TAG, "Lambda function...");
                 Location location = null;
                 Location destination = null;
 
-                Log.d(TAG, "Grabbing JSONArray...");
                 JSONArray locations = t.getJSONObject("result").getJSONArray("messages");
 
                 if(locations.length() != 0){
-                    Log.d(TAG, "Getting location...");
+
                     JSONArray JSONlocation = locations
                             .getJSONObject(0)
                             .getJSONObject("location")
                             .getJSONArray("coordinates");
 
-                    Log.d(TAG, "Converting location...");
                     location = new Location("location");
                     location.setLatitude(JSONlocation.getDouble(0));
                     location.setLongitude(JSONlocation.getDouble(1));
 
                     if(locations.length() != 1) {
-                        Log.d(TAG, "Getting destination...");
                         JSONArray JSONdest = locations
                                 .getJSONObject(locations.length() - 1)
                                 .getJSONObject("location")
                                 .getJSONArray("coordinates");
 
-                        Log.d(TAG, "Converting destination...");
                         destination = new Location("destination");
                         destination.setLatitude(JSONdest.getDouble(0));
                         destination.setLongitude(JSONdest.getDouble(1));
                     }
-                } else {
-                    Log.d(TAG, "0 location length");
                 }
 
                 renderLocs(location, destination);
@@ -119,7 +103,6 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
                 Log.e(TAG, e.getMessage());
             }
         }, new Credentials("dropcomputing@gmail.com","kontol"));
-        Log.d(TAG, "After lambda function");
     }
 
     private void renderLocs(Location dest, Location loc) {

@@ -17,10 +17,10 @@ public class CarerHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_home);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCH);
+        Toolbar myToolbar = findViewById(R.id.toolbarCH);
         setSupportActionBar(myToolbar);
 
-        Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
+        Button connectToElderBtn = findViewById(R.id.connectToElderBtn);
         connectToElderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -29,7 +29,7 @@ public class CarerHome extends AppCompatActivity {
             }
         });
 
-        Button myElders = (Button)findViewById(R.id.myElders);
+        Button myElders = findViewById(R.id.myElders);
         myElders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

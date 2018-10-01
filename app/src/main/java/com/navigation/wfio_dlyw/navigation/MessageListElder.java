@@ -1,14 +1,10 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ListView;
 
-import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
@@ -20,7 +16,6 @@ public class MessageListElder extends AppCompatActivity {
 
     private MessageAdapter messageAdapter;
     private ListView messagesView;
-    private Service autoCheck;
     Intent serviceIntent;
 
     @Override
@@ -33,7 +28,6 @@ public class MessageListElder extends AppCompatActivity {
         messageAdapter = new MessageAdapter(this);
         messagesView = findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
-        Requester req = Requester.getInstance(this);
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
         startService(serviceIntent);
 

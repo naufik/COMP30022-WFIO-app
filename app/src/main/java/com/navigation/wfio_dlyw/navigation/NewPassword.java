@@ -18,12 +18,12 @@ public class NewPassword extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_password);
 
-        Button newPasswordBtn = (Button)findViewById(R.id.newPasswordBtn);
+        Button newPasswordBtn = findViewById(R.id.newPasswordBtn);
         newPasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText newPassword = (EditText) findViewById(R.id.newPassword);
-                EditText retypeNewPassword = (EditText) findViewById(R.id.retypeNewPassword);
+                EditText newPassword = findViewById(R.id.newPassword);
+                EditText retypeNewPassword = findViewById(R.id.retypeNewPassword);
 
                 String newPasswordS = newPassword.getText().toString();
                 String retypeNewPasswordS = retypeNewPassword.getText().toString();
@@ -43,7 +43,7 @@ public class NewPassword extends AppCompatActivity {
         });
 
         //for use outside of onclicklistener scope
-        EditText retypeNewPasswordEnter = (EditText) findViewById(R.id.retypeNewPassword);
+        EditText retypeNewPasswordEnter = findViewById(R.id.retypeNewPassword);
         retypeNewPasswordEnter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

@@ -27,11 +27,11 @@ public class ElderConnect extends AppCompatActivity {
         Requester req = Requester.getInstance(this);
         Token token = Token.getInstance();
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEC);
+        Toolbar myToolbar = findViewById(R.id.toolbarEC);
         setSupportActionBar(myToolbar);
 
-        Button getCode = (Button) findViewById(R.id.newCodeBtn);
-        TextView connectCode = (TextView) findViewById(R.id.elderConnectCode);
+        Button getCode = findViewById(R.id.newCodeBtn);
+        TextView connectCode = findViewById(R.id.elderConnectCode);
 
         getCode.setOnClickListener(view -> {
             connectCode.setText("LOADING CODE");

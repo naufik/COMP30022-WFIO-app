@@ -29,7 +29,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -57,7 +56,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
 
     private static final int CASE_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = ElderMaps.class.getSimpleName();
-    //private final LatLng mDefaultLocation = new LatLng(-37.8070, 144.9612);
 
     private final String ROUTE_URL = "https://maps.googleapis.com/maps/api/directions/json?origin=%s&destination=%s&key=%s";
     private final String API_KEY = "AIzaSyBbm1wwfULDJFvSC44OoTa_G8XAnGgV6XM";
@@ -72,9 +70,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         //should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
-//        Intent intent = getIntent();
-//        ElderItem elderItem = intent.getParcelableExtra("Example Item");
-//        String name = elderItem.getmText1();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -158,10 +153,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Location permission granted.");
             mLocationPermission = true;
         } else {
-            Log.d(TAG, "Requesting location permission...");
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     CASE_ACCESS_FINE_LOCATION);
@@ -178,7 +171,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Location permission granted.");
                     mLocationPermission = true;
                 }
             }
@@ -197,12 +189,11 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                Log.d(TAG, "Location permission not granted, setting to null");
                 mCurrentLocation = null;
                 getLocationPermission();
             }
         } catch (SecurityException e) {
-            Log.e("Exception: %s", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -212,15 +203,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        Log.d(TAG, "Current location found. Rendering...");
                         mCurrentLocation = (Location) task.getResult();
-                        Log.d(TAG, "Running getRoute()");
                         getRoute();
                     } else {
-                        Log.d(TAG, "Current location is null. Using defaults.");
-                        Log.e(TAG, String.format("Exception: %s", task.getException()));
-                        LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
-                                mDefaultLocation.getLongitude());
                         mCurrentLocation = mDefaultLocation;
                         mMap.getUiSettings().setMyLocationButtonEnabled(false);
                     }
@@ -228,11 +213,9 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                             new LatLng(mCurrentLocation.getLatitude(),
                                     mCurrentLocation.getLongitude()), 15));
                 });
-            } else {
-                Log.d(TAG, "Location permission not granted.");
             }
         } catch(SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -246,14 +229,13 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
             Requester req = Requester.getInstance(this);
             req.requestAction(ServerAction.MESSAGE_SEND, message, t -> {}, new Credentials("dropcomputing@gmail.com","kontol"));
         } catch(JSONException e) {
-            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private void getRoute() {
         String formatDest = destination.replace(" ", "+");
         String formatUrl = String.format(ROUTE_URL, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), formatDest, API_KEY);
-        Log.d(TAG, formatUrl);
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -293,8 +275,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     sendLocToServer(destination);
                 }
             }
-
-            Polyline polyline = mMap.addPolyline(polylineOptions);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -12,7 +12,7 @@ public class AnswerHelp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer_help);
 
-        Button decline = (Button)findViewById(R.id.decline);
+        Button decline = findViewById(R.id.decline);
         decline.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
             startActivity(startIntent);
