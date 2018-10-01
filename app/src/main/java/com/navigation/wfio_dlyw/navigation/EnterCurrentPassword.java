@@ -11,6 +11,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class EnterCurrentPassword extends AppCompatActivity {
 
@@ -18,6 +26,8 @@ public class EnterCurrentPassword extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_current_password);
+        Token token = Token.getInstance();
+        Requester req = Requester.getInstance(this);
 
         Button currentPasswordBtn = (Button)findViewById(R.id.currentPasswordBtn);
         currentPasswordBtn.setOnClickListener(new View.OnClickListener() {
@@ -30,8 +40,22 @@ public class EnterCurrentPassword extends AppCompatActivity {
                             "password", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    Intent startIntent = new Intent(getApplicationContext(), NewPassword.class);
-                    startActivity(startIntent);
+                    JSONObject params = new JSONObject();
+                    try {
+                        params.put("username", token.getUsername()).put("password", currentPasswordS);
+                        req.requestAction(ServerAction.USER_LOGIN, params, t->{
+                            try {
+                                if (t.getBoolean("ok")){
+                                    if (t.getJSONObject("result").getString("email").equals(token.getEmail())){
+                                        Intent startIntent = new Intent(getApplicationContext(), NewPassword.class);
+                                        startActivity(startIntent);
+                                    }
+                                }
+                                Toast.makeText(EnterCurrentPassword.this, "Password incorrect", Toast.LENGTH_LONG).show();
+                            } catch (JSONException e) {}
+                        }, new Credentials(token.getEmail(), token.getValue()));
+                    } catch (JSONException e) {}
+
                 }
             }
         });
