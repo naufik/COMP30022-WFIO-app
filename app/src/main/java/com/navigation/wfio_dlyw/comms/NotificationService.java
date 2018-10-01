@@ -99,7 +99,6 @@ public class NotificationService extends IntentService {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setColor(Color.BLUE)
-                .setAutoCancel(true)
                 .setOnlyAlertOnce(true);
 
         if (contentIntent != null) {
@@ -113,7 +112,7 @@ public class NotificationService extends IntentService {
                     (int)System.currentTimeMillis(), i.getValue(), 0));
         }
 
-        NotificationManagerCompat.from(this).notify(currentId++, newNotification.build());
+        NotificationManagerCompat.from(this).notify(currentId++, newNotification.setAutoCancel(true).build());
     }
 
     private void createNotificationChannels() {
