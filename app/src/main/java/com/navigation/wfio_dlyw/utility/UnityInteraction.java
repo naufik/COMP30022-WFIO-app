@@ -9,8 +9,17 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.navigation.ElderMaps;
 import com.navigation.wfio_dlyw.navigation.ElderNavigation;
+import com.unity3d.player.UnityPlayer;
 
 public class UnityInteraction {
+
+    boolean mBound = false;
+
+
+    public static void requestService(){
+        
+        UnityPlayer.UnitySendMessage("Camera","ReceiveMessage", "You got message");
+    }
 
     public static void goBack(Activity activity){
         Intent intent = new Intent(activity, ElderNavigation.class);
