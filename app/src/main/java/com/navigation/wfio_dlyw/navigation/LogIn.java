@@ -54,6 +54,10 @@ public class LogIn extends AppCompatActivity {
                 req.requestAction(ServerAction.USER_LOGIN, params,
                         t -> {
                     try {
+                        if(!t.getBoolean("ok")){
+                            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         String s = t.getJSONObject("result").getString("token");
                         token.setValue(s);
                         token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
