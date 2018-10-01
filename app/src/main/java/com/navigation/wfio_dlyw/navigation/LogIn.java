@@ -57,10 +57,11 @@ public class LogIn extends AppCompatActivity {
                         String s = t.getJSONObject("result").getString("token");
                         token.setValue(s);
                         token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
-                        Toast.makeText(this.getApplicationContext(),  token.getType(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this.getApplicationContext(), token.getType(), Toast.LENGTH_LONG).show();
                         token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
                         token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
+                        token.setUsername(user);
                         if (token.getType().equals("ELDER")) {
 
                             req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {

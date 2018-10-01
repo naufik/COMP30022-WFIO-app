@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -11,6 +12,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class EnterCurrentPassword extends AppCompatActivity {
 
@@ -18,20 +27,47 @@ public class EnterCurrentPassword extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_current_password);
+        Token token = Token.getInstance();
+        Requester req = Requester.getInstance(this);
 
         Button currentPasswordBtn = findViewById(R.id.currentPasswordBtn);
         currentPasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText currentPassword = findViewById(R.id.currentPassword);
+                Log.d("KYA", "KYAAAAAAA");
+                EditText currentPassword = (EditText)findViewById(R.id.currentPassword);
                 String currentPasswordS = currentPassword.getText().toString();
                 if(currentPasswordS.isEmpty()){
+                    Log.d("KYA", "BBBBBBBB");
                     Toast.makeText(getApplicationContext(), "Please enter your current " +
                             "password", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    Intent startIntent = new Intent(getApplicationContext(), NewPassword.class);
-                    startActivity(startIntent);
+                    Log.d("KYA", "CCCCCCCCCC");
+                    JSONObject params = new JSONObject();
+                    try {
+                        Log.d("KYA", "DDDDDDDDDDDDD");
+                        params.put("username", token.getUsername()).put("password", currentPasswordS);
+                        req.requestAction(ServerAction.USER_LOGIN, params, t->{
+                            try {
+                                if (t.getBoolean("ok")){
+                                    Log.d("KYA", "EEEEEEEEEEE");
+                                    if (t.getJSONObject("result").getJSONObject("user").getString("email").equals(token.getEmail())){
+                                        Log.d("KYA", "FFFFFFFFFF");
+                                        Toast.makeText(EnterCurrentPassword.this, "something is right?", Toast.LENGTH_SHORT).show();
+                                        Intent startIntent = new Intent(getApplicationContext(), NewPassword.class);
+                                        startActivity(startIntent);
+                                    }
+                                    else {
+                                        Log.d("KYA", "GGGGGGGGGGGG");
+                                        Toast.makeText(EnterCurrentPassword.this,"something is wrong?",Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                Log.d("KYA", "HHHHHHHHHHHHHH");
+                            } catch (JSONException e) {}
+                        }, new Credentials(token.getEmail(), token.getValue()));
+                    } catch (JSONException e) {}
+
                 }
             }
         });
