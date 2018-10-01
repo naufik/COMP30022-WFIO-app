@@ -23,6 +23,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
 public class ElderNavigation extends AppCompatActivity {
@@ -51,6 +54,16 @@ public class ElderNavigation extends AppCompatActivity {
             }
         });
 
+        Button notifyAll = findViewById(R.id.nofifyAll);
+        notifyAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Requester minta = Requester.getInstance(getApplicationContext());
+                Token var = Token.getInstance();
+                minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+            }
+        });
+
         Button arButton = findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
@@ -66,7 +79,6 @@ public class ElderNavigation extends AppCompatActivity {
                 startActivity(favouriteIntent);
             }
         });
-
 
     }
 
