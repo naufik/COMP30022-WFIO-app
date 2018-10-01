@@ -9,7 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -26,10 +25,10 @@ public class ElderHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_home);
         Token token = Token.getInstance();
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEH);
+        Toolbar myToolbar = findViewById(R.id.toolbarEH);
         setSupportActionBar(myToolbar);
 
-        Button navigationButton = (Button)findViewById(R.id.navigateButton);
+        Button navigationButton = findViewById(R.id.navigateButton);
         navigationButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -38,7 +37,7 @@ public class ElderHome extends AppCompatActivity {
             }
         });
 
-        Button connectBtn = (Button)findViewById(R.id.rncButton);
+        Button connectBtn = findViewById(R.id.rncButton);
         connectBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){

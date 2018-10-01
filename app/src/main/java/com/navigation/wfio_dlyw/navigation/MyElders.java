@@ -6,10 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -34,7 +30,7 @@ public class MyElders extends AppCompatActivity {
         elders = new ArrayList<>();
         setContentView(R.layout.activity_my_elders);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarME);
+        Toolbar myToolbar = findViewById(R.id.toolbarME);
         setSupportActionBar(myToolbar);
 
         createElders();
@@ -81,10 +77,6 @@ public class MyElders extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnItemClickListener(new ConnectAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(int position) {
-//                changeItem(position, "clicked");
-//            }
 
             @Override
             public void onItemClick(int position){

@@ -1,23 +1,17 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.Timer;
 import java.util.TimerTask;
 

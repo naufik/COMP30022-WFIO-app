@@ -3,20 +3,16 @@ package com.navigation.wfio_dlyw.navigation;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,12 +39,10 @@ public class MessageList extends AppCompatActivity{
     private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
-    private MediaPlayer mPlayer = null;
     private Button mRecord;
 
     private ArrayList<String> fileNames = new ArrayList<>();
     private Button viewClips;
-    private Button playButton;
     private int fileCount = 0;
 
     private int recipientID;
@@ -66,7 +60,7 @@ public class MessageList extends AppCompatActivity{
         String name = elderItem.getmText1();
         recipientID = elderItem.getmId();
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarML);
+        Toolbar myToolbar = findViewById(R.id.toolbarML);
         myToolbar.setTitle("");
         setSupportActionBar(myToolbar);
         myToolbar.setTitle(name);

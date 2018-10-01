@@ -3,7 +3,6 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -24,7 +23,7 @@ public class SignUp extends AppCompatActivity {
         Token token = Token.getInstance();
 
         setContentView(R.layout.activity_sign_up);
-        Button submitBtn = (Button) findViewById(R.id.submitBtn);
+        Button submitBtn = findViewById(R.id.submitBtn);
         submitBtn.setOnClickListener(view -> {
                 Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
                 String type = null;
@@ -33,19 +32,19 @@ public class SignUp extends AppCompatActivity {
                 }
 
                 //trim removes leading and trailing whitespace
-                EditText usernameS = (EditText) findViewById(R.id.usernameS);
+                EditText usernameS = findViewById(R.id.usernameS);
                 String usernameSS = usernameS.getText().toString().trim();
 
-                EditText fullnameS = (EditText) findViewById(R.id.fullNameS);
+                EditText fullnameS = findViewById(R.id.fullNameS);
                 String fullnameSS = fullnameS.getText().toString().trim();
 
-                EditText emailS = (EditText) findViewById(R.id.emailS);
+                EditText emailS = findViewById(R.id.emailS);
                 String emailSS = emailS.getText().toString().trim();
 
-                EditText passwordS = (EditText) findViewById(R.id.passwordS);
+                EditText passwordS = findViewById(R.id.passwordS);
                 String passwordSS = passwordS.getText().toString();
 
-                EditText rePasswordS = (EditText) findViewById(R.id.rePasswordS);
+                EditText rePasswordS = findViewById(R.id.rePasswordS);
                 String rePasswordSS = rePasswordS.getText().toString();
 
                 //password same as re-entered and username/email doesnt contain white space

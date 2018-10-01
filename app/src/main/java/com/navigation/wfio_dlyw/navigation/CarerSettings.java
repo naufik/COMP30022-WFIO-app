@@ -25,10 +25,10 @@ public class CarerSettings extends AppCompatActivity {
         //TO-DO set hints so that it shows the user's current details
         fullname.setHint("cool");
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCS);
+        Toolbar myToolbar = findViewById(R.id.toolbarCS);
         setSupportActionBar(myToolbar);
 
-        final Button carerLogOutBtn = (Button) findViewById(R.id.carerLogOutBtn);
+        final Button carerLogOutBtn = findViewById(R.id.carerLogOutBtn);
         carerLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -37,7 +37,7 @@ public class CarerSettings extends AppCompatActivity {
             }
         });
 
-        Button changePassword = (Button)findViewById(R.id.changePasswordCS);
+        Button changePassword = findViewById(R.id.changePasswordCS);
         changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

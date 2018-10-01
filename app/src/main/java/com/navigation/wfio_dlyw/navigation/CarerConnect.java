@@ -18,7 +18,6 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 
 public class CarerConnect extends AppCompatActivity {
@@ -28,16 +27,15 @@ public class CarerConnect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_connect);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCC);
+        Toolbar myToolbar = findViewById(R.id.toolbarCC);
         setSupportActionBar(myToolbar);
         Requester req = Requester.getInstance(this);
         Token token = Token.getInstance();
 
         Toast.makeText(this , token.getType(), Toast.LENGTH_LONG).show();
 
-        Button getCode = (Button) findViewById(R.id.newCodeBtn);
-        EditText input = (EditText) findViewById(R.id.verificationCodeCC);
-        Button link = (Button) findViewById(R.id.link);
+        EditText input = findViewById(R.id.verificationCodeCC);
+        Button link = findViewById(R.id.link);
 
         link.setOnClickListener(view -> {
             String code = input.getText().toString();

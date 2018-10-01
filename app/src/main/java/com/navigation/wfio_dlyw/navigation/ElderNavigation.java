@@ -6,7 +6,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -15,7 +14,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,8 +31,6 @@ public class ElderNavigation extends AppCompatActivity {
     public static final String channel_1_ID = "channel 1";
     private Intent favouriteIntent;
 
-   private final Context context = this;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,10 +40,10 @@ public class ElderNavigation extends AppCompatActivity {
         createNotificationChannels();
         notificationManager = NotificationManagerCompat.from(this);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
+        Toolbar myToolbar = findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
 
-        Button elderMessage = (Button) findViewById(R.id.eldermsg);
+        Button elderMessage = findViewById(R.id.eldermsg);
         elderMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,14 +52,14 @@ public class ElderNavigation extends AppCompatActivity {
             }
         });
 
-        Button arButton = (Button) findViewById(R.id.AR);
+        Button arButton = findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startIntent);
         });
 
-        Button favouriteButton = (Button) findViewById(R.id.favoritesButton);
+        Button favouriteButton = findViewById(R.id.favoritesButton);
         favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,7 +73,7 @@ public class ElderNavigation extends AppCompatActivity {
 
     public void sendDestination(View view) {
         Intent intent = new Intent(this, ElderMaps.class);
-        EditText editText = (EditText) findViewById(R.id.navigationSearchField);
+        EditText editText = findViewById(R.id.navigationSearchField);
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);

@@ -19,11 +19,11 @@ public class EnterCurrentPassword extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_current_password);
 
-        Button currentPasswordBtn = (Button)findViewById(R.id.currentPasswordBtn);
+        Button currentPasswordBtn = findViewById(R.id.currentPasswordBtn);
         currentPasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText currentPassword = (EditText)findViewById(R.id.currentPassword);
+                EditText currentPassword = findViewById(R.id.currentPassword);
                 String currentPasswordS = currentPassword.getText().toString();
                 if(currentPasswordS.isEmpty()){
                     Toast.makeText(getApplicationContext(), "Please enter your current " +
@@ -37,7 +37,7 @@ public class EnterCurrentPassword extends AppCompatActivity {
         });
 
         //for use outside of onclicklistener scope
-        EditText currentPasswordEnter = (EditText)findViewById(R.id.currentPassword);
+        EditText currentPasswordEnter = findViewById(R.id.currentPassword);
         currentPasswordEnter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -24,7 +23,7 @@ public class Favourites extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarF);
+        Toolbar myToolbar = findViewById(R.id.toolbarF);
         setSupportActionBar(myToolbar);
 
         buildRecyclerViewer();
