@@ -70,9 +70,6 @@ public class ElderSettings extends AppCompatActivity {
                                         fullname.setHint(fullnameS);
                                         token.setFullname(fullnameS);
                                     }
-                                    else {
-                                        Toast.makeText(this, "U fucked up", Toast.LENGTH_SHORT).show();
-                                    }
                                 } catch (JSONException e) {}
                         }, new Credentials(token.getEmail(), token.getValue()));
                     }

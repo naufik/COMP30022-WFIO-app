@@ -34,36 +34,27 @@ public class EnterCurrentPassword extends AppCompatActivity {
         currentPasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("KYA", "KYAAAAAAA");
                 EditText currentPassword = (EditText)findViewById(R.id.currentPassword);
                 String currentPasswordS = currentPassword.getText().toString();
                 if(currentPasswordS.isEmpty()){
-                    Log.d("KYA", "BBBBBBBB");
                     Toast.makeText(getApplicationContext(), "Please enter your current " +
                             "password", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    Log.d("KYA", "CCCCCCCCCC");
                     JSONObject params = new JSONObject();
                     try {
-                        Log.d("KYA", "DDDDDDDDDDDDD");
                         params.put("username", token.getUsername()).put("password", currentPasswordS);
                         req.requestAction(ServerAction.USER_LOGIN, params, t->{
                             try {
                                 if (t.getBoolean("ok")){
-                                    Log.d("KYA", "EEEEEEEEEEE");
                                     if (t.getJSONObject("result").getJSONObject("user").getString("email").equals(token.getEmail())){
-                                        Log.d("KYA", "FFFFFFFFFF");
-                                        Toast.makeText(EnterCurrentPassword.this, "something is right?", Toast.LENGTH_SHORT).show();
                                         Intent startIntent = new Intent(getApplicationContext(), NewPassword.class);
                                         startActivity(startIntent);
                                     }
                                     else {
-                                        Log.d("KYA", "GGGGGGGGGGGG");
-                                        Toast.makeText(EnterCurrentPassword.this,"something is wrong?",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(EnterCurrentPassword.this,"SERVER_REQUEST_FAILURE",Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                                Log.d("KYA", "HHHHHHHHHHHHHH");
                             } catch (JSONException e) {}
                         }, new Credentials(token.getEmail(), token.getValue()));
                     } catch (JSONException e) {}
