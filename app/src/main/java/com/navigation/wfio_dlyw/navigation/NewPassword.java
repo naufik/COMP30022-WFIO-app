@@ -54,8 +54,14 @@ public class NewPassword extends AppCompatActivity {
                     req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t->{
                     }, new Credentials(token.getEmail(), token.getValue()));
                     Toast.makeText(NewPassword.this,"Password changes successfully",Toast.LENGTH_SHORT).show();
-                    Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
-                    startActivity(startIntent);
+                    if (token.getType().equals("ELDER")) {
+                        Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
+                        startActivity(startIntent);
+                    }
+                    else {
+                        Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
+                        startActivity(startIntent);
+                    }
                 }
             }
         });

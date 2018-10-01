@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -32,8 +33,8 @@ public class CarerSettings extends AppCompatActivity {
         Token token = Token.getInstance();
 
         EditText fullname = (EditText) findViewById(R.id.fullNameCS);
-        EditText username = (EditText) findViewById(R.id.usernameCS);
-        EditText email = (EditText) findViewById(R.id.emailCS);
+        TextView username = (TextView) findViewById(R.id.usernameCS);
+        TextView email = (TextView) findViewById(R.id.emailCS);
 
         //TO-DO set hints so that it shows the user's current details
         req.requestAction(ServerAction.USER_GET_INFO, null,
@@ -86,6 +87,7 @@ public class CarerSettings extends AppCompatActivity {
         carerLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Token.reset();
                 Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
                 startActivity(startIntent);
             }
