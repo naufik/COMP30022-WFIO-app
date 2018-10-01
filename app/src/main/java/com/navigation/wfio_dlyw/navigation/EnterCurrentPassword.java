@@ -47,8 +47,12 @@ public class EnterCurrentPassword extends AppCompatActivity {
                             try {
                                 if (t.getBoolean("ok")){
                                     if (t.getJSONObject("result").getString("email").equals(token.getEmail())){
+                                        Toast.makeText(EnterCurrentPassword.this, "something is right?", Toast.LENGTH_SHORT).show();
                                         Intent startIntent = new Intent(getApplicationContext(), NewPassword.class);
                                         startActivity(startIntent);
+                                    }
+                                    else {
+                                        Toast.makeText(EnterCurrentPassword.this,"something is wrong?",Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 Toast.makeText(EnterCurrentPassword.this, "Password incorrect", Toast.LENGTH_LONG).show();
