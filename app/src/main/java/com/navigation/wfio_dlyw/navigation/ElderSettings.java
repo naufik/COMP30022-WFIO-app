@@ -63,7 +63,7 @@ public class ElderSettings extends AppCompatActivity {
                         req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
                                 try {
                                     if (t.getBoolean("ok")) {
-                                        Toast.makeText(this, "Full name changed successfully", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(ElderSettings.this, "Full name changed successfully", Toast.LENGTH_LONG).show();
                                         fullname.setHint(fullnameS);
                                         token.setFullname(fullnameS);
                                     }

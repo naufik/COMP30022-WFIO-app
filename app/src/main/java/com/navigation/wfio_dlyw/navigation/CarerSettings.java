@@ -18,6 +18,9 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.regex.Pattern;
 
 public class CarerSettings extends AppCompatActivity {
 
@@ -39,7 +42,6 @@ public class CarerSettings extends AppCompatActivity {
                         fullname.setHint(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
                         email.setText(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         username.setText(t.getJSONObject("result").getJSONObject("user").getString("username"));
-                        Toast.makeText(this, "hehehe", Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                     }
                 }, new Credentials(token.getEmail(), token.getValue()));
@@ -47,7 +49,40 @@ public class CarerSettings extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarCS);
         setSupportActionBar(myToolbar);
 
-        final Button carerLogOutBtn = findViewById(R.id.carerLogOutBtn);
+        Button changeFullName = (Button) findViewById(R.id.changeFullName);
+        changeFullName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String fullnameS = fullname.getText().toString();
+                try {
+                    Pattern p = Pattern.compile("^[ A-Za-z]+$");
+                    JSONObject params = new JSONObject();
+                    if (!fullnameS.isEmpty()) {
+                        if (p.matcher(fullnameS).matches()) {
+                            params.put("fullName", fullnameS);
+
+                            req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
+                                try {
+                                    if (t.getBoolean("ok")) {
+                                        Toast.makeText(CarerSettings.this, "Full name changed successfully", Toast.LENGTH_LONG).show();
+                                        fullname.setHint(fullnameS);
+                                        token.setFullname(fullnameS);
+                                    }
+                                } catch (JSONException e) {}
+                            }, new Credentials(token.getEmail(), token.getValue()));
+                        }
+                        else {
+                            Toast.makeText(CarerSettings.this, "Please only usse alphabets and spaces", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    else {
+                        Toast.makeText(CarerSettings.this, "Please insert a valid full name", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {}
+            }
+        });
+
+        final Button carerLogOutBtn = (Button) findViewById(R.id.carerLogOutBtn);
         carerLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
