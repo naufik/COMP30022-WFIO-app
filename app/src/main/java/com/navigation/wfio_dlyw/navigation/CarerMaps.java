@@ -129,12 +129,16 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 startActivity(startIntent);
                 return true;
             case R.id.star_button:
-                Toast.makeText(this, "pri", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "awas", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.sms_button:
-                Toast.makeText(this, "ki", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
+                Intent smsintent = new Intent(getApplicationContext(), MyElders.class);
+                startActivity(smsintent);
+                return true;
             case R.id.sos_button:
-                Toast.makeText(this, "tiew", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
+                return true;
 
             default:
                 // If we got here, the user's action was not recognized.

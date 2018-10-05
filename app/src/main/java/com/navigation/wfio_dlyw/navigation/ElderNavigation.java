@@ -82,7 +82,7 @@ public class ElderNavigation extends AppCompatActivity {
         });
 
     }
-
+    //currently carer maps for testing
     public void sendDestination(View view) {
         Intent intent = new Intent(this, CarerMaps.class);
 //        EditText editText = findViewById(R.id.navigationSearchField);
