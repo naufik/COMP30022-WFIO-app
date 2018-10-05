@@ -13,4 +13,8 @@
     <string name="ApplicationAppearrance">Application Appearrance</string>
     <string name="title_activity_elder_maps">Elder Maps</string>
     <string name="title_activity_carer_maps">Carer Maps</string>
+    <string name="star">Add to Favorites</string>
+    <string name="sms">Message Carer</string>
+    <string name="sos">Help!</string>
+
 </resources>

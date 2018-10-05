@@ -92,6 +92,21 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.back_button:
+                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
+                startActivity(startIntent);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search, menu);
 
