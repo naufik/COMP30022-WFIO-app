@@ -23,14 +23,23 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ElderNavigation extends AppCompatActivity {
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
+    private static final int MAX_SUGGESTIONS = 100;
     private Intent favouriteIntent;
+    private MaterialSearchView searchView;
+    private List[] stuff;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +47,7 @@ public class ElderNavigation extends AppCompatActivity {
         Token token = Token.getInstance();
         Toast.makeText(this , token.getValue(), Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_elder_navigation);
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
 
@@ -49,7 +59,6 @@ public class ElderNavigation extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
-
         Button notifyAll = findViewById(R.id.nofifyAll);
         notifyAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,20 +68,50 @@ public class ElderNavigation extends AppCompatActivity {
                 minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
             }
         });
-
         Button arButton = findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startIntent);
         });
-
         Button favouriteButton = findViewById(R.id.favoritesButton);
         favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
                 startActivity(favouriteIntent);
+
+            }
+        });
+        String[] list = new String[] { "Barney" , "is", "a", "dinosaur", "of", "our", "imagination"};
+
+        //searchview stuff
+        MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
+        this.searchView = searchView;
+        searchView.setSuggestions(list);
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //Do some magic
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
             }
         });
 
@@ -93,10 +132,15 @@ public class ElderNavigation extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.back,menu);
+        getMenuInflater().inflate(R.menu.search, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
         return true;
     }
     
