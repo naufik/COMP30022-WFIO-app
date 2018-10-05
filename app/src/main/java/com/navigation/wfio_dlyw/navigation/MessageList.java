@@ -59,6 +59,9 @@ public class MessageList extends AppCompatActivity{
         ElderItem elderItem = intent.getParcelableExtra("Example Item");
         String name = elderItem.getmText1();
         recipientID = elderItem.getmId();
+        try {
+            recipientID = Token.getInstance().getCurrentConnection().getInt("id");
+        } catch (JSONException e) {}
 
         Toolbar myToolbar = findViewById(R.id.toolbarML);
         myToolbar.setTitle("");

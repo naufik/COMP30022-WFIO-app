@@ -108,7 +108,7 @@ public class MyElders extends AppCompatActivity {
                 Token t = Token.getInstance();
                 Log.d("itemPrint", ""+elders.get(position).getmId());
                 try {
-                    Log.d("itemCompare", "" + t.getConnections().getJSONObject(position).getInt("id"));
+                    Log.d("itemCompare", "" + t.getConnections().getJSONObject(position).getInt("id")); 
                     t.getConnections().remove(position);
                     JSONObject params = new JSONObject();
                     params.put("connections",t.getConnections());
