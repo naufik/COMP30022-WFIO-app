@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Token;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Timer;
@@ -38,18 +39,26 @@ public class MessageListElder extends AppCompatActivity {
             public void run() {
                 runOnUiThread(() -> {
                     try {
+                        JSONArray temp = new JSONArray();
                         while (token.getMessages().length() > 0) {
-                            int senderID = token.getMessages().getJSONObject(0).getInt("from");
-                            String sender = "error";
-                            for (int i =0; i < token.getConnections().length(); i++) {
-                                if (token.getConnections().getJSONObject(i).getInt("id") == senderID){
-                                    sender = token.getConnections().getJSONObject(i).getString("fullname");
+                            if (token.getMessages().getJSONObject(0).getInt("from") == token.getCurrentConnection().getInt("id")) {
+                                int senderID = token.getMessages().getJSONObject(0).getInt("from");
+                                String sender = "error";
+                                for (int i = 0; i < token.getConnections().length(); i++) {
+                                    if (token.getConnections().getJSONObject(i).getInt("id") == senderID) {
+                                        sender = token.getConnections().getJSONObject(i).getString("fullname");
+                                    }
                                 }
+                                token.getConnections().getJSONObject(0).getInt("id");
+                                onMessage(token.getMessages().getJSONObject(0).getString("content"), sender);
+                                token.getMessages().remove(0);
                             }
-                            token.getConnections().getJSONObject(0).getInt("id");
-                            onMessage(token.getMessages().getJSONObject(0).getString("content"), sender);
-                            token.getMessages().remove(0);
+                            else {
+                                temp.put(token.getMessages().getJSONObject(0));
+                                token.getMessages().remove(0);
+                            }
                         }
+                        token.setMessages(temp);
                     } catch (JSONException e) {}
                 });
             }
