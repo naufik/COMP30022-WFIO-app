@@ -2,9 +2,18 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.content.Intent;
 import android.location.Location;
+
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -13,6 +22,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.miguelcatalan.materialsearchview.SearchAdapter;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.NotifyService;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -24,10 +35,11 @@ import org.json.JSONException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
+public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLng dest;
+    private MaterialSearchView searchView;
 
     private static final String TAG = CarerMaps.class.getSimpleName();
 
@@ -35,6 +47,9 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_maps);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCM);
+        setSupportActionBar(myToolbar);
 
         Intent notify = new Intent(this, NotifyService.class);
         notify.setAction("notify");
@@ -46,8 +61,91 @@ public class CarerMaps extends FragmentActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //make fake list
+        String[] list = new String[] { "Barney" , "is", "a", "dinosaur", "of", "our", "imagination"};
+
+        //searchview stuff
+        MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
+        this.searchView = searchView;
+        searchView.setSuggestions(list);
+
+
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String query = (String) parent.getItemAtPosition(position);
+                searchView.closeSearch();
+                //query is the clicked string use that to search for destination
+                Log.d("test", query);
+            }
+        });
+
+
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //Do some magic
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        searchView.setMenuItem(item);
+
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.back_button:
+                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
+                startActivity(startIntent);
+                return true;
+            case R.id.star_button:
+                Toast.makeText(this, "awas", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.sms_button:
+                Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
+                Intent smsintent = new Intent(getApplicationContext(), MyElders.class);
+                startActivity(smsintent);
+                return true;
+            case R.id.sos_button:
+                Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /**
      * Manipulates the map once available.

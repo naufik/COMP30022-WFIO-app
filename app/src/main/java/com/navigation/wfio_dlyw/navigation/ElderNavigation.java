@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
@@ -31,15 +32,21 @@ import com.navigation.wfio_dlyw.comms.Token;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ElderNavigation extends AppCompatActivity {
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
+    private static final int MAX_SUGGESTIONS = 100;
     private Intent favouriteIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Token token = Token.getInstance();
         setContentView(R.layout.activity_elder_navigation);
+
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
         String email = getIntent().getStringExtra("from");
@@ -63,7 +70,6 @@ public class ElderNavigation extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
-
         Button notifyAll = findViewById(R.id.nofifyAll);
         notifyAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,30 +79,29 @@ public class ElderNavigation extends AppCompatActivity {
                 minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
             }
         });
-
         Button arButton = findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startIntent);
         });
-
         Button favouriteButton = findViewById(R.id.favoritesButton);
         favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
                 startActivity(favouriteIntent);
+
             }
         });
 
     }
-
+    //currently carer maps for testing
     public void sendDestination(View view) {
-        Intent intent = new Intent(this, ElderMaps.class);
-        EditText editText = findViewById(R.id.navigationSearchField);
-        String destination = editText.getText().toString();
-        intent.putExtra(EXTRA_DESTINATION, destination);
+        Intent intent = new Intent(this, CarerMaps.class);
+//        EditText editText = findViewById(R.id.navigationSearchField);
+//        String destination = editText.getText().toString();
+//        intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
     }
 
