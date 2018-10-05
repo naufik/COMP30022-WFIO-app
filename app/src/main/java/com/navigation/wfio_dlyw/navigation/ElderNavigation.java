@@ -36,9 +36,6 @@ public class ElderNavigation extends AppCompatActivity {
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
     private static final int MAX_SUGGESTIONS = 100;
     private Intent favouriteIntent;
-    private MaterialSearchView searchView;
-    private List[] stuff;
-
 
 
     @Override
@@ -83,45 +80,14 @@ public class ElderNavigation extends AppCompatActivity {
 
             }
         });
-        String[] list = new String[] { "Barney" , "is", "a", "dinosaur", "of", "our", "imagination"};
-
-        //searchview stuff
-        MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        this.searchView = searchView;
-        searchView.setSuggestions(list);
-
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                //Do some magic
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //Do some magic
-                return false;
-            }
-        });
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-            }
-        });
 
     }
 
     public void sendDestination(View view) {
-        Intent intent = new Intent(this, ElderMaps.class);
-        EditText editText = findViewById(R.id.navigationSearchField);
-        String destination = editText.getText().toString();
-        intent.putExtra(EXTRA_DESTINATION, destination);
+        Intent intent = new Intent(this, CarerMaps.class);
+//        EditText editText = findViewById(R.id.navigationSearchField);
+//        String destination = editText.getText().toString();
+//        intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
     }
 
@@ -132,15 +98,10 @@ public class ElderNavigation extends AppCompatActivity {
         startActivity(intent);
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search, menu);
-
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.back,menu);
         return true;
     }
     
@@ -150,7 +111,6 @@ public class ElderNavigation extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.back_button:
                 Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                Toast.makeText(this, "get back on it, come on come on", Toast.LENGTH_LONG).show();
                 startActivity(startIntent);
                 return true;
 
