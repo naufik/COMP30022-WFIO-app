@@ -133,7 +133,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 return true;
             case R.id.sms_button:
                 Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
-                Intent smsintent = new Intent(getApplicationContext(), MyElders.class);
+                Intent smsintent = new Intent(getApplicationContext(), MessageList.class);
                 startActivity(smsintent);
                 return true;
             case R.id.sos_button:
