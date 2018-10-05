@@ -13,9 +13,6 @@ import com.unity3d.player.UnityPlayer;
 
 public class UnityInteraction {
 
-    boolean mBound = false;
-
-
     public static void requestService(){
         
         UnityPlayer.UnitySendMessage("Camera","ReceiveMessage", "You got message");
