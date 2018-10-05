@@ -91,17 +91,6 @@ public class MessageList extends AppCompatActivity{
                 return false;
             }
         });
-        viewClips = findViewById(R.id.viewClips);
-
-        viewClips.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), StoreClips.class);
-                intent.putExtra("fileNames", fileNames);
-                startActivity(intent);
-            }
-        });
-
     }
 
 
