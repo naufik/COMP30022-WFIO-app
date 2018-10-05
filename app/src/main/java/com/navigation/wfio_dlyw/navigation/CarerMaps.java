@@ -11,6 +11,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,6 +23,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.miguelcatalan.materialsearchview.SearchAdapter;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.NotifyService;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -58,6 +62,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //make fake list
         String[] list = new String[] { "Barney" , "is", "a", "dinosaur", "of", "our", "imagination"};
 
         //searchview stuff
@@ -65,10 +70,24 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         this.searchView = searchView;
         searchView.setSuggestions(list);
 
+
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String query = (String) parent.getItemAtPosition(position);
+                searchView.closeSearch();
+                //query is the clicked string use that to search for destination
+                Log.d("test", query);
+            }
+        });
+
+
+
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //Do some magic
+
                 return false;
             }
 
@@ -92,21 +111,6 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
-                startActivity(startIntent);
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search, menu);
 
@@ -116,6 +120,28 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         return true;
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.back_button:
+                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
+                startActivity(startIntent);
+                return true;
+            case R.id.star_button:
+                Toast.makeText(this, "pri", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.sms_button:
+                Toast.makeText(this, "ki", Toast.LENGTH_LONG).show();
+            case R.id.sos_button:
+                Toast.makeText(this, "tiew", Toast.LENGTH_LONG).show();
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /**
      * Manipulates the map once available.
