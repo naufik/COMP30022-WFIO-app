@@ -16,5 +16,9 @@
     <string name="star">Add to Favorites</string>
     <string name="sms">Message Elder</string>
     <string name="sos">Help!</string>
+    <string name="call">Call Elder</string>
+    <string name="clips">View Clips</string>
+
+
 
 </resources>
