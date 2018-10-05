@@ -104,31 +104,6 @@ public class MessageList extends AppCompatActivity{
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.messaging,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.call_button:
-                //nauf do your stuff here
-                return true;
-            case R.id.clips_button:
-                Intent intent = new Intent(getApplicationContext(), StoreClips.class);
-                intent.putExtra("fileNames", fileNames);
-                startActivity(intent);
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 
     private void startRecording() {
         mRecorder = new MediaRecorder();
@@ -204,5 +179,30 @@ public class MessageList extends AppCompatActivity{
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.messaging,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.call_button:
+                //nauf do your stuff here
+                return true;
+            case R.id.clips_button:
+                Intent intent = new Intent(getApplicationContext(), StoreClips.class);
+                intent.putExtra("fileNames", fileNames);
+                startActivity(intent);
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
