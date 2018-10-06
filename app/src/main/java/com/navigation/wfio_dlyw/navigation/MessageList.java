@@ -20,15 +20,24 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.*;
+import com.twilio.voice.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Function;
 
 
 public class MessageList extends AppCompatActivity{
+
+    private String toName;
+    private String toUserName;
+    private boolean onCall = false;
+
+    private Call activeCall;
 
     private EditText editText;
     private MessageAdapter messageAdapter;
@@ -68,7 +77,9 @@ public class MessageList extends AppCompatActivity{
             Toolbar myToolbar = findViewById(R.id.toolbarML);
             myToolbar.setTitle("");
             setSupportActionBar(myToolbar);
-            myToolbar.setTitle(Token.getInstance().getCurrentConnection().getString("fullname"));
+            this.toName = Token.getInstance().getCurrentConnection().getString("fullname");
+            this.toUserName = Token.getInstance().getCurrentConnection().getString("username");
+            myToolbar.setTitle(this.toName);
         } catch (JSONException e) {}
 
 
@@ -183,9 +194,10 @@ public class MessageList extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        String to = "alice";
         switch (item.getItemId()) {
             case R.id.call_button:
-                //nauf do your stuff here
+                this.makeCall();
                 return true;
             case R.id.clips_button:
                 Intent intent = new Intent(getApplicationContext(), StoreClips.class);
@@ -197,5 +209,37 @@ public class MessageList extends AppCompatActivity{
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void makeCall() {
+        Voice.call( this, Token.getInstance().getVoiceToken(),
+                ((Function<String, HashMap<String, String>>) i -> {
+                    HashMap opts = new HashMap<>();
+
+                    opts.put( "to", this.toUserName);
+                    return opts;
+                }).apply( this.toUserName ), makeCallListener());
+    }
+
+
+    private Call.Listener makeCallListener() {
+        return new Call.Listener(){
+
+            @Override
+            public void onConnectFailure(Call call, CallException e) {
+                Toast.makeText(MessageList.this, "Cannot call the person right now",
+                        Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onConnected(Call call) {
+                getSupportActionBar().setTitle("ON CALL: " + MessageList.this.toName);
+            }
+
+            @Override
+            public void onDisconnected(Call call, CallException e) {
+                getSupportActionBar().setTitle(MessageList.this.toName);
+            }
+        };
     }
 }

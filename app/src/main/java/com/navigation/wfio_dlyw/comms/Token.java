@@ -1,11 +1,24 @@
 package com.navigation.wfio_dlyw.comms;
 
+import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.twilio.voice.RegistrationException;
+import com.twilio.voice.RegistrationListener;
+import com.twilio.voice.Voice;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Date;
 
 public class Token{
+    private static final String TOKEN_ENDPOINT_URL = "https://rawon.naufik.net/voice/accessToken";
+
     private static Token instance;
 
     // Global variable
@@ -112,5 +125,34 @@ public class Token{
 
     public void setMessages(JSONArray messages) {
         this.messages = messages;
+    }
+
+    private void loadTwilioToken(Context ctx) {
+            Ion.with(ctx).load(TOKEN_ENDPOINT_URL + "?identity=" + this.getUsername())
+                    .asString()
+                    .setCallback((e, s) -> {
+                        if (e != null) {
+                            Toast.makeText(ctx, "error jancuk", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        this.setVoiceToken(s);
+                        final String fcmToken = FirebaseInstanceId.getInstance().getToken( );
+                        if (fcmToken != null) {
+                            Voice.register( ctx,
+                                    this.getVoiceToken(),
+                                    Voice.RegistrationChannel.FCM,
+                                    fcmToken, new RegistrationListener() {
+                                        @Override
+                                        public void onRegistered(String s, String s1) {
+                                            //pass
+                                        }
+
+                                        @Override
+                                        public void onError(RegistrationException e, String s, String s1) {
+                                            //nothing can go wrong here.
+                                        }
+                                    } );
+                        }
+            });
     }
 }
