@@ -19,6 +19,7 @@ import java.util.Date;
 public class Token{
     private static final String TOKEN_ENDPOINT_URL = "https://rawon.naufik.net/voice/accessToken";
 
+    private static Context context;
     private static Token instance;
 
     // Global variable
@@ -46,6 +47,11 @@ public class Token{
     }
 
     public void setUsername(String username) {
+        if (username == null) {
+            this.setVoiceToken(null);
+        } else {
+            this.loadTwilioToken();
+        }
         this.username = username;
     }
 
@@ -57,6 +63,7 @@ public class Token{
     public void setValue(String data){
         this.value = data;
     }
+
     public String getValue(){
         return this.value;
     }
@@ -73,7 +80,7 @@ public class Token{
         this.id = id;
     }
 
-    public int getId() {
+    public int getId(){
         return id;
     }
 
@@ -85,13 +92,15 @@ public class Token{
         this.email = email;
     }
 
-    public JSONArray getConnections() { return connections; }
+    public JSONArray getConnections() {
+        return connections;
+    }
 
     public void setConnections(JSONArray connections) {
         this.connections = connections;
     }
 
-    public String getFullname() {
+    public String getFullName() {
         return fullname;
     }
 
@@ -99,11 +108,19 @@ public class Token{
         this.fullname = fullname;
     }
 
-    public static synchronized Token getInstance(){
-        if(instance==null){
-            instance=new Token();
+    public static synchronized Token getInstance(Context ctx) {
+        if(instance == null){
+            instance = new Token();
+        }
+        if (ctx != null) {
+            instance.context = ctx;
         }
         return instance;
+    }
+
+    @Deprecated
+    public static Token getInstance() {
+        return getInstance(null);
     }
 
     public static synchronized Token reset() {
@@ -127,18 +144,18 @@ public class Token{
         this.messages = messages;
     }
 
-    private void loadTwilioToken(Context ctx) {
-            Ion.with(ctx).load(TOKEN_ENDPOINT_URL + "?identity=" + this.getUsername())
+    private void loadTwilioToken() {
+            Ion.with( context ).load(TOKEN_ENDPOINT_URL + "?identity=" + this.getUsername())
                     .asString()
                     .setCallback((e, s) -> {
                         if (e != null) {
-                            Toast.makeText(ctx, "error jancuk", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "error jancuk", Toast.LENGTH_LONG).show();
                             return;
                         }
                         this.setVoiceToken(s);
                         final String fcmToken = FirebaseInstanceId.getInstance().getToken( );
                         if (fcmToken != null) {
-                            Voice.register( ctx,
+                            Voice.register( context,
                                     this.getVoiceToken(),
                                     Voice.RegistrationChannel.FCM,
                                     fcmToken, new RegistrationListener() {
