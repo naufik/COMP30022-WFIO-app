@@ -12,7 +12,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Messenger;
+import android.os.Message;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -21,7 +25,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.VoidDDQ.Cam.GeoStatService;
-import com.VoidDDQ.Cam.GeoStatService.*;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -58,7 +61,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
     private Location mDefaultLocation;
-    private PolylineOptions mCurrentRoute;
+    private PolylineOptions route;
     private String destination;
     private boolean updateRoute;
     private String ROUTE_URL;
@@ -70,12 +73,15 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private SensorManager sensorManager;
 
     // Service variables
-    GeoStatService mGeoStatService;
-    ServiceConnection mServiceConnection;
-    boolean mBound = false;
+    Messenger mService = null;
+    boolean mIsBound;
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
 
     // Constant variables
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    public static final int MSG_REGISTER_CLIENT = 0;
+    public static final int MSG_UNREGISTER_CLIENT = 1;
+    public static final int MSG_REQUEST_LOCATION = 2;
+    public static final int MSG_REQUEST_ROUTE = 3;
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
     private static final int DEFAULT_ZOOM = 15;
@@ -83,31 +89,45 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
+    // Service to client message handler
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_REQUEST_ROUTE:
+                    //Do stuff with msg.obj
+            }
+        }
+    }
+
+    // Main service interface
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            mService = new Messenger(iBinder);
+            try {
+                // Register as client
+                Message msg = Message.obtain(null, MSG_REGISTER_CLIENT);
+                msg.replyTo = mMessenger;
+                mService.send(msg);
+
+                // Request route
+                msg = Message.obtain(null, MSG_REQUEST_ROUTE);
+                mService.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mService = null;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Bind to GeoStatService
-        Intent intent = new Intent(this, GeoStatService.class);
-        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-
-        // Initialize service connection
-        mServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName className,
-                                           IBinder service) {
-                // We've bound to LocalService, cast the IBinder and get LocalService instance]
-                GeoStatBinder binder = (GeoStatBinder) service;
-                mGeoStatService = binder.getService();
-                mBound = true;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName arg0) {
-                mBound = false;
-            }
-        };
-
 
         // Asynchronously setup map
         setContentView(R.layout.activity_elder_maps);
@@ -142,9 +162,10 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
                     finish();
                 }
             }
+
             @Override
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // empty
+            public void onAccuracyChanged(Sensor sensor, int i) {
+                return;
             }
         };
 
@@ -159,51 +180,8 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        //getLocationPermission();
         updateLocationUI();
-        //startLocationUpdates();
     }
-
-    /*private void onPermissionGranted() {
-        updateLocationUI();
-        startLocationUpdates();
-    }
-
-    private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission() started");
-        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true;
-            onPermissionGranted();
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionResult() started");
-        mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                    Log.d(TAG, "Permission granted on callback");
-                    onPermissionGranted();
-                } else {
-                    finish();
-                }
-            }
-        }
-        //updateLocationUI();
-    }*/
 
     private void updateLocationUI() {
         Log.d(TAG, "updateLocationUI() started");
@@ -249,7 +227,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(mServiceConnection);
-        mBound = false;
+        unbindService(mConnection);
+        mIsBound = false;
     }
 }
