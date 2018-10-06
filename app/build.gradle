@@ -48,7 +48,7 @@ dependencies {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
     }
-    implementation 'com.twilio:voice-android:2.0.1'
+    implementation 'com.twilio:voice-android:2.0.9'
     implementation 'com.squareup.retrofit:retrofit:1.9.0'
     implementation 'com.koushikdutta.ion:ion:2.1.8'
 }

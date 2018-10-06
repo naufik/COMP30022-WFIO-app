@@ -1,6 +1,9 @@
 package com.navigation.wfio_dlyw.comms;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -145,6 +148,8 @@ public class Token{
     }
 
     private void loadTwilioToken() {
+        int resultMic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO);
+        Log.d("dadada", Boolean.toString(resultMic == PackageManager.PERMISSION_GRANTED));
             Ion.with( context ).load(TOKEN_ENDPOINT_URL + "?identity=" + this.getUsername())
                     .asString()
                     .setCallback((e, s) -> {
@@ -158,8 +163,8 @@ public class Token{
                         Log.d("LOAD", "fcm: " + FirebaseInstanceId.getInstance()
                                 .getToken());
                         if (fcmToken != null) {
-                            Voice.register( context.getApplicationContext(),
-                                    this.getVoiceToken(),
+                            Voice.register(context,
+                                    s,
                                     Voice.RegistrationChannel.FCM,
                                     fcmToken, new RegistrationListener() {
                                         @Override
