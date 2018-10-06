@@ -1,5 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +21,8 @@ public class StoreClips extends AppCompatActivity implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayList<String> fileNames = (ArrayList<String>) getIntent().getSerializableExtra("fileNames");
+
+        ArrayList<String> fileNames =  (ArrayList<String>) getIntent().getStringArrayListExtra("listName");
 
         setContentView(R.layout.activity_store_clips);
 
