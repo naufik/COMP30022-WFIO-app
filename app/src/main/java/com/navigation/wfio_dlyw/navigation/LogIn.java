@@ -33,6 +33,7 @@ public class LogIn extends AppCompatActivity {
         FirebaseApp.initializeApp(this.getApplicationContext());
         Token token = Token.getInstance(this.getApplicationContext());
 
+
         setContentView(R.layout.activity_log_in);
         EditText username = findViewById(R.id.username);
         EditText password = findViewById(R.id.password);

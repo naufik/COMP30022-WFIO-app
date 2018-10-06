@@ -158,20 +158,21 @@ public class Token{
                         Log.d("LOAD", "fcm: " + FirebaseInstanceId.getInstance()
                                 .getToken());
                         if (fcmToken != null) {
-                            Voice.register( context,
+                            Voice.register( context.getApplicationContext(),
                                     this.getVoiceToken(),
                                     Voice.RegistrationChannel.FCM,
                                     fcmToken, new RegistrationListener() {
                                         @Override
                                         public void onRegistered(String s, String s1) {
-                                            //pass
+                                            Log.d("TAG", "registered");
                                         }
 
                                         @Override
                                         public void onError(RegistrationException e, String s, String s1) {
-                                            //nothing can go wrong here.
+                                            Log.d("TAG", e.getMessage().toString());
+                                            e.printStackTrace();
                                         }
-                                    } );
+                                    });
                         }
             });
     }

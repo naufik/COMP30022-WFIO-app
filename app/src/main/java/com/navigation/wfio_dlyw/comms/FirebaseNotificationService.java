@@ -51,6 +51,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                         PendingIntent pendingIntent = PendingIntent.getActivity(
                                 FirebaseNotificationService.this, notificationId,
                                 intent2, PendingIntent.FLAG_ONE_SHOT);
+
                         new Notification.Builder(getApplicationContext(), "wfio_channel1")
                                 .setContentTitle(callInvite.getFrom() + " called you.")
                                 .setContentText("Here to offer a better help")
