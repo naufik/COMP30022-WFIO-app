@@ -103,6 +103,7 @@
         <service android:name=".MsgUpdateService" />
         <service android:name="com.navigation.wfio_dlyw.comms.NotifyService" />
         <service android:name="com.navigation.wfio_dlyw.comms.NotificationService" />
+        <service android:name="com.navigation.wfio_dlyw.comms.FirebaseNotificationService" />
 
         <activity android:name=".CallActivity"></activity>
     </application>
