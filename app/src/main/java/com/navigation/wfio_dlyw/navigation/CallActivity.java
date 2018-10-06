@@ -18,7 +18,6 @@ public class CallActivity extends AppCompatActivity {
     private Call activeCall;
     private String callTo;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );

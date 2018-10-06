@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.navigation.wfio_dlyw.navigation.R;
 import com.twilio.voice.RegistrationException;
 import com.twilio.voice.RegistrationListener;
 import com.twilio.voice.Voice;
@@ -52,6 +53,7 @@ public class Token{
     public void setUsername(String username) {
         if (username == null) {
             this.setVoiceToken(null);
+            return;
         }
         this.username = username;
         this.loadTwilioToken();

@@ -5,7 +5,7 @@ import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.R;
+import com.navigation.wfio_dlyw.navigation.R;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.util.Log;
@@ -59,6 +59,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
 
                         Notification n = new Notification
                                 .Builder(getApplicationContext(), "wfio_channel1")
+                                .setSmallIcon(R.drawable.ic_call)
                                 .setContentTitle(callInvite.getFrom() + " called you.")
                                 .setContentText("Here to offer a better help")
                                 .setContentIntent(pendingIntent)
