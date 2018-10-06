@@ -52,3 +52,5 @@ dependencies {
     implementation 'com.squareup.retrofit:retrofit:1.9.0'
     implementation 'com.koushikdutta.ion:ion:2.1.8'
 }
+
+apply plugin: 'com.google.gms.google-services'

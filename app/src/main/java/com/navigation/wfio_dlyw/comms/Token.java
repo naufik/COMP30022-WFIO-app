@@ -153,7 +153,10 @@ public class Token{
                             return;
                         }
                         this.setVoiceToken(s);
-                        final String fcmToken = FirebaseInstanceId.getInstance().getToken( );
+                        Log.d("LOAD", "tok: " + this.twilioVoiceToken);
+                        final String fcmToken = FirebaseInstanceId.getInstance().getToken();
+                        Log.d("LOAD", "fcm: " + FirebaseInstanceId.getInstance()
+                                .getToken());
                         if (fcmToken != null) {
                             Voice.register( context,
                                     this.getVoiceToken(),
