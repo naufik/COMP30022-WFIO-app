@@ -18,9 +18,18 @@ public class Token{
     private JSONArray messages;
     private JSONObject currentConnection;
     private String username;
+    private String twilioVoiceToken;
 
     public String getUsername() {
         return username;
+    }
+
+    public void setVoiceToken(String v) {
+        this.twilioVoiceToken = v;
+    }
+
+    public String getVoiceToken() {
+        return this.twilioVoiceToken;
     }
 
     public void setUsername(String username) {
