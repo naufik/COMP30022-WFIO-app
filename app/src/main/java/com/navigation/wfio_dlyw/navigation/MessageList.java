@@ -59,14 +59,18 @@ public class MessageList extends AppCompatActivity{
         editText = findViewById(R.id.messageInput);
 
         Intent intent = getIntent();
+        /*
         ElderItem elderItem = intent.getParcelableExtra("Example Item");
         String name = elderItem.getmText1();
-        recipientID = elderItem.getmId();
+        recipientID = elderItem.getmId(); */
+        try {
+            recipientID = Token.getInstance().getCurrentConnection().getInt("id");
+            Toolbar myToolbar = findViewById(R.id.toolbarML);
+            myToolbar.setTitle("");
+            setSupportActionBar(myToolbar);
+            myToolbar.setTitle(Token.getInstance().getCurrentConnection().getString("fullname"));
+        } catch (JSONException e) {}
 
-        Toolbar myToolbar = findViewById(R.id.toolbarML);
-        myToolbar.setTitle("");
-        setSupportActionBar(myToolbar);
-        myToolbar.setTitle(name);
 
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();

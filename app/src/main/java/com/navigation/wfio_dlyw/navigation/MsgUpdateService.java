@@ -64,7 +64,6 @@ public class MsgUpdateService extends IntentService {
                             }
                         }catch(JSONException e) {}
                     }, new Credentials(token.getEmail(), token.getValue()));
-                    Toast.makeText(getApplicationContext(), "Requested!", Toast.LENGTH_LONG).show();
                 });
             }
         };

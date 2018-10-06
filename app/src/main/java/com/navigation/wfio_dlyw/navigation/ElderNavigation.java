@@ -29,6 +29,9 @@ import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +45,23 @@ public class ElderNavigation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Token token = Token.getInstance();
-        Toast.makeText(this , token.getValue(), Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_elder_navigation);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
-
+        String email = getIntent().getStringExtra("from");
+        if (email != null) {
+            for (int i = 0; i < token.getConnections().length(); i++){
+                try {
+                    JSONObject carer = token.getConnections().getJSONObject(i);
+                    if (carer.getString("email").equals(email)){
+                        token.setCurrentConnection(carer);
+                        Toast.makeText(this, "connected to " + carer.getString("fullname"), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                } catch (JSONException e){}
+            }
+        }
         Button elderMessage = findViewById(R.id.eldermsg);
         elderMessage.setOnClickListener(new View.OnClickListener() {
             @Override

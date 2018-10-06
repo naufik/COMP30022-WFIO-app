@@ -1,11 +1,14 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.Toast;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,6 +19,7 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -26,12 +30,15 @@ public class MyElders extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ConnectAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private AlertDialog.Builder builder = null;
+    private Requester req = Requester.getInstance(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         elders = new ArrayList<>();
         setContentView(R.layout.activity_my_elders);
+        builder = new AlertDialog.Builder(this);
 
         Toolbar myToolbar = findViewById(R.id.toolbarME);
         setSupportActionBar(myToolbar);
@@ -63,6 +70,8 @@ public class MyElders extends AppCompatActivity {
                 for (int i = 0; i < eList.length(); ++i) {
                     JSONObject currentElder = eList.getJSONObject(i);
                     insertItem(i, new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getString("username"), currentElder.getInt("id")));
+                    Log.d("online Elder", ""+currentElder.getInt("id"));
+                    Log.d("offline Elder", ""+t.getConnections().getJSONObject(i).getInt("id"));
                 }
             } catch (Exception e) {
 
@@ -100,6 +109,18 @@ public class MyElders extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(int position) {
+                Token t = Token.getInstance();
+                Log.d("itemPrint", ""+elders.get(position).getmId());
+                try {
+                    Log.d("itemCompare", "" + t.getConnections().getJSONObject(position).getInt("id")); 
+                    t.getConnections().remove(position);
+                    JSONObject params = new JSONObject();
+                    params.put("connections",t.getConnections());
+                    req.requestAction(ServerAction.USER_MODIFY_RECORD,params,delete->{
+                        Toast.makeText(MyElders.this, "updated connections list", Toast.LENGTH_SHORT).show();
+                    },new Credentials(t.getEmail(),t.getValue()));
+                } catch (JSONException e) {}
+
                 removeItem(position);
             }
         });
@@ -127,3 +148,5 @@ public class MyElders extends AppCompatActivity {
         }
     }
 }
+
+

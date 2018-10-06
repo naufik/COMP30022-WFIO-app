@@ -8,9 +8,9 @@ public class ElderItem implements Parcelable{
     private String mText2;
     private int mId;
 
-    public ElderItem(String text1, String text2, int id){
-        mText1 = text1;
-        mText2 = text2;
+    public ElderItem(String fullname, String username, int id){
+        mText1 = fullname;
+        mText2 = username;
         mId = id;
     }
 
