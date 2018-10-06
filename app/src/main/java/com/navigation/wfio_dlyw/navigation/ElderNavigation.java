@@ -99,14 +99,6 @@ public class ElderNavigation extends AppCompatActivity {
         String destination = editText.getText().toString();
 
         Intent intent = new Intent(this, ElderMaps.class);
-        Intent serviceIntent = new Intent(this, GeoStatService.class);
-
-        serviceIntent.putExtra(EXTRA_DESTINATION, destination);
-
-        Log.d(TAG, "startService()");
-        startService(serviceIntent);
-        Log.d(TAG, "startActivity()");
-        //startActivity(intent);
 
     }
 

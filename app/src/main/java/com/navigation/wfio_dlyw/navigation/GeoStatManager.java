@@ -1,10 +1,8 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -23,6 +21,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.unity3d.player.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +29,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class GeoStatService extends Service {
+public class GeoStatService extends Service{
 
     private LocationRequest mLocationRequest;
     private LocationCallback mLocationCallback;
@@ -39,32 +38,24 @@ public class GeoStatService extends Service {
     private Location currentLocation;
     private String destination;
     private PolylineOptions route;
-    private int checkpointIndex;
+    private int checkpointIndex = 1;
     private boolean firstCycle = true;
 
-    private String ROUTE_URL;
+    private static String ROUTE_URL;
     private String API_KEY;
 
     private static final int TIME_INTERVAL = 1000;
     private static final int CHECKPOINT_PROXIMITY = 3;
     private static final String TAG = GeoStatService.class.getSimpleName();
 
-    private final IBinder mBinder = new GeoStatBinder();
-
-    public class GeoStatBinder extends Binder {
-        GeoStatService getService() {
-            return GeoStatService.this;
-        }
-    }
-
+    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind()");
-        // Initialize second route point as checkpoint
-        /*checkpointIndex = 1;
+// Initialize second route point as checkpoint
+        checkpointIndex = 1;
 
         // Initialize strings
-        destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
+        destination = intent.getStringExtra("com.navigation.wfio_dlyw.navigation.DESTINATION");
         ROUTE_URL = getResources().getString(R.string.route_url_format);
         API_KEY = getResources().getString(R.string.google_maps_key);
 
@@ -86,8 +77,8 @@ public class GeoStatService extends Service {
                 }
                 for (Location location : locationResult.getLocations()) {
                     currentLocation = location;
-                    sendLocToServer(location);
-                    Log.d(TAG, String.valueOf(currentLocation));*/
+                    // sendLocToServer(location);
+                    Log.d(TAG, String.valueOf(currentLocation));
                     /*if (updateRoute) {
                         Log.d(TAG, "Route requires updating");
                         mMap.clear();
@@ -108,15 +99,16 @@ public class GeoStatService extends Service {
                     }
                     if (closeToCheckpoint()) {
                         checkpointIndex++;
-                    }
+                    }*/
                 }
             }
         };
 
         mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
-                null);*/
-        return mBinder;
+                null);
+
+        return null;
     }
 
     public Location getLocation() {
