@@ -140,6 +140,7 @@ public class ElderNavigation extends AppCompatActivity {
         String destination = editText.getText().toString();
 
         Intent intent = new Intent(this, ElderMaps.class);
+        startActivity(intent);
     }
 
     //currently carer maps for testing

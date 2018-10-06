@@ -57,8 +57,8 @@ public class GeoStatService extends Service{
 
         // Initialize strings
         destination = intent.getStringExtra("com.navigation.wfio_dlyw.navigation.DESTINATION");
-        ROUTE_URL = Resources.getString(R.string.route_url_format);
-        API_KEY = Resources.getString(R.string.google_maps_key);
+        //ROUTE_URL = Resources.getString(R.string.route_url_format);
+        //API_KEY = Resources.getString(R.string.google_maps_key);
 
         // Live location provider
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
