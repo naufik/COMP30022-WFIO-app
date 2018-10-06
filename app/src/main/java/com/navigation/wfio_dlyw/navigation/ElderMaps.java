@@ -27,8 +27,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.VoidDDQ.Cam.GeoStatService;
-import com.VoidDDQ.Cam.GeoStatService.*;
+//import com.VoidDDQ.Cam.GeoStatService;
+//import com.VoidDDQ.Cam.GeoStatService.*;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -79,7 +79,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private SensorManager sensorManager;
 
     // Service variables
-    GeoStatService mGeoStatService;
+//    GeoStatService mGeoStatService;
     ServiceConnection mServiceConnection;
     boolean mBound = false;
 
@@ -101,26 +101,26 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEM);
         setSupportActionBar(myToolbar);
 
-        // Bind to GeoStatService
-        Intent intent = new Intent(this, GeoStatService.class);
-        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-
-        // Initialize service connection
-        mServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName className,
-                                           IBinder service) {
-                // We've bound to LocalService, cast the IBinder and get LocalService instance]
-                GeoStatBinder binder = (GeoStatBinder) service;
-                mGeoStatService = binder.getService();
-                mBound = true;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName arg0) {
-                mBound = false;
-            }
-        };
+//        // Bind to GeoStatService
+//        Intent intent = new Intent(this, GeoStatService.class);
+//        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+//
+//        // Initialize service connection
+//        mServiceConnection = new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName className,
+//                                           IBinder service) {
+//                // We've bound to LocalService, cast the IBinder and get LocalService instance]
+//                GeoStatBinder binder = (GeoStatBinder) service;
+//                mGeoStatService = binder.getService();
+//                mBound = true;
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName arg0) {
+//                mBound = false;
+//            }
+//        };
 
 
         // Asynchronously setup map

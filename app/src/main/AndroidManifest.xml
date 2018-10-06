@@ -81,7 +81,9 @@
 
         <activity
             android:name=".ElderMaps"
-            android:label="@string/title_activity_elder_maps"></activity>
+            android:windowSoftInputMode="adjustPan"
+            android:label="@string/title_activity_elder_maps"/>
+
         <activity
             android:name=".CarerMaps"
             android:windowSoftInputMode="adjustPan"
