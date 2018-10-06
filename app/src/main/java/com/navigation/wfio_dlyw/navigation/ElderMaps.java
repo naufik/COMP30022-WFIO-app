@@ -137,10 +137,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //findtoolbar
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEM);
-        setSupportActionBar(myToolbar);
+        setContentView(R.layout.activity_elder_maps);
 
         // Asynchronously setup map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -156,9 +153,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mDefaultLocation.setLongitude(144.9612);
 
         // Should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
-        /*Intent intent = getIntent();
-        ElderItem elderItem = intent.getParcelableExtra("Example Item");
-        String name = elderItem.getText1();*/
+        //Intent intent = getIntent();
+        //ElderItem elderItem = intent.getParcelableExtra("Example Item");
+        //String name = elderItem.getText1();
+
+        //findtoolbar
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEM);
+        setSupportActionBar(myToolbar);
 
         // Initialize sensor
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -320,7 +321,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(mConnection);
+        if (mIsBound) {
+            unbindService(mConnection);
+        }
         mIsBound = false;
     }
 
