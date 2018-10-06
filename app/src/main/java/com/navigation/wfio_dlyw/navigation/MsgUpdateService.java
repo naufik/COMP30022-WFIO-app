@@ -61,12 +61,14 @@ public class MsgUpdateService extends IntentService {
                         try {
                             for (int i=0; i<t.getJSONObject("result").getJSONArray("messages").length(); i++){
                                 token.getMessages().put(t.getJSONObject("result").getJSONArray("messages").getJSONObject(i));
+                                Toast.makeText(MsgUpdateService.this, "messages pulled", Toast.LENGTH_SHORT).show();
                             }
                         }catch(JSONException e) {}
                     }, new Credentials(token.getEmail(), token.getValue()));
                 });
             }
         };
+        timer = new Timer();
         timer.schedule(task, 0,1000);
     }
 
