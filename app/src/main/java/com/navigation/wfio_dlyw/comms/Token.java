@@ -52,10 +52,9 @@ public class Token{
     public void setUsername(String username) {
         if (username == null) {
             this.setVoiceToken(null);
-        } else {
-            this.loadTwilioToken();
         }
         this.username = username;
+        this.loadTwilioToken();
     }
 
     // Restrict the constructor from being instantiated
@@ -164,7 +163,7 @@ public class Token{
                                 .getToken());
                         if (fcmToken != null) {
                             Voice.register(context,
-                                    s,
+                                    this.getVoiceToken(),
                                     Voice.RegistrationChannel.FCM,
                                     fcmToken, new RegistrationListener() {
                                         @Override
@@ -180,5 +179,9 @@ public class Token{
                                     });
                         }
             });
+    }
+
+    public void startVoice() {
+        this.loadTwilioToken();
     }
 }

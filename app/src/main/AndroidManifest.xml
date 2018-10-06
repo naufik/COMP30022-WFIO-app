@@ -103,8 +103,11 @@
         <service android:name=".MsgUpdateService" />
         <service android:name="com.navigation.wfio_dlyw.comms.NotifyService" />
         <service android:name="com.navigation.wfio_dlyw.comms.NotificationService" />
-        <service android:name="com.navigation.wfio_dlyw.comms.FirebaseNotificationService" />
-        <service android:name="com.navigation.wfio_dlyw.comms.FirebaseNotificationService"/>
+        <service android:name="com.navigation.wfio_dlyw.comms.FirebaseNotificationService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity android:name=".CallActivity"></activity>
     </application>
 
