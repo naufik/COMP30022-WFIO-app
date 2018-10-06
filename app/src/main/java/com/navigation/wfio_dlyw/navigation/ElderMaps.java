@@ -31,12 +31,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-<<<<<<< HEAD
 import com.VoidDDQ.Cam.GeoStatService;
-=======
-//import com.VoidDDQ.Cam.GeoStatService;
-//import com.VoidDDQ.Cam.GeoStatService.*;
->>>>>>> 7660599f481f7147c20ec285dabf7ca31de2f130
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
