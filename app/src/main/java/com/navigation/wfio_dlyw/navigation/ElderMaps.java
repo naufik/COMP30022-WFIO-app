@@ -2,13 +2,17 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -23,6 +27,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.VoidDDQ.Cam.GeoStatService;
+import com.VoidDDQ.Cam.GeoStatService.*;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -72,6 +78,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private Sensor sensor;
     private SensorManager sensorManager;
 
+    // Service variables
+    GeoStatService mGeoStatService;
+    ServiceConnection mServiceConnection;
+    boolean mBound = false;
+
     // Constant variables
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final String TAG = ElderMaps.class.getSimpleName();
@@ -90,13 +101,34 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEM);
         setSupportActionBar(myToolbar);
 
+        // Bind to GeoStatService
+        Intent intent = new Intent(this, GeoStatService.class);
+        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+
+        // Initialize service connection
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName className,
+                                           IBinder service) {
+                // We've bound to LocalService, cast the IBinder and get LocalService instance]
+                GeoStatBinder binder = (GeoStatBinder) service;
+                mGeoStatService = binder.getService();
+                mBound = true;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName arg0) {
+                mBound = false;
+            }
+        };
+
+
         // Asynchronously setup map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         // Live location provider
-        // mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Default location if live location inaccessible
@@ -109,48 +141,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         ElderItem elderItem = intent.getParcelableExtra("Example Item");
         String name = elderItem.getText1();*/
 
-        // Initialize strings
-        // Intent intent = getIntent();
-        // destination = intent.getStringExtra(ElderNavigation.EXTRA_DESTINATION);
-        // ROUTE_URL = getResources().getString(R.string.route_url_format);
-        // API_KEY = getResources().getString(R.string.google_maps_key);
-
-        // Initialize other variables
-        // updateRoute = true;
-
-        // Initialize location polling
-        // mLocationRequest = new LocationRequest();
-        // mLocationRequest.setInterval(TIME_INTERVAL);
-        // mLocationRequest.setFastestInterval(TIME_INTERVAL);
-        // mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        // Initialize location callback
-        /*mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    mCurrentLocation = location;
-                    //sendLocToServer(location);
-                    Log.d(TAG, String.valueOf(location));
-                    if (updateRoute) {
-                        Log.d(TAG, "Route requires updating");
-                        getRoute(location, destination, response -> {
-                            Log.d(TAG, "Route acquired");
-                            mCurrentRoute = convertRoute(response);
-                            mMap.clear();
-                            mMap.addPolyline(mCurrentRoute);
-                            updateRoute = false;
-                        });
-                    }
-                    Log.d(TAG, "Checking next route update");
-                    checkNextRouteUpdate();
-                }
-            }
-        };*/
-
         // Initialize sensor
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -160,6 +150,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         eventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
+                Log.d(TAG, "onSensorChanged");
                 if(event.values[2] < 2 && event.values[1] > 8){
                     finish();
                 }
@@ -339,12 +330,19 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onResume() {
         super.onResume();
-        // sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // sensorManager.unregisterListener(eventListener);
+        sensorManager.unregisterListener(eventListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(mServiceConnection);
+        mBound = false;
     }
 }

@@ -100,7 +100,6 @@
         <activity android:name=".MessageListElder" />
 
         <service android:name=".MsgUpdateService" />
-        <service android:name=".GeoStatService" />
 
         <activity
             android:name=".MapsPermissionTest"
