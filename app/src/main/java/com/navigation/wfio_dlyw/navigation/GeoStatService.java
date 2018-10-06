@@ -2,6 +2,7 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -56,8 +57,8 @@ public class GeoStatService extends Service{
 
         // Initialize strings
         destination = intent.getStringExtra("com.navigation.wfio_dlyw.navigation.DESTINATION");
-        ROUTE_URL = getResources().getString(R.string.route_url_format);
-        API_KEY = getResources().getString(R.string.google_maps_key);
+        ROUTE_URL = Resources.getString(R.string.route_url_format);
+        API_KEY = Resources.getString(R.string.google_maps_key);
 
         // Live location provider
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);

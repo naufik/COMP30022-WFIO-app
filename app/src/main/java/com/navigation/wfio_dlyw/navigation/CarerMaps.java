@@ -1,10 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
-<<<<<<< HEAD
 import android.graphics.Color;
-=======
 import android.content.Intent;
->>>>>>> f21abd6b220d14624e1f9e030d8613d0db38540c
 import android.location.Location;
 
 import android.support.v4.app.FragmentActivity;
