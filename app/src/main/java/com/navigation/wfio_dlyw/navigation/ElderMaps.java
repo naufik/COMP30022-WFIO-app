@@ -345,4 +345,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 //        unbindService(mServiceConnection);
         mBound = false;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
