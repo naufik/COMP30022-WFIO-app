@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class MessageList extends AppCompatActivity{
+public class MessageList extends AppCompatActivity {
 
     private EditText editText;
     private MessageAdapter messageAdapter;
