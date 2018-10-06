@@ -9,7 +9,7 @@
     <item
         android:id="@+id/sms_button"
         android:icon="@drawable/ic_sms"
-        android:title="@string/sms"
+        android:title="@string/smsE"
         app:showAsAction="ifRoom"
         />
 </menu>

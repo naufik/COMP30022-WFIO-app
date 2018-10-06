@@ -342,7 +342,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(mServiceConnection);
+//        unbindService(mServiceConnection);
         mBound = false;
     }
 }
