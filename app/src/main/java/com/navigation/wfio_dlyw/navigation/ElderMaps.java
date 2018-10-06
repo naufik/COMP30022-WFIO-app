@@ -30,7 +30,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -85,6 +84,7 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
 
         // Live location provider
         // mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Default location if live location inaccessible
         mDefaultLocation = new Location("Zen Apartments");
@@ -232,133 +232,6 @@ public class ElderMaps extends FragmentActivity implements OnMapReadyCallback {
         } catch (SecurityException e)  {
             Log.e("Exception: %s", e.getMessage());
         }
-    }
-
-    /*private void getLocation() {
-        try {
-            if (mLocationPermissionGranted) {
-                Task locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        //Log.d(TAG, "Current location found. Rendering...");
-                        mCurrentLocation = (Location) task.getResult();
-                        //Log.d(TAG, "Running getRoute()");
-                        //getRoute();
-                    } else {
-                        Log.d(TAG, "Current location is null. Using defaults.");
-                        Log.d(TAG, "Task successful: " + String.valueOf(task.isSuccessful()));
-                        Log.d(TAG, "Task result: " + String.valueOf(task.getResult()));
-                        Log.e(TAG, String.format("Exception: %s", task.getException()));
-                        LatLng mDefaultLatLng = new LatLng(mDefaultLocation.getLatitude(),
-                                mDefaultLocation.getLongitude());
-                        mCurrentLocation = mDefaultLocation;
-                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                    }
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                            //new LatLng(mCurrentLocation.getLatitude(),
-                                    //mCurrentLocation.getLongitude()), DEFAULT_ZOOM));
-                });
-            } else {
-                Log.d(TAG, "Location permission not granted.");
-            }
-        } catch(SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }*/
-
-    /*private void sendLocToServer(Location loc) {
-        try {
-            JSONObject message = new JSONObject();
-            JSONObject location = new JSONObject();
-            location.put("lat", loc.getLatitude()).put("long", loc.getLongitude());
-            message.put("recipient", 1).put("location", location);
-
-            Requester req = Requester.getInstance(this);
-            req.requestAction(ServerAction.MESSAGE_SEND, message, t -> {}, new Credentials("dropcomputing@gmail.com","kontol"));
-        } catch(JSONException e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
-    private void getRoute(Location location, String destination, final VolleyCallback callback) {
-        String formatDest = destination.replace(" ", "+");
-        String formatUrl = String.format(ROUTE_URL, location.getLatitude() + "," + location.getLongitude(), formatDest, API_KEY);
-        Log.d(TAG, formatUrl);
-
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        // Request a string response from the provided URL.
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, formatUrl,
-                null, response -> callback.onSuccess(response),
-                error -> Log.e(TAG, "Volley Error"));
-
-        // Add the request to the RequestQueue.
-        queue.add(jsonObjectRequest);
-    }
-
-    private PolylineOptions convertRoute(JSONObject route) {
-        PolylineOptions polylineOptions = new PolylineOptions();
-
-        try {
-
-            JSONObject legs = route.getJSONArray("routes")
-                    .getJSONObject(0)
-                    .getJSONArray("legs")
-                    .getJSONObject(0);
-
-            JSONObject start = legs.getJSONObject("start_location");
-            LatLng latLngStart = new LatLng(Double.parseDouble(start.getString("lat")),
-                    Double.parseDouble(start.getString("lng")));
-            polylineOptions.add(latLngStart);
-
-            JSONArray steps = legs.getJSONArray("steps");
-            for(int i = 0; i < steps.length(); i++) {
-                JSONObject step = steps.getJSONObject(i).getJSONObject("end_location");
-                LatLng latLngStep = new LatLng(Double.parseDouble(step.getString("lat")),
-                        Double.parseDouble(step.getString("lng")));
-                polylineOptions.add(latLngStep);
-
-                if(i == steps.length() - 1) {
-                    Location destination = new Location("destination");
-                    destination.setLatitude(Double.parseDouble(step.getString("lat")));
-                    destination.setLongitude(Double.parseDouble(step.getString("lng")));
-                    //sendLocToServer(destination);
-                }
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return polylineOptions;
-    }
-
-    private void checkNextRouteUpdate() {
-        // Set to true once current position is within proximity of 2nd polyline point
-        try {
-            List<LatLng> pointList = mCurrentRoute.getPoints();
-            LatLng checkpoint = pointList.get(1);
-            Location locationCheckpoint = new Location("checkpoint");
-            locationCheckpoint.setLatitude(checkpoint.latitude);
-            locationCheckpoint.setLongitude(checkpoint.longitude);
-            float distance = mCurrentLocation.distanceTo(locationCheckpoint);
-            Log.d(TAG, "Distance to next checkpoint: " + distance + "m");
-
-            if (distance <= CHECKPOINT_PROXIMITY) {
-                updateRoute = true;
-            }
-
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }*/
-
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdates() {
-        mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest,
-                mLocationCallback,
-                null /* Looper */);
     }
 
     @Override

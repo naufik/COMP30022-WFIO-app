@@ -56,7 +56,10 @@
             android:label="@string/settings" />
         <activity
             android:name=".MyElders"
-            android:label="MyElders" />
+            android:label="@string/MyElders" />
+        <activity
+            android:name=".Favourites"
+            android:label="@string/favourites" />
         <activity
             android:name=".StoreClips"
             android:label="StoreClips" />
@@ -81,6 +84,7 @@
             android:label="@string/title_activity_elder_maps"></activity>
         <activity
             android:name=".CarerMaps"
+            android:windowSoftInputMode="adjustPan"
             android:label="@string/title_activity_carer_maps" />
 
         <receiver android:name=".NotificationReceiver" />
@@ -92,6 +96,7 @@
             android:name=".ApplicationAppearance"
             android:label="@string/ApplicationAppearance" />
         <activity android:name=".MessageList" />
+
         <activity android:name=".MessageListElder" />
 
         <service android:name=".MsgUpdateService" />
@@ -100,7 +105,8 @@
         <activity
             android:name=".MapsPermissionTest"
             android:label="@string/title_activity_maps_permission_test"></activity>
-
+        <service android:name="com.navigation.wfio_dlyw.comms.NotifyService"/>
+        <service android:name="com.navigation.wfio_dlyw.comms.NotificationService"/>
     </application>
 
 </manifest>
