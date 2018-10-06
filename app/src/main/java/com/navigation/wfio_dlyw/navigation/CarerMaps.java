@@ -3,11 +3,13 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.location.Location;
 
+import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +34,7 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,7 +72,6 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
         this.searchView = searchView;
         searchView.setSuggestions(list);
-
 
         searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -110,6 +112,18 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         });
     }
 
+    //on back pressed
+    @Override
+    public void onBackPressed() {
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search, menu);
@@ -125,7 +139,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
+                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                 startActivity(startIntent);
                 return true;
             case R.id.star_button:
