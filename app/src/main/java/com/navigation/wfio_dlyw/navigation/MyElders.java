@@ -30,6 +30,7 @@ public class MyElders extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ConnectAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private AlertDialog.Builder builder = null;
     private Requester req;
 
     @Override
