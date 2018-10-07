@@ -31,13 +31,13 @@ public class CallActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
+        setContentView( R.layout.activity_call );
 
         endCallButton = findViewById(R.id.endCall);
         endCallButton.setOnClickListener(v->{
             twilio.getCall().disconnect();
         });
 
-        setContentView( R.layout.activity_call );
         this.notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         handleCallIntent(this.getIntent());
