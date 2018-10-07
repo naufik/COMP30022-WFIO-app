@@ -49,22 +49,21 @@ public class MsgUpdateService extends IntentService {
         super.onCreate();
     }
 
+
     private void startPolling() {
+        this.stopPolling();
         Requester req = Requester.getInstance(this);
-        Token token = Token.getInstance();
         TimerTask task = new TimerTask() {
 
             @Override
             public void run() {
                 h.post(() -> {
+                    Token token = Token.getInstance();
                     req.requestAction(ServerAction.MESSAGE_PULL, null, t->{
                         try {
                             for (int i=0; i<t.getJSONObject("result").getJSONArray("messages").length(); i++){
                                 JSONObject message = t.getJSONObject("result").getJSONArray("messages").getJSONObject(i);
                                 token.getServerMessages().put(message);
-                                Log.d("MUS", token.getServerMessages().length() + "");
-                                Log.d("MUS2", token.getServerMessages().toString());
-                                Toast.makeText(MsgUpdateService.this, message.getString("content") + "is pulled", Toast.LENGTH_SHORT).show();
                             }
                         }catch(JSONException e) {}
                     }, new Credentials(token.getEmail(), token.getValue()));
@@ -80,5 +79,6 @@ public class MsgUpdateService extends IntentService {
             timer.cancel();
         }
     }
+
 
 }
