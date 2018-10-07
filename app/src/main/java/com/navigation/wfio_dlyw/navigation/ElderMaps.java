@@ -31,7 +31,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.VoidDDQ.Cam.GeoStatService;
+//import com.VoidDDQ.Cam.GeoStatService;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -311,8 +311,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         updateLocationUI();
 
         //Log.d(TAG, "Binding service...");
-        bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
-        mIsBound = true;
+        //bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
+        //mIsBound = true;
     }
 
     private void updateLocationUI() {
