@@ -127,7 +127,7 @@ public class MessageList extends AppCompatActivity{
 
             @Override
             public void onDisconnect() {
-                item.setIcon(R.drawable.ic_hangup);
+                item.setIcon(R.drawable.ic_call);
                 item.setEnabled(true);
             }
 
@@ -142,7 +142,7 @@ public class MessageList extends AppCompatActivity{
 
             @Override
             public void onCallFailure() {
-                item.setIcon(R.drawable.ic_hangup);
+                item.setIcon(R.drawable.ic_call);
                 item.setEnabled(true);
             }
         };
@@ -246,8 +246,10 @@ public class MessageList extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.call_button:
+                MenuItem menu = (MenuItem) findViewById(R.id.call_button);
                 if (twilio.getCall() == null) {
                     makeCall();
+                    menu.setIcon(R.drawable.ic_hangup);
                 } else {
                     stopCall();
                 }
