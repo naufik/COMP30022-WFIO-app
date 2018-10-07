@@ -27,7 +27,7 @@ public class MessageListElder extends AppCompatActivity {
                 return;
             }
             populateUsersList();
-            handler.postDelayed(this,1500);
+            handler.postDelayed(this,700);
         }
     };
 

@@ -71,7 +71,7 @@ public class MsgUpdateService extends IntentService {
             }
         };
         timer = new Timer();
-        timer.schedule(task, 0,1000);
+        timer.schedule(task, 0,500);
     }
 
     private void stopPolling() {
