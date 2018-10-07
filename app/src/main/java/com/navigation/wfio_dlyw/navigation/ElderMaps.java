@@ -84,13 +84,15 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     // Service variables
     Messenger mService = null;
     boolean mIsBound;
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
 
     // Constant variables
-    public static final int MSG_REGISTER_CLIENT = 0;
-    public static final int MSG_UNREGISTER_CLIENT = 1;
-    public static final int MSG_REQUEST_LOCATION = 2;
-    public static final int MSG_REQUEST_ROUTE = 3;
+    public static final int MSG_REQUEST_LOCATION = 1;
+    public static final int MSG_REQUEST_ROUTE = 2;
+    public static final int MSG_REQUEST_CHECKPOINT = 3;
+    public static final int MSG_UPDATE_DESTINATION = 4;
+    public static final int MSG_PAUSE_UPDATE = 5;
+    public static final int MSG_RESUME_UPDATE = 6;
+
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
     private static final int DEFAULT_ZOOM = 15;
@@ -104,24 +106,41 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_REQUEST_ROUTE:
-                    //Do stuff with msg.obj
+                    // Update map with new route
+                    route = (PolylineOptions) msg.obj;
+                    mMap.clear();
+                    mMap.addPolyline(route);
+                case MSG_UPDATE_DESTINATION:
+                    // After destination updated, grab new route, callback above
+                    try {
+                        Message resp = Message.obtain(null, MSG_REQUEST_ROUTE);
+                        resp.replyTo = mMessenger;
+                        mService.send(resp);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                case MSG_PAUSE_UPDATE:
+                    // Only called when this activity is closed, thus we unbind
+                    if (mIsBound) {
+                        unbindService(mConnection);
+                    }
+                    mIsBound = false;
             }
         }
     }
+
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
 
     // Main service interface
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.d(TAG, "Service connected");
             mService = new Messenger(iBinder);
-            try {
-                // Register as client
-                Message msg = Message.obtain(null, MSG_REGISTER_CLIENT);
-                msg.replyTo = mMessenger;
-                mService.send(msg);
 
-                // Request route
-                msg = Message.obtain(null, MSG_REQUEST_ROUTE);
+            try {
+                Message msg = Message.obtain(null, MSG_RESUME_UPDATE);
+                msg.replyTo = mMessenger;
                 mService.send(msg);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -130,12 +149,14 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
+            Log.d(TAG, "Service disconnected");
             mService = null;
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "ElderMaps created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_maps);
 
@@ -170,7 +191,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         eventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-                Log.d(TAG, "onSensorChanged");
+                //Log.d(TAG, "onSensorChanged");
                 if(event.values[2] < 2 && event.values[1] > 8){
                     finish();
                 }
@@ -209,8 +230,20 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //Do some magic
-                return false;
+                if(query == null) {
+                    return false;
+                }
+
+                // Sends new destination to service
+                try {
+                    Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION);
+                    msg.replyTo = mMessenger;
+                    mService.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+                return true;
             }
 
             @Override
@@ -273,12 +306,17 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d(TAG, "Map ready");
         mMap = googleMap;
         updateLocationUI();
+
+        //Log.d(TAG, "Binding service...");
+        bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
     }
 
     private void updateLocationUI() {
-        Log.d(TAG, "updateLocationUI() started");
+        Log.d(TAG, "Updating location UI");
         if (mMap == null) {
             return;
         }
@@ -321,10 +359,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onStop() {
         super.onStop();
-        if (mIsBound) {
-            unbindService(mConnection);
+        try {
+            Message msg = Message.obtain(null, MSG_PAUSE_UPDATE);
+            msg.replyTo = mMessenger;
+            mService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
-        mIsBound = false;
     }
 
     @Override
