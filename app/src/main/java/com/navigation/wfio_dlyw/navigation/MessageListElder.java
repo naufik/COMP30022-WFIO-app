@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,11 +15,10 @@ import com.navigation.wfio_dlyw.comms.Token;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class MessageListElder extends AppCompatActivity {
     private boolean update;
     private Intent serviceIntent;
+    private Text2Speech t2t;
 
     Handler handler = new Handler();
     Runnable runner = new Runnable() {
@@ -36,6 +37,7 @@ public class MessageListElder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list_elder);
         update = true;
+        t2t = new Text2Speech(getApplicationContext());
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
         this.serviceIntent.setAction("poll");
         startService(serviceIntent);
@@ -44,6 +46,7 @@ public class MessageListElder extends AppCompatActivity {
 
     private void populateUsersList() {
         Token token = Token.getInstance();
+        t2t = new Text2Speech(getApplicationContext());
         // Construct the data source
         while (token.getServerMessages().length() > 0) {
             try {
@@ -57,8 +60,20 @@ public class MessageListElder extends AppCompatActivity {
         // Create the adapter to convert the array to views
         CustomMessageAdapter adapter = new CustomMessageAdapter(this, token.getSessionMessages());
         // Attach the adapter to a ListView
+
         ListView listView = (ListView) findViewById(R.id.messages_view);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View v, int position,
+                                    long arg3)
+            {
+                Message theirMsg = (Message) adapter.getItemAtPosition(position);
+                t2t.read(theirMsg.getText());
+                Log.d("MLE", theirMsg.toString());
+            }
+        });
     }
 
     @Override
