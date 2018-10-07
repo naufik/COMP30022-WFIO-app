@@ -15,16 +15,20 @@ import java.util.function.UnaryOperator;
 public class TwilioUtils {
 
     private static TwilioUtils instance;
-    private NotificationManager notificationManager;
+    private static Context pastContext;
 
     private CallInvite activeCallInvite;
     private Call activeCall;
     private int activeCallNotificationId;
 
-    public static synchronized TwilioUtils getInstance() {
+    public static synchronized TwilioUtils getInstance(Context context) {
         if (instance == null) {
             instance = new TwilioUtils();
+            if (context != null) {
+                instance.pastContext = context;
+            }
         }
+
         return instance;
     }
 
@@ -38,7 +42,6 @@ public class TwilioUtils {
     }
 
     public void declineCall(Context ctx) {
-        Log.d("CALLINFO", "hey");
         if (this.activeCallInvite != null) {
             this.activeCallInvite.reject(ctx);
             this.activeCallInvite = null;
@@ -68,6 +71,8 @@ public class TwilioUtils {
                             .show();
                     e.printStackTrace();
                 }
+                instance.activeCall = null;
+                instance.activeCallInvite = null;
             }
 
             @Override
@@ -75,7 +80,7 @@ public class TwilioUtils {
                 if (onConnect != null) {
                     onConnect.apply( call );
                 }
-                TwilioUtils.getInstance().activeCall = call;
+                instance.activeCall = call;
             }
 
             @Override
@@ -88,6 +93,8 @@ public class TwilioUtils {
                             .show();
                     e.printStackTrace();
                 }
+                instance.activeCall = null;
+                instance.activeCallInvite = null;
             }
         };
     }

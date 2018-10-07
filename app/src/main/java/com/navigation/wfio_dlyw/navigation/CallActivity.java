@@ -20,7 +20,7 @@ public class CallActivity extends AppCompatActivity {
     public static final String TOKEN_ENDPOINT_URL = "https://rawon.naufik.net/voice/accessToken";
 
     private NotificationManager notificationManager;
-    private TwilioUtils twilio = TwilioUtils.getInstance();
+    private TwilioUtils twilio = TwilioUtils.getInstance(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
