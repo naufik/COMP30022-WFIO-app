@@ -87,8 +87,8 @@
 
         <activity
             android:name=".CarerMaps"
-            android:windowSoftInputMode="adjustPan"
-            android:label="@string/title_activity_carer_maps" />
+            android:label="@string/title_activity_carer_maps"
+            android:windowSoftInputMode="adjustPan" />
 
         <receiver android:name=".NotificationReceiver" />
 
@@ -99,16 +99,22 @@
             android:name=".ApplicationAppearance"
             android:label="@string/ApplicationAppearance" />
         <activity android:name=".MessageList" />
-
         <activity android:name=".MessageListElder" />
 
-        <service android:name=".MsgUpdateService" />
 
         <activity
             android:name=".MapsPermissionTest"
             android:label="@string/title_activity_maps_permission_test"></activity>
-        <service android:name="com.navigation.wfio_dlyw.comms.NotifyService"/>
-        <service android:name="com.navigation.wfio_dlyw.comms.NotificationService"/>
+        <service android:name=".MsgUpdateService"/>
+        <service android:name=".InitializeService"/>
+        <service android:name="com.navigation.wfio_dlyw.comms.NotifyService" />
+        <service android:name="com.navigation.wfio_dlyw.comms.NotificationService" />
+        <service android:name="com.navigation.wfio_dlyw.comms.FirebaseNotificationService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <activity android:name=".CallActivity"></activity>
     </application>
 
 </manifest>

@@ -4,11 +4,13 @@ import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
 
+import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +36,7 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -63,6 +66,8 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //make fake list
+        String[] list = new String[]{"Barney", "is", "a", "dinosaur", "of", "our", "imagination"};
     }
 
     @Override

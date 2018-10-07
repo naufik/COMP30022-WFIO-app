@@ -25,7 +25,8 @@ public class ElderHome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_home);
-        Token token = Token.getInstance();
+        Token token = Token.getInstance(this);
+        Token.getInstance( this ).setUsername( Token.getInstance( this ).getUsername());
         Toolbar myToolbar = findViewById(R.id.toolbarEH);
         setSupportActionBar(myToolbar);
 

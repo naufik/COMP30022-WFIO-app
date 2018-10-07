@@ -95,7 +95,13 @@ public class MyElders extends AppCompatActivity {
             public void onItemClick(int position){
                 Intent intent = new Intent(MyElders.this, MessageList.class);
                 intent.putExtra("Example Item", elders.get(position));
-                startActivity(intent);
+                try {
+                    Token.getInstance().setCurrentConnection(Token.getInstance().getConnections()
+                            .getJSONObject(position));
+                    startActivity(intent);
+                } catch (JSONException e) {
+
+                }
             }
 
             //CarerHome should be changed to ElderMaps instead

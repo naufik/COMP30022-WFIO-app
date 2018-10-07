@@ -11,6 +11,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.view.KeyEvent;
 import android.speech.tts.TextToSpeech;
+
+import com.google.firebase.FirebaseApp;
 import com.navigation.wfio_dlyw.utility.*;
 import android.speech.tts.TextToSpeech.OnInitListener;
 
@@ -28,7 +30,11 @@ public class LogIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Requester req = Requester.getInstance(this);
-        Token token = Token.getInstance();
+        FirebaseApp.initializeApp(this.getApplicationContext());
+        Token token = Token.getInstance(this.getApplicationContext());
+
+        Intent initIntent = new Intent(this, InitializeService.class);
+        startService(initIntent);
 
         setContentView(R.layout.activity_log_in);
         EditText username = findViewById(R.id.username);
