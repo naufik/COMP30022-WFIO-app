@@ -1,6 +1,11 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,7 +14,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.NotificationService;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -17,9 +24,13 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class ElderHome extends AppCompatActivity {
+
+    private Intent favouriteIntent;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +45,19 @@ public class ElderHome extends AppCompatActivity {
         notifier.setAction("poll");
         startService(notifier);
 
-        Button navigationButton = (Button)findViewById(R.id.navigateButton);
-        navigationButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
-                startActivity(startIntent);
+        String email = getIntent().getStringExtra("from");
+        if (email != null) {
+            for (int i = 0; i < token.getConnections().length(); i++){
+                try {
+                    JSONObject carer = token.getConnections().getJSONObject(i);
+                    if (carer.getString("email").equals(email)){
+                        token.setCurrentConnection(carer);
+                        token.createSessionMessages();
+                        break;
+                    }
+                } catch (JSONException e){}
             }
-        });
+        }
 
         Button connectBtn = findViewById(R.id.rncButton);
         connectBtn.setOnClickListener(new View.OnClickListener(){
@@ -49,6 +65,23 @@ public class ElderHome extends AppCompatActivity {
             public void onClick(View view){
                 Intent startIntent = new Intent(getApplicationContext(), ElderConnect.class);
                 startActivity(startIntent);
+            }
+        });
+
+        Button arButton = findViewById(R.id.ARbtn);
+        arButton.setOnClickListener(view -> {
+            Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
+            startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(startIntent);
+        });
+
+        Button favouriteButton = findViewById(R.id.favoritesBtn);
+        favouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
+                startActivity(favouriteIntent);
+
             }
         });
 
@@ -65,6 +98,40 @@ public class ElderHome extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.settings,menu);
         return true;
+    }
+
+    public void getLocationPermission(View view) {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            onPermissionGranted();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onPermissionGranted();
+                } else {
+                    // Do nothing, try to notify user to accept else can't do shit
+                }
+            }
+        }
+    }
+
+    private void onPermissionGranted() {
+        Intent intent = new Intent(this, ElderMaps.class);
+        startActivity(intent);
     }
 
 
@@ -86,5 +153,16 @@ public class ElderHome extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         System.exit(0);
+    }
+
+
+    public static void Call(Activity activity){
+        Intent intent = new Intent(activity, ElderMaps.class);
+        activity.startActivity(intent);
+    }
+
+    public static void CallAgain(Activity activity){
+        Intent intent = new Intent(activity, ElderNavigation.class);
+        activity.startActivity(intent);
     }
 }
