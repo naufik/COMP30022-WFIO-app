@@ -215,6 +215,7 @@ public class MessageList extends AppCompatActivity{
             callIntent.setAction("call.start");
             callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
                 .getString("username"));
+            startActivity(callIntent);
         } catch (JSONException e) {
             Toast.makeText( this, "currently not being connected to anyone" ,
                     Toast.LENGTH_LONG).show();
