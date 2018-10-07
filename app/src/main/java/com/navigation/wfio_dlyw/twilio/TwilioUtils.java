@@ -89,4 +89,8 @@ public class TwilioUtils {
             }
         };
     }
+
+    public int getCurrentCallNotificationId() {
+        return this.activeCallNotificationId;
+    }
 }

@@ -34,11 +34,13 @@ public class CallActivity extends AppCompatActivity {
     public void onNewIntent(Intent intent) {
         if (intent.getAction().equals("call.answer")) {
             CallInvite inv = intent.getParcelableExtra( "invite");
-            twilio.receiveCall( intent.getIntExtra("notificationId", 0),
+            twilio.receiveCall(intent.getIntExtra("notificationId", 0),
                     inv);
 
             // placeholder events, this declines all calls as soon as they are received.
             twilio.declineCall(this);
+
+            this.notificationManager.cancel(twilio.getCurrentCallNotificationId());
         }
     }
 }
