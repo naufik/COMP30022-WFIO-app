@@ -201,9 +201,9 @@ public class MessageList extends AppCompatActivity{
         switch (item.getItemId()) {
             case R.id.call_button:
                 if (twilio.getCall() == null) {
-
-                } else {
                     makeCall();
+                } else {
+                    stopCall();
                 }
                 changeUI(item);
                 return true;
