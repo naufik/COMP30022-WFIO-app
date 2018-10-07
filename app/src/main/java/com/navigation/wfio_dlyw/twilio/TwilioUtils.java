@@ -32,7 +32,7 @@ public class TwilioUtils {
         this.activeCallNotificationId = notificationId;
     }
 
-    public void acceptCall(Call call) {
+    private void setCall(Call call) {
         this.activeCall = call;
     }
 
@@ -73,6 +73,7 @@ public class TwilioUtils {
                 if (onConnect != null) {
                     onConnect.apply( call );
                 }
+                TwilioUtils.getInstance().activeCall = call;
             }
 
             @Override
