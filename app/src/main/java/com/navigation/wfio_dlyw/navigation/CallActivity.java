@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.koushikdutta.async.future.FutureCallback;
@@ -25,9 +26,17 @@ public class CallActivity extends AppCompatActivity {
     private NotificationManager notificationManager;
     private TwilioUtils twilio = TwilioUtils.getInstance(this);
 
+    Button endCallButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
+
+        endCallButton = findViewById(R.id.endCall);
+        endCallButton.setOnClickListener(v->{
+            twilio.getCall().disconnect();
+        });
+
         setContentView( R.layout.activity_call );
         this.notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -53,12 +62,7 @@ public class CallActivity extends AppCompatActivity {
             twilio.acceptCall( new TwilioUtils.TwilioCallListener() {
                 @Override
                 public void onConnected(Call call) {
-                    Toast.makeText( CallActivity.this,
-                            "NOW YOU ARE IN CALL",
-                            Toast.LENGTH_LONG).show();
-
-                    Timer t = new Timer();
-
+                    Log.d("SUPERTRAP", "2 milyar");
                 }
 
                 @Override
