@@ -31,7 +31,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-//import com.VoidDDQ.Cam.GeoStatService;
+import com.VoidDDQ.Cam.GeoStatService;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -119,12 +119,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
-                case MSG_PAUSE_UPDATE:
-                    // Only called when this activity is closed, thus we unbind
-                    if (mIsBound) {
-                        unbindService(mConnection);
-                    }
-                    mIsBound = false;
             }
         }
     }
@@ -138,13 +132,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             Log.d(TAG, "Service connected");
             mService = new Messenger(iBinder);
 
-            try {
+            /*try {
                 Message msg = Message.obtain(null, MSG_RESUME_UPDATE);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
             } catch (RemoteException e) {
                 e.printStackTrace();
-            }
+            }*/
         }
 
         @Override
@@ -311,8 +305,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         updateLocationUI();
 
         //Log.d(TAG, "Binding service...");
-        //bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
-        //mIsBound = true;
+        bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
     }
 
     private void updateLocationUI() {
@@ -359,13 +353,17 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onStop() {
         super.onStop();
-        try {
+        /*try {
             Message msg = Message.obtain(null, MSG_PAUSE_UPDATE);
             msg.replyTo = mMessenger;
             mService.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
+        }*/
+        if (mIsBound) {
+            unbindService(mConnection);
         }
+        mIsBound = false;
     }
 
     @Override
