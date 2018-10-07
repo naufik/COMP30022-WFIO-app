@@ -314,6 +314,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 return true;
             case R.id.sos_button:
                 Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
+                Requester minta = Requester.getInstance(getApplicationContext());
+                Token var = Token.getInstance();
+                minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
                 return true;
             default:
                 // If we got here, the user's action was not recognized.

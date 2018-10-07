@@ -59,8 +59,8 @@
             android:name=".MyElders"
             android:label="@string/MyElders" />
         <activity
-            android:name=".Favourites"
-            android:label="@string/favourites" />
+            android:name=".Favourites"  
+            android:label="@string/favorites" />
         <activity
             android:name=".StoreClips"
             android:label="StoreClips" />
