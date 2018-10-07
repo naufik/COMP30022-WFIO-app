@@ -73,7 +73,7 @@ public class LogIn extends AppCompatActivity {
                                     token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
                                     } catch (JSONException e) {}
                              }, new Credentials(token.getEmail(), token.getValue()));
-
+                            token.createSessionMessages();
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
@@ -84,7 +84,7 @@ public class LogIn extends AppCompatActivity {
                                     token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
                                 } catch (JSONException e) {}
                             }, new Credentials(token.getEmail(), token.getValue()));
-
+                            token.createSessionMessages();
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);

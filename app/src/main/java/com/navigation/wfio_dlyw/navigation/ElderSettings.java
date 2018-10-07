@@ -90,8 +90,9 @@ public class ElderSettings extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Token.reset();
-                Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
-                startActivity(startIntent);
+                Intent intent = new Intent(getApplicationContext(), LogIn.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
 

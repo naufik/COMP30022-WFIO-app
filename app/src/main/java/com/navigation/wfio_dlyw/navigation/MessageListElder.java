@@ -1,93 +1,86 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Token;
 
-import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
 
 public class MessageListElder extends AppCompatActivity {
+    private boolean update;
+    private Intent serviceIntent;
 
-    private MessageAdapter messageAdapter;
-    private ListView messagesView;
-    Intent serviceIntent;
+    Handler handler = new Handler();
+    Runnable runner = new Runnable() {
+        @Override
+        public void run() {
+            if (!update){
+                return;
+            }
+            populateUsersList();
+            handler.postDelayed(this,1500);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list_elder);
-        Token token = Token.getInstance();
-        Timer timer = new Timer();
-
-        messageAdapter = new MessageAdapter(this);
-        messagesView = findViewById(R.id.messages_view);
-        messagesView.setAdapter(messageAdapter);
+        update = true;
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
         this.serviceIntent.setAction("poll");
         startService(serviceIntent);
-
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(() -> {
-                    try {
-                        JSONArray temp = new JSONArray();
-                        while (token.getMessages().length() > 0) {
-                            if (token.getMessages().getJSONObject(0).getInt("from") == token.getCurrentConnection().getInt("id")) {
-                                int senderID = token.getMessages().getJSONObject(0).getInt("from");
-                                String sender = "error";
-                                for (int i = 0; i < token.getConnections().length(); i++) {
-                                    if (token.getConnections().getJSONObject(i).getInt("id") == senderID) {
-                                        sender = token.getConnections().getJSONObject(i).getString("fullname");
-                                    }
-                                }
-                                token.getConnections().getJSONObject(0).getInt("id");
-                                onMessage(token.getMessages().getJSONObject(0).getString("content"), sender);
-                                token.getMessages().remove(0);
-                            }
-                            else {
-                                temp.put(token.getMessages().getJSONObject(0));
-                                token.getMessages().remove(0);
-                            }
-                        }
-                        token.setMessages(temp);
-                    } catch (JSONException e) {}
-                });
-            }
-
-        };
-        timer.schedule(task, 0,1000);
+        handler.post(runner);
     }
-    public void onMessage(String message, String sender) {
-        //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
-        //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, sender, false);
-        messageAdapter.add(message1);
-        // scroll the ListView to the last added element
-        messagesView.setSelection(messagesView.getCount() - 1);
+
+    private void populateUsersList() {
+        Token token = Token.getInstance();
+        // Construct the data source
+        Log.d("MLE", "populateUsersList Called");
+        while (token.getServerMessages().length() > 0) {
+            try {
+                Log.d("MLE", "Message exist in Token");
+                JSONObject curMessage = token.getServerMessages().getJSONObject(0);
+                if (curMessage.getInt("from") == token.getCurrentConnection().getInt("id")){
+                    token.getSessionMessages().add(new Message(curMessage.getString("content"),token.getCurrentConnection().getString("fullname"),false));
+                }
+                token.getServerMessages().remove(0);
+            } catch (JSONException e) {}
+        }
+        // Create the adapter to convert the array to views
+        CustomMessageAdapter adapter = new CustomMessageAdapter(this, token.getSessionMessages());
+        // Attach the adapter to a ListView
+        ListView listView = (ListView) findViewById(R.id.messages_view);
+        listView.setAdapter(adapter);
     }
 
     @Override
-    public void onPause(){
+    protected void onResume() {
+        super.onResume();
+        update = true;
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
-        this.serviceIntent.setAction("stop");
+        this.serviceIntent.setAction("poll");
         startService(serviceIntent);
+        // start first run by hand
+        handler.post(runner);
+    }
+
+    @Override
+    protected void onPause() {
         super.onPause();
-    }
-
-    @Override
-    public void onStop(){
+        update= false;
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
         this.serviceIntent.setAction("stop");
         startService(serviceIntent);
-        super.onStop();
     }
 }
+
