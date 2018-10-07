@@ -37,8 +37,6 @@ public class MessageList extends AppCompatActivity{
     private String toUserName;
     private boolean onCall = false;
 
-    private Call activeCall;
-
     private EditText editText;
     private MessageAdapter messageAdapter;
     private ListView messagesView;
@@ -211,35 +209,15 @@ public class MessageList extends AppCompatActivity{
         }
     }
 
-    public void makeCall() {
-        Voice.call( this, Token.getInstance().getVoiceToken(),
-                ((Function<String, HashMap<String, String>>) i -> {
-                    HashMap opts = new HashMap<>();
-
-                    opts.put( "to", this.toUserName);
-                    return opts;
-                }).apply( this.toUserName ), makeCallListener());
-    }
-
-
-    private Call.Listener makeCallListener() {
-        return new Call.Listener(){
-
-            @Override
-            public void onConnectFailure(Call call, CallException e) {
-                Toast.makeText(MessageList.this, "Cannot call the person right now",
-                        Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onConnected(Call call) {
-                getSupportActionBar().setTitle("ON CALL: " + MessageList.this.toName);
-            }
-
-            @Override
-            public void onDisconnected(Call call, CallException e) {
-                getSupportActionBar().setTitle(MessageList.this.toName);
-            }
-        };
+    private void makeCall(){
+        try {
+            Intent callIntent = new Intent(this, CallActivity.class);
+            callIntent.setAction("call.start");
+            callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
+                .getString("username"));
+        } catch (JSONException e) {
+            Toast.makeText( this, "currently not being connected to anyone" ,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }

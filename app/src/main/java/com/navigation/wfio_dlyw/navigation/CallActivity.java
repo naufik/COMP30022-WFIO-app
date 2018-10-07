@@ -18,6 +18,7 @@ import com.twilio.voice.*;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
 
 public class CallActivity extends AppCompatActivity {
 
@@ -51,7 +52,6 @@ public class CallActivity extends AppCompatActivity {
 
     private void handleCallIntent(Intent intent) {
         if (intent.getAction().equals("call.answer")) {
-            Toast.makeText(this, "EH BANGSAT", Toast.LENGTH_LONG).show();
             CallInvite inv = intent.getParcelableExtra( "invite");
             twilio.receiveCall(intent.getIntExtra("notificationId", 0),
                     inv);
@@ -64,7 +64,7 @@ public class CallActivity extends AppCompatActivity {
 
                 @Override
                 public void onDisconnected(Call call) {
-
+                    CallActivity.this.finish();
                 }
 
                 @Override
@@ -74,6 +74,26 @@ public class CallActivity extends AppCompatActivity {
             } );
 
             this.notificationManager.cancel(twilio.getCurrentCallNotificationId());
+        } else if (intent.getAction().equals("call.start")) {
+            String recipient = intent.getStringExtra("to");
+
+            twilio.getInstance(this).startCall( recipient, new TwilioUtils.TwilioCallListener() {
+                @Override
+                public void onConnected(Call call) {
+                    Toast.makeText( CallActivity.this, "CALLED IT", Toast.LENGTH_LONG)
+                            .show();
+                }
+
+                @Override
+                public void onDisconnected(Call call) {
+                    CallActivity.this.finish();
+                }
+
+                @Override
+                public void onFailure(Call call) {
+
+                }
+            } );
         }
     }
 }
