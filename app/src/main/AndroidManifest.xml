@@ -104,6 +104,7 @@
         <service android:name=".InitializeService"/>
         <service android:name="com.navigation.wfio_dlyw.comms.NotifyService" />
         <service android:name="com.navigation.wfio_dlyw.comms.NotificationService" />
+        <service android:name="com.navigation.wfio_dlyw.twilio.CallService"/>
         <service android:name="com.navigation.wfio_dlyw.comms.FirebaseNotificationService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

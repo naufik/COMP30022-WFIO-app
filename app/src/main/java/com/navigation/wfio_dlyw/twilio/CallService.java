@@ -10,7 +10,7 @@ public class CallService extends IntentService {
 
     private TwilioUtils twilio;
 
-    public CallService(String name) {
+    public CallService() {
         super("call_service");
     }
 
