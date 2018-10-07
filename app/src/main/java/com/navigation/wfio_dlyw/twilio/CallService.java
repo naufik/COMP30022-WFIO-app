@@ -11,7 +11,7 @@ public class CallService extends IntentService {
     private TwilioUtils twilio;
 
     public CallService() {
-        super("call_service");
+        super("CallService");
     }
 
     @Override
@@ -26,7 +26,7 @@ public class CallService extends IntentService {
                 acceptCall(intent);
                 break;
 
-            case "call.disconnect":
+            case "call.stop":
                 disconnectCall(intent);
                 break;
 
