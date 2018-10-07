@@ -9,6 +9,7 @@ import com.navigation.wfio_dlyw.navigation.R;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -22,8 +23,6 @@ import java.util.Map;
 
 public class FirebaseNotificationService extends FirebaseMessagingService {
     private NotificationManager notificationManager;
-
-
 
     @Override
     public void onCreate() {
@@ -47,6 +46,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                         Intent intent2 = new Intent(FirebaseNotificationService.this,
                                 CallActivity.class);
                         intent2.setAction("call.answer");
+                        intent2.putExtra("invitation", callInvite);
 
                         Bundle extras = new Bundle();
                         extras.putString("fromUsername", callInvite.getFrom());
@@ -63,6 +63,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                                 .setContentTitle(callInvite.getFrom() + " called you.")
                                 .setContentText("Here to offer a better help")
                                 .setContentIntent(pendingIntent)
+                                .setExtras(extras)
                                 .setAutoCancel(true)
                                 .build();
 
@@ -73,7 +74,9 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
 
                 @Override
                 public void onError(MessageException e) {
-
+                    Toast.makeText(FirebaseNotificationService.this,
+                            "Hang on something broke", Toast.LENGTH_LONG)
+                            .show();
                 }
             });
 
