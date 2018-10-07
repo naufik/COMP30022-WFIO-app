@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -12,6 +13,7 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -58,8 +60,11 @@ public class MsgUpdateService extends IntentService {
                     req.requestAction(ServerAction.MESSAGE_PULL, null, t->{
                         try {
                             for (int i=0; i<t.getJSONObject("result").getJSONArray("messages").length(); i++){
-                                token.getServerMessages().put(t.getJSONObject("result").getJSONArray("messages").getJSONObject(i));
-                                Toast.makeText(MsgUpdateService.this, "messages pulled", Toast.LENGTH_SHORT).show();
+                                JSONObject message = t.getJSONObject("result").getJSONArray("messages").getJSONObject(i);
+                                token.getServerMessages().put(message);
+                                Log.d("MUS", token.getServerMessages().length() + "");
+                                Log.d("MUS2", token.getServerMessages().toString());
+                                Toast.makeText(MsgUpdateService.this, message.getString("content") + "is pulled", Toast.LENGTH_SHORT).show();
                             }
                         }catch(JSONException e) {}
                     }, new Credentials(token.getEmail(), token.getValue()));

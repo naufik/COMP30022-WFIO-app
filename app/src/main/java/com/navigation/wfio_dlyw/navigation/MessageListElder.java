@@ -45,13 +45,18 @@ public class MessageListElder extends AppCompatActivity {
     private void populateUsersList() {
         Token token = Token.getInstance();
         // Construct the data source
-        Log.d("MLE", "populateUsersList Called");
+        Log.d("MLE", "" + token.getServerMessages().length());
         while (token.getServerMessages().length() > 0) {
             try {
-                Log.d("MLE", "Message exist in Token");
+                Log.d("MLE", "Message exist in Token" + " " + token.getServerMessages().getJSONObject(0).getString("content"));
                 JSONObject curMessage = token.getServerMessages().getJSONObject(0);
+                Log.d("MLE2", curMessage.toString());
+                Log.d("MLE2", token.getCurrentConnection().toString());
                 if (curMessage.getInt("from") == token.getCurrentConnection().getInt("id")){
                     token.getSessionMessages().add(new Message(curMessage.getString("content"),token.getCurrentConnection().getString("fullname"),false));
+                }
+                else {
+                    Toast.makeText(this, token.getServerMessages().getJSONObject(0).getString("content") + "is sent illegal", Toast.LENGTH_SHORT).show();
                 }
                 token.getServerMessages().remove(0);
             } catch (JSONException e) {}
