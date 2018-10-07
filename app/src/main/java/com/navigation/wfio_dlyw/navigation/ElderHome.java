@@ -45,20 +45,6 @@ public class ElderHome extends AppCompatActivity {
         notifier.setAction("poll");
         startService(notifier);
 
-        String email = getIntent().getStringExtra("from");
-        if (email != null) {
-            for (int i = 0; i < token.getConnections().length(); i++){
-                try {
-                    JSONObject carer = token.getConnections().getJSONObject(i);
-                    if (carer.getString("email").equals(email)){
-                        token.setCurrentConnection(carer);
-                        token.createSessionMessages();
-                        break;
-                    }
-                } catch (JSONException e){}
-            }
-        }
-
         Button connectBtn = findViewById(R.id.rncButton);
         connectBtn.setOnClickListener(new View.OnClickListener(){
             @Override
