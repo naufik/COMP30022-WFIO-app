@@ -7,13 +7,18 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,6 +42,9 @@ import java.util.List;
 
 public class ElderNavigation extends AppCompatActivity {
     public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
+    public static final String channel_1_ID = "channel 1";
+    private static final String TAG = ElderNavigation.class.getSimpleName();
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int MAX_SUGGESTIONS = 100;
     private Intent favouriteIntent;
 
@@ -49,6 +57,13 @@ public class ElderNavigation extends AppCompatActivity {
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
+
+        Button elderMessage = (Button) findViewById(R.id.eldermsg);
+        elderMessage.setOnClickListener(view -> {
+            Intent startIntent = new Intent(getApplicationContext(), MessageListElder.class);
+            startActivity(startIntent);
+        });
+
         String email = getIntent().getStringExtra("from");
         if (email != null) {
             for (int i = 0; i < token.getConnections().length(); i++){
@@ -62,14 +77,7 @@ public class ElderNavigation extends AppCompatActivity {
                 } catch (JSONException e){}
             }
         }
-        Button elderMessage = findViewById(R.id.eldermsg);
-        elderMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), MessageListElder.class);
-                startActivity(startIntent);
-            }
-        });
+
         Button notifyAll = findViewById(R.id.nofifyAll);
         notifyAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,12 +87,14 @@ public class ElderNavigation extends AppCompatActivity {
                 minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
             }
         });
+
         Button arButton = findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
             startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startIntent);
         });
+
         Button favouriteButton = findViewById(R.id.favoritesButton);
         favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,8 +104,45 @@ public class ElderNavigation extends AppCompatActivity {
 
             }
         });
-
     }
+
+    public void getLocationPermission(View view) {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            onPermissionGranted();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onPermissionGranted();
+                } else {
+                    // Do nothing, try to notify user to accept else can't do shit
+                }
+            }
+        }
+    }
+
+    private void onPermissionGranted() {
+        EditText editText = (EditText) findViewById(R.id.navigationSearchField);
+        String destination = editText.getText().toString();
+
+        Intent intent = new Intent(this, ElderMaps.class);
+        startActivity(intent);
+    }
+
     //currently carer maps for testing
     public void sendDestination(View view) {
         Intent intent = new Intent(this, ElderMaps.class);

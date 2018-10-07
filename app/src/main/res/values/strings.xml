@@ -10,14 +10,15 @@
     <string name="SignUp">Sign-Up</string>
     <string name="Login">Login</string>
     <string name="ChooseAccountType">Choose Account Type</string>
-    <string name="ApplicationAppearrance">Application Appearrance</string>
+    <string name="ApplicationAppearance">Application Appearance</string>
     <string name="title_activity_elder_maps">Elder Maps</string>
     <string name="title_activity_carer_maps">Carer Maps</string>
+    <string name="route_url_format">https://maps.googleapis.com/maps/api/directions/json?origin=%s&amp;destination=%s+Melbourne+3000&amp;mode=walking&amp;key=%s</string>
+    <string name="title_activity_maps_permission_test">Map</string>
     <string name="star">Add to Favorites</string>
-    <string name="sms">Message Elder</string>
+    <string name="smsE">Message Elder</string>
+    <string name="smsC">Message Carer</string>
     <string name="sos">Help!</string>
     <string name="call">Call Elder</string>
     <string name="clips">View Clips</string>
-
-
 </resources>
