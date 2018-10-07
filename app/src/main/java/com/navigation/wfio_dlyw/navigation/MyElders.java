@@ -30,12 +30,12 @@ public class MyElders extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ConnectAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private AlertDialog.Builder builder = null;
-    private Requester req = Requester.getInstance(this);
+    private Requester req;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        req = Requester.getInstance(this);
         elders = new ArrayList<>();
         setContentView(R.layout.activity_my_elders);
         builder = new AlertDialog.Builder(this);
