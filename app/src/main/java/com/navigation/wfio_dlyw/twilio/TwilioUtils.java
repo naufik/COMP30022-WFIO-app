@@ -5,11 +5,14 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.navigation.CallActivity;
 import com.twilio.voice.Call;
 import com.twilio.voice.CallException;
 import com.twilio.voice.CallInvite;
+import com.twilio.voice.Voice;
 
+import java.util.HashMap;
 import java.util.function.UnaryOperator;
 
 public class TwilioUtils {
@@ -115,5 +118,14 @@ public class TwilioUtils {
 
     public int getCurrentCallNotificationId() {
         return this.activeCallNotificationId;
+    }
+
+    public void startCall(String userName, TwilioCallListener listener) {
+        HashMap<String, String> twiMlParams = new HashMap<>();
+        twiMlParams.put("to", userName);
+
+        instance.activeCall = Voice.call(
+          this.pastContext, Token.getInstance(this.pastContext).getVoiceToken(), twiMlParams,
+                TwilioUtils.buildListener(this.pastContext, listener));
     }
 }

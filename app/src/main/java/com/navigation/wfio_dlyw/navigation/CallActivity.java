@@ -56,13 +56,10 @@ public class CallActivity extends AppCompatActivity {
             twilio.receiveCall(intent.getIntExtra("notificationId", 0),
                     inv);
 
-            // placeholder events, this declines all calls as soon as they are received.
-            // twilio.declineCall(this);
-
-            twilio.acceptCall( new TwilioUtils.TwilioCallListener() {
+            twilio.acceptCall(new TwilioUtils.TwilioCallListener() {
                 @Override
                 public void onConnected(Call call) {
-                    Log.d("SUPERTRAP", "2 milyar");
+
                 }
 
                 @Override
@@ -75,6 +72,7 @@ public class CallActivity extends AppCompatActivity {
 
                 }
             } );
+
             this.notificationManager.cancel(twilio.getCurrentCallNotificationId());
         }
     }
