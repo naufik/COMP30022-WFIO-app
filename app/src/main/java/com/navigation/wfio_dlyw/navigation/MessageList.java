@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
+import android.app.IntentService;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
@@ -20,6 +21,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.*;
+import com.navigation.wfio_dlyw.twilio.CallService;
+import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.twilio.voice.*;
 
 import org.json.JSONException;
@@ -32,6 +35,8 @@ import java.util.function.Function;
 
 
 public class MessageList extends AppCompatActivity{
+
+    private TwilioUtils twilio;
 
     private String toName;
     private String toUserName;
@@ -62,6 +67,7 @@ public class MessageList extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
 
+        twilio = TwilioUtils.getInstance(this);
         // This is where we write the message
         editText = findViewById(R.id.messageInput);
 
@@ -192,10 +198,14 @@ public class MessageList extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        String to = "alice";
         switch (item.getItemId()) {
             case R.id.call_button:
-                this.makeCall();
+                if (twilio.getCall() == null) {
+
+                } else {
+                    makeCall();
+                }
+                changeUI(item);
                 return true;
             case R.id.clips_button:
                 Intent intent = new Intent(getApplicationContext(), StoreClips.class);
@@ -209,16 +219,26 @@ public class MessageList extends AppCompatActivity{
         }
     }
 
-    private void makeCall(){
+    private void changeUI(MenuItem item) {
+        item.setIcon(twilio.getCall() == null ? R.drawable.ic_call : R.drawable.ic_hangup);
+    }
+
+    private void makeCall() {
         try {
-            Intent callIntent = new Intent(this, CallActivity.class);
+            Intent callIntent = new Intent(this, CallService.class);
             callIntent.setAction("call.start");
             callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
                 .getString("username"));
-            startActivity(callIntent);
+            startService(callIntent);
         } catch (JSONException e) {
             Toast.makeText( this, "currently not being connected to anyone" ,
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void stopCall() {
+        Intent stopCallIntent = new Intent(this, CallService.class);
+        stopCallIntent.setAction("call.stop");
+        startService(stopCallIntent);
     }
 }
