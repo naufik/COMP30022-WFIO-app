@@ -2,6 +2,7 @@ package com.navigation.wfio_dlyw.twilio;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.navigation.CallActivity;
@@ -37,6 +38,7 @@ public class TwilioUtils {
     }
 
     public void declineCall(Context ctx) {
+        Log.d("CALLINFO", "hey");
         if (this.activeCallInvite != null) {
             this.activeCallInvite.reject(ctx);
             this.activeCallInvite = null;

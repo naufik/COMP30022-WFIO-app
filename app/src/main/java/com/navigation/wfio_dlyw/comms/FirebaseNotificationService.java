@@ -46,7 +46,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
                         Intent intent2 = new Intent(FirebaseNotificationService.this,
                                 CallActivity.class);
                         intent2.setAction("call.answer");
-                        intent2.putExtra("invitation", callInvite);
+                        intent2.putExtra("invite", callInvite);
 
                         Bundle extras = new Bundle();
                         extras.putString("fromUsername", callInvite.getFrom());

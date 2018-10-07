@@ -28,11 +28,19 @@ public class CallActivity extends AppCompatActivity {
         setContentView( R.layout.activity_call );
         this.notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        handleCallIntent(this.getIntent());
     }
+
 
     @Override
     public void onNewIntent(Intent intent) {
+        handleCallIntent(intent);
+    }
+
+    private void handleCallIntent(Intent intent) {
         if (intent.getAction().equals("call.answer")) {
+            Toast.makeText(this, "EH BANGSAT", Toast.LENGTH_LONG).show();
             CallInvite inv = intent.getParcelableExtra( "invite");
             twilio.receiveCall(intent.getIntExtra("notificationId", 0),
                     inv);
