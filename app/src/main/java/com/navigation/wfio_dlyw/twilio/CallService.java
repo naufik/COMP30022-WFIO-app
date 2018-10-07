@@ -52,7 +52,6 @@ public class CallService extends IntentService {
             case "call.answer":
                 acceptCall(intent);
                 break;
-
             case "call.stop":
                 disconnectCall(intent);
                 break;
@@ -62,24 +61,29 @@ public class CallService extends IntentService {
             default:
                 break;
         }
-        sendBroadcast(intent);
     }
 
     private void acceptCall(Intent intent) {
         twilio.acceptCall( new TwilioUtils.TwilioCallListener() {
             @Override
             public void onConnected(Call call) {
-
+                Intent i = new Intent();
+                i.setAction("call.onconnected");
+                sendBroadcast(i);
             }
 
             @Override
             public void onDisconnected(Call call) {
-
+                Intent i = new Intent();
+                i.setAction("call.ondisonnect");
+                sendBroadcast(i);
             }
 
             @Override
             public void onFailure(Call call) {
-
+                Intent i = new Intent();
+                i.setAction("call.onfailure");
+                sendBroadcast(i);
             }
         } );
     }
@@ -98,17 +102,23 @@ public class CallService extends IntentService {
         twilio.startCall(intent.getStringExtra( "to" ), new TwilioUtils.TwilioCallListener() {
             @Override
             public void onConnected(Call call) {
-
+                Intent i = new Intent();
+                i.setAction("call.onconnected");
+                sendBroadcast(i);
             }
 
             @Override
             public void onDisconnected(Call call) {
-
+                Intent i = new Intent();
+                i.setAction("call.ondisonnect");
+                sendBroadcast(i);
             }
 
             @Override
             public void onFailure(Call call) {
-
+                Intent i = new Intent();
+                i.setAction("call.onfailure");
+                sendBroadcast(i);
             }
         } );
     }
