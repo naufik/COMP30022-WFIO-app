@@ -16,5 +16,6 @@ public class InitializeService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         AudioManager audioMgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioMgr.setSpeakerphoneOn(true);
+
     }
 }

@@ -3,6 +3,8 @@ package com.navigation.wfio_dlyw.navigation;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.net.rtp.AudioStream;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -42,6 +44,9 @@ public class CallActivity extends AppCompatActivity {
         this.notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         handleCallIntent(this.getIntent());
+
+
+        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
     }
 
 
@@ -80,8 +85,7 @@ public class CallActivity extends AppCompatActivity {
             twilio.getInstance(this).startCall( recipient, new TwilioUtils.TwilioCallListener() {
                 @Override
                 public void onConnected(Call call) {
-                    Toast.makeText( CallActivity.this, "CALLED IT", Toast.LENGTH_LONG)
-                            .show();
+
                 }
 
                 @Override
