@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -144,6 +146,16 @@ public class MessageList extends AppCompatActivity{
                 item.setEnabled(true);
             }
         };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("call.ondisconnect");
+        filter.addAction("call.onconnected");
+        filter.addAction("call.onfailure");
+        filter.addAction("call.onfailure");
+
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(callEventsHandler,
+                filter);
     }
 
 

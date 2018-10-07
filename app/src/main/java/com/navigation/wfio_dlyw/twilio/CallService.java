@@ -56,14 +56,13 @@ public class CallService extends IntentService {
             case "call.stop":
                 disconnectCall(intent);
                 break;
-
             case "call.decline":
                 declineCall(intent);
                 break;
-
             default:
                 break;
         }
+        sendBroadcast(intent);
     }
 
     private void acceptCall(Intent intent) {
