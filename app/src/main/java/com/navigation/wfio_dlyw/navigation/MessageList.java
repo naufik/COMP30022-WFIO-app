@@ -121,41 +121,6 @@ public class MessageList extends AppCompatActivity{
             }
         });
 
-        callEventsHandler = new CallService.CallServiceReceiver() {
-            private MenuItem item =
-                    findViewById(R.id.call_button);
-
-            @Override
-            public void onDisconnect() {
-                item.setIcon(R.drawable.ic_call);
-                item.setEnabled(true);
-            }
-
-            @Override
-            public void onConnected() {
-                Toolbar toolbar = findViewById(R.id.toolbarML);
-                toolbar.setTitle("ON CALL: ");
-
-                item.setIcon(R.drawable.ic_hangup);
-                item.setEnabled(true);
-            }
-
-            @Override
-            public void onCallFailure() {
-                item.setIcon(R.drawable.ic_call);
-                item.setEnabled(true);
-            }
-        };
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("call.ondisconnect");
-        filter.addAction("call.onconnected");
-        filter.addAction("call.onfailure");
-        filter.addAction("call.onfailure");
-
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(callEventsHandler,
-                filter);
     }
 
 
@@ -191,6 +156,50 @@ public class MessageList extends AppCompatActivity{
             mRecorder.release();
             mRecorder = null;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.messaging, menu);
+        callEventsHandler = new CallService.CallServiceReceiver() {
+            private MenuItem item =
+                    findViewById(R.id.call_button);
+
+            @Override
+            public void onDisconnect() {
+                item.setIcon(R.drawable.ic_call);
+                item.setEnabled(true);
+            }
+
+            @Override
+            public void onConnected() {
+                Toolbar toolbar = findViewById(R.id.toolbarML);
+                toolbar.setTitle("ON CALL: ");
+
+                item.setIcon(R.drawable.ic_hangup);
+                item.setEnabled(true);
+            }
+
+            @Override
+            public void onCallFailure() {
+                item.setIcon(R.drawable.ic_call);
+                item.setEnabled(true);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("call.ondisconnect");
+        filter.addAction("call.onconnected");
+        filter.addAction("call.onfailure");
+        filter.addAction("call.onfailure");
+
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(callEventsHandler,
+                filter);
+        return true;
     }
 
     @Override
@@ -235,12 +244,6 @@ public class MessageList extends AppCompatActivity{
         messagesView.setSelection(messagesView.getCount() - 1);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.messaging,menu);
-        return true;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
