@@ -39,6 +39,7 @@ public class AnswerHelp extends AppCompatActivity {
             Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
             startIntent.setAction("can-help");
             startIntent.putExtra("from", getIntent().getStringExtra("from"));
+            this.finish();
             startActivity(startIntent);
         });
 
@@ -46,6 +47,7 @@ public class AnswerHelp extends AppCompatActivity {
         decline.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
             startIntent.setAction("cannot-help");
+            this.finish();
             startActivity(startIntent);
         });
     }
