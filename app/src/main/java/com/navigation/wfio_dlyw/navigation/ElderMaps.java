@@ -104,6 +104,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
+            Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
                 case MSG_REQUEST_ROUTE:
                     // Update map with new route
