@@ -74,7 +74,7 @@ public class CallActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call call) {
-
+                    CallActivity.this.finish();
                 }
             } );
 
@@ -95,7 +95,7 @@ public class CallActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call call) {
-
+                    CallActivity.this.finish();
                 }
             } );
         }
