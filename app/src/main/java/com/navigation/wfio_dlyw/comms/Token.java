@@ -1,9 +1,11 @@
 package com.navigation.wfio_dlyw.comms;
 
+import com.navigation.wfio_dlyw.navigation.Message;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Date;
+import java.util.ArrayList;
 
 public class Token{
     private static Token instance;
@@ -15,7 +17,8 @@ public class Token{
     private String email;
     private String fullname;
     private JSONArray connections;
-    private JSONArray messages;
+    private JSONArray serverMessages;
+    private ArrayList<Message> sessionMessages;
     private JSONObject currentConnection;
     private String username;
 
@@ -29,7 +32,7 @@ public class Token{
 
     // Restrict the constructor from being instantiated
     private Token(){
-        this.messages = new JSONArray();
+        this.serverMessages = new JSONArray();
     }
 
     public void setValue(String data){
@@ -97,11 +100,15 @@ public class Token{
         this.currentConnection = currentConnection;
     }
 
-    public JSONArray getMessages() {
-        return messages;
+    public JSONArray getServerMessages() {
+        return serverMessages;
     }
 
-    public void setMessages(JSONArray messages) {
-        this.messages = messages;
+    public ArrayList<Message> getSessionMessages() {
+        return sessionMessages;
+    }
+
+    public void createSessionMessages () {
+        this.sessionMessages = new ArrayList<>();
     }
 }

@@ -13,8 +13,6 @@ import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
 
-import java.lang.reflect.Array;
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -60,7 +58,7 @@ public class MsgUpdateService extends IntentService {
                     req.requestAction(ServerAction.MESSAGE_PULL, null, t->{
                         try {
                             for (int i=0; i<t.getJSONObject("result").getJSONArray("messages").length(); i++){
-                                token.getMessages().put(t.getJSONObject("result").getJSONArray("messages").getJSONObject(i));
+                                token.getServerMessages().put(t.getJSONObject("result").getJSONArray("messages").getJSONObject(i));
                                 Toast.makeText(MsgUpdateService.this, "messages pulled", Toast.LENGTH_SHORT).show();
                             }
                         }catch(JSONException e) {}
