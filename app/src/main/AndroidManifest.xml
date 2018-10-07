@@ -100,7 +100,8 @@
         <activity android:name=".MessageList" />
         <activity android:name=".MessageListElder" />
 
-        <service android:name=".MsgUpdateService" />
+        <service android:name=".MsgUpdateService"/>
+        <service android:name=".InitializeService"/>
         <service android:name="com.navigation.wfio_dlyw.comms.NotifyService" />
         <service android:name="com.navigation.wfio_dlyw.comms.NotificationService" />
         <service android:name="com.navigation.wfio_dlyw.comms.FirebaseNotificationService">
