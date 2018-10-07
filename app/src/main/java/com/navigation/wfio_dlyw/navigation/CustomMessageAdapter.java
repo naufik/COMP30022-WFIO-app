@@ -1,8 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +10,12 @@ import android.widget.TextView;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CustomMessageAdapter extends ArrayAdapter<Message> {
+
     public CustomMessageAdapter(Context context, ArrayList<Message> messages) {
         super(context, 0, messages);
+
     }
 
     @Override

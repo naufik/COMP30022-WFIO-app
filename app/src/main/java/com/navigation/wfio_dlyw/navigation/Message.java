@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 // Message.java
 public class Message {
