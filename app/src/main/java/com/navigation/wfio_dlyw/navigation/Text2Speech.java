@@ -72,14 +72,12 @@ public class Text2Speech {
     public void read(String text){
         Intent checkIntent = new Intent();
         checkIntent.setAction(android.speech.tts.TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-        Log.d("T2T", "Read being launch");
 
         t1=new android.speech.tts.TextToSpeech(application, new OnInitListener() {
             @Override
             public void onInit(int status) {
                 if(status != android.speech.tts.TextToSpeech.ERROR) {
                     t1.setLanguage(Locale.UK);
-                    Log.d("T2T", "ON init success");
                     t1.speak(text, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, null);
                 }
             }
