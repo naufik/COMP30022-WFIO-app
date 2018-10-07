@@ -12,18 +12,12 @@ public class CallService extends IntentService {
 
     private TwilioUtils twilio;
 
-    public abstract class CallServiceReceiver extends BroadcastReceiver {
-        private TwilioUtils.TwilioCallListener onReceive;
-
+    public static abstract class CallServiceReceiver extends BroadcastReceiver {
         public abstract void onDisconnect();
 
         public abstract void onConnected();
 
         public abstract void onCallFailure();
-
-        public CallServiceReceiver(TwilioUtils.TwilioCallListener listener) {
-            this.onReceive = listener;
-        }
 
         @Override
         public void onReceive(Context context, Intent intent) {

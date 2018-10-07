@@ -19,17 +19,6 @@ import java.util.function.UnaryOperator;
 
 public class TwilioUtils {
 
-    public class VoiceBroadcastReceiver extends BroadcastReceiver {
-
-        public VoiceBroadcastReceiver(TwilioUtils.TwilioCallListener listener)  {
-
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
-    }
 
     public interface TwilioCallListener {
         public void onConnected(Call call);

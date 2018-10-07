@@ -2,6 +2,7 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
@@ -37,6 +38,7 @@ import java.util.function.Function;
 public class MessageList extends AppCompatActivity{
 
     private TwilioUtils twilio;
+    private BroadcastReceiver callEventsHandler;
 
     private String toName;
     private String toUserName;
@@ -116,6 +118,32 @@ public class MessageList extends AppCompatActivity{
                 return false;
             }
         });
+
+        callEventsHandler = new CallService.CallServiceReceiver() {
+            private MenuItem item =
+                    findViewById(R.id.call_button);
+
+            @Override
+            public void onDisconnect() {
+                item.setIcon(R.drawable.ic_hangup);
+                item.setEnabled(true);
+            }
+
+            @Override
+            public void onConnected() {
+                Toolbar toolbar = findViewById(R.id.toolbarML);
+                toolbar.setTitle("ON CALL: ");
+
+                item.setIcon(R.drawable.ic_hangup);
+                item.setEnabled(true);
+            }
+
+            @Override
+            public void onCallFailure() {
+                item.setIcon(R.drawable.ic_hangup);
+                item.setEnabled(true);
+            }
+        };
     }
 
 
@@ -211,7 +239,8 @@ public class MessageList extends AppCompatActivity{
                 } else {
                     stopCall();
                 }
-                changeUI(item);
+
+                findViewById(R.id.call_button).setEnabled(false);
                 return true;
             case R.id.clips_button:
                 Intent intent = new Intent(getApplicationContext(), StoreClips.class);
@@ -223,10 +252,6 @@ public class MessageList extends AppCompatActivity{
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void changeUI(MenuItem item) {
-        item.setIcon(twilio.getCall() == null ? R.drawable.ic_call : R.drawable.ic_hangup);
     }
 
     private void makeCall() {
