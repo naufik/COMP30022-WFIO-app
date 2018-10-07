@@ -1,6 +1,8 @@
 package com.navigation.wfio_dlyw.twilio;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
@@ -9,6 +11,37 @@ import com.twilio.voice.Call;
 public class CallService extends IntentService {
 
     private TwilioUtils twilio;
+
+    public abstract class CallServiceReceiver extends BroadcastReceiver {
+        private TwilioUtils.TwilioCallListener onReceive;
+
+        public abstract void onDisconnect();
+
+        public abstract void onConnected();
+
+        public abstract void onCallFailure();
+
+        public CallServiceReceiver(TwilioUtils.TwilioCallListener listener) {
+            this.onReceive = listener;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case "call.ondisconnect":
+                    onDisconnect();
+                    break;
+                case "call.onconnected":
+                    onConnected();
+                    break;
+                case "call.onfailure":
+                    onCallFailure();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     public CallService() {
         super("CallService");

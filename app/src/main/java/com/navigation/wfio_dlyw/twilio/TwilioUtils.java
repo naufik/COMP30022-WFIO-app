@@ -1,7 +1,9 @@
 package com.navigation.wfio_dlyw.twilio;
 
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,6 +18,18 @@ import java.util.HashMap;
 import java.util.function.UnaryOperator;
 
 public class TwilioUtils {
+
+    public class VoiceBroadcastReceiver extends BroadcastReceiver {
+
+        public VoiceBroadcastReceiver(TwilioUtils.TwilioCallListener listener)  {
+
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
+    }
 
     public interface TwilioCallListener {
         public void onConnected(Call call);
