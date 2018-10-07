@@ -14,6 +14,14 @@ import java.util.function.UnaryOperator;
 
 public class TwilioUtils {
 
+    public interface TwilioCallListener {
+        public void onConnected(Call call);
+
+        public void onDisconnected(Call call);
+
+        public void onFailure(Call call);
+    }
+
     private static TwilioUtils instance;
     private static Context pastContext;
 
@@ -57,14 +65,12 @@ public class TwilioUtils {
     }
 
     public static Call.Listener buildListener(Context ctx,
-                                              UnaryOperator<Call> onConnect,
-                                              UnaryOperator<Call> onError,
-                                              UnaryOperator<Call> onDisconnect) {
+                                              TwilioCallListener listener) {
         return new Call.Listener() {
             @Override
             public void onConnectFailure(Call call, CallException e) {
-                if (onError != null) {
-                    onError.apply( call );
+                if (listener != null) {
+                    listener.onFailure( call );
                 }
                 if (e != null) {
                     Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG)
@@ -77,16 +83,16 @@ public class TwilioUtils {
 
             @Override
             public void onConnected(Call call) {
-                if (onConnect != null) {
-                    onConnect.apply( call );
+                if (listener != null) {
+                    listener.onConnected( call );
                 }
                 instance.activeCall = call;
             }
 
             @Override
             public void onDisconnected(Call call, CallException e) {
-                if (onDisconnect != null) {
-                    onDisconnect.apply(call);
+                if (listener != null) {
+                    listener.onDisconnected(call);
                 }
                 if (e != null) {
                     Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG)
