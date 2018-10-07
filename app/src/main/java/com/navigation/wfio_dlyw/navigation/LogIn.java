@@ -67,7 +67,7 @@ public class LogIn extends AppCompatActivity {
                         String s = t.getJSONObject("result").getString("token");
                         token.setValue(s);
                         token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
-                        Toast.makeText(this.getApplicationContext(), token.getType(), Toast.LENGTH_LONG).show();
+                        //  Toast.makeText(this.getApplicationContext(), token.getType(), Toast.LENGTH_LONG).show();
                         token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
                         token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
@@ -79,7 +79,7 @@ public class LogIn extends AppCompatActivity {
                                     token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
                                     } catch (JSONException e) {}
                              }, new Credentials(token.getEmail(), token.getValue()));
-
+                            token.createSessionMessages();
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
@@ -90,7 +90,7 @@ public class LogIn extends AppCompatActivity {
                                     token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
                                 } catch (JSONException e) {}
                             }, new Credentials(token.getEmail(), token.getValue()));
-
+                            token.createSessionMessages();
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);

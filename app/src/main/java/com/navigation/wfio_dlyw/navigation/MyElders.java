@@ -70,8 +70,8 @@ public class MyElders extends AppCompatActivity {
                 for (int i = 0; i < eList.length(); ++i) {
                     JSONObject currentElder = eList.getJSONObject(i);
                     insertItem(i, new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getString("username"), currentElder.getInt("id")));
-                    Log.d("online Elder", ""+currentElder.getInt("id"));
-                    Log.d("offline Elder", ""+t.getConnections().getJSONObject(i).getInt("id"));
+                    //Log.d("online Elder", ""+currentElder.getInt("id"));
+                    //Log.d("offline Elder", ""+t.getConnections().getJSONObject(i).getInt("id"));
                 }
             } catch (Exception e) {
 
@@ -118,12 +118,12 @@ public class MyElders extends AppCompatActivity {
                 Token t = Token.getInstance();
                 Log.d("itemPrint", ""+elders.get(position).getmId());
                 try {
-                    Log.d("itemCompare", "" + t.getConnections().getJSONObject(position).getInt("id")); 
+                    String name = t.getConnections().getJSONObject(position).getString("fullname");
                     t.getConnections().remove(position);
                     JSONObject params = new JSONObject();
                     params.put("connections",t.getConnections());
                     req.requestAction(ServerAction.USER_MODIFY_RECORD,params,delete->{
-                        Toast.makeText(MyElders.this, "updated connections list", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyElders.this, name + " is no longer connected with you", Toast.LENGTH_SHORT).show();
                     },new Credentials(t.getEmail(),t.getValue()));
                 } catch (JSONException e) {}
 

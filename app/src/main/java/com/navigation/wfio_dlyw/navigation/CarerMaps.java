@@ -134,7 +134,6 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
