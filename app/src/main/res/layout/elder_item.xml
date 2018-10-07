@@ -2,24 +2,27 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="4dp">
+    app:cardCornerRadius="4dp"
+    app:cardBackgroundColor="@color/pink">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="4dp"
+        android:background="@color/pink"
         android:layout_marginBottom="4dp">
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:text="Line 1"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_alignParentTop="true"
             android:id="@+id/fullnameEI"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Line 1"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

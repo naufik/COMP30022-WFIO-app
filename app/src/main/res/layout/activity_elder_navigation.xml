@@ -11,33 +11,32 @@
         android:id="@+id/navigationSearchField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="21dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Type Here"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/favoritesButton"
+        app:layout_constraintBottom_toTopOf="@+id/searchButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleEN"
-        app:layout_constraintVertical_bias="0.307" />
+        app:layout_constraintTop_toBottomOf="@+id/titleEN" />
 
     <TextView
         android:id="@+id/titleEN"
         android:layout_width="264dp"
         android:layout_height="90dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="116dp"
         android:gravity="center"
         android:text="Where do you want to go?"
         android:textSize="36sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/navigationSearchField"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -49,10 +48,12 @@
         android:layout_marginBottom="168dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Favorites"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchButton" />
 
     <Button
         android:id="@+id/searchButton"
@@ -61,49 +62,50 @@
         android:layout_marginBottom="224dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="9dp"
         android:onClick="sendDestination"
         android:text="Search"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/navigationSearchField" />
+
+    <!--<android.support.v7.widget.Toolbar-->
+        <!--android:id="@+id/toolbarEN"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?attr/actionBarSize"-->
+        <!--android:background="?attr/colorPrimary"-->
+        <!--android:elevation="4dp"-->
+        <!--android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarEN"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/notif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:onClick="sendOnChannel"
-        android:text="Notif"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/favoritesButton" />
+    <com.miguelcatalan.materialsearchview.MaterialSearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/AR"
         android:layout_width="wrap_content"
         android:layout_height="52dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="1dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="AR View"
-        app:layout_constraintBottom_toTopOf="@+id/notif"
+        app:layout_constraintBottom_toTopOf="@+id/nofifyAll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/favoritesButton" />
@@ -115,9 +117,25 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="2dp"
         android:text="Elder Message"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nofifyAll" />
+
+    <Button
+        android:id="@+id/nofifyAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="notify All"
+        app:layout_constraintBottom_toTopOf="@+id/eldermsg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/AR" />
 
 </android.support.constraint.ConstraintLayout>

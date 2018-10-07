@@ -1,13 +1,17 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -15,6 +19,7 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -25,25 +30,25 @@ public class MyElders extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ConnectAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private AlertDialog.Builder builder = null;
+    private Requester req = Requester.getInstance(this);
 
-    private Button buttonInsert;
-    private Button buttonRemove;
-    private EditText editTextInsert;
-    private EditText editTextRemove;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         elders = new ArrayList<>();
         setContentView(R.layout.activity_my_elders);
+        builder = new AlertDialog.Builder(this);
+
+        Toolbar myToolbar = findViewById(R.id.toolbarME);
+        setSupportActionBar(myToolbar);
 
         createElders();
         buildRecyclerViewer();
-        setButtons();
-
     }
 
-    public void insertItem(int position){
-        elders.add(position, new ElderItem("New Item At Position"+position, "This is Line 2"));
+    public void insertItem(int position, ElderItem item){
+        elders.add(position, item);
         mAdapter.notifyItemInserted(position);
     }
 
@@ -64,16 +69,16 @@ public class MyElders extends AppCompatActivity {
                 JSONArray eList = res.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList");
                 for (int i = 0; i < eList.length(); ++i) {
                     JSONObject currentElder = eList.getJSONObject(i);
-                    elders.add(
-                            new ElderItem("" + currentElder.getInt("id"), "" + currentElder.getInt("id"))
-                    );
+                    insertItem(i, new ElderItem("" + currentElder.getString("fullname"), "" + currentElder.getString("username"), currentElder.getInt("id")));
+                    Log.d("online Elder", ""+currentElder.getInt("id"));
+                    Log.d("offline Elder", ""+t.getConnections().getJSONObject(i).getInt("id"));
                 }
             } catch (Exception e) {
 
             }
         }, new Credentials(t.getEmail(), t.getValue()));
-        elders.add(new ElderItem("test", "stacy"));
     }
+
 
     public void buildRecyclerViewer(){
         mRecyclerView = findViewById(R.id.recyclerView);
@@ -85,16 +90,18 @@ public class MyElders extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         mAdapter.setOnItemClickListener(new ConnectAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(int position) {
-//                changeItem(position, "clicked");
-//            }
 
             @Override
             public void onItemClick(int position){
                 Intent intent = new Intent(MyElders.this, MessageList.class);
                 intent.putExtra("Example Item", elders.get(position));
-                startActivity(intent);
+                try {
+                    Token.getInstance().setCurrentConnection(Token.getInstance().getConnections()
+                            .getJSONObject(position));
+                    startActivity(intent);
+                } catch (JSONException e) {
+
+                }
             }
 
             //CarerHome should be changed to ElderMaps instead
@@ -108,35 +115,44 @@ public class MyElders extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(int position) {
+                Token t = Token.getInstance();
+                Log.d("itemPrint", ""+elders.get(position).getmId());
+                try {
+                    Log.d("itemCompare", "" + t.getConnections().getJSONObject(position).getInt("id")); 
+                    t.getConnections().remove(position);
+                    JSONObject params = new JSONObject();
+                    params.put("connections",t.getConnections());
+                    req.requestAction(ServerAction.USER_MODIFY_RECORD,params,delete->{
+                        Toast.makeText(MyElders.this, "updated connections list", Toast.LENGTH_SHORT).show();
+                    },new Credentials(t.getEmail(),t.getValue()));
+                } catch (JSONException e) {}
+
                 removeItem(position);
             }
         });
     }
 
-    public void setButtons(){
-        buttonInsert = findViewById(R.id.button_insert);
-        buttonRemove = findViewById(R.id.button_remove);
-        editTextInsert = findViewById(R.id.edittext_insert);
-        editTextRemove = findViewById(R.id.edittext_remove);
-
-        buttonInsert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = Integer.parseInt(editTextInsert.getText().toString());
-                insertItem(position);
-            }
-        });
-
-        buttonRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int position = Integer.parseInt(editTextRemove.getText().toString());
-                removeItem(position);
-            }
-        });
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.back,menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.back_button:
+                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
+                startActivity(startIntent);
+                return true;
 
-
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }
+
+

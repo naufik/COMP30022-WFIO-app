@@ -1,16 +1,14 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.Token;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Timer;
@@ -20,7 +18,6 @@ public class MessageListElder extends AppCompatActivity {
 
     private MessageAdapter messageAdapter;
     private ListView messagesView;
-    private Service autoCheck;
     Intent serviceIntent;
 
     @Override
@@ -33,8 +30,8 @@ public class MessageListElder extends AppCompatActivity {
         messageAdapter = new MessageAdapter(this);
         messagesView = findViewById(R.id.messages_view);
         messagesView.setAdapter(messageAdapter);
-        Requester req = Requester.getInstance(this);
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("poll");
         startService(serviceIntent);
 
         TimerTask task = new TimerTask() {
@@ -42,10 +39,26 @@ public class MessageListElder extends AppCompatActivity {
             public void run() {
                 runOnUiThread(() -> {
                     try {
+                        JSONArray temp = new JSONArray();
                         while (token.getMessages().length() > 0) {
-                            onMessage(token.getMessages().getJSONObject(0).getString("content"));
-                            token.getMessages().remove(0);
+                            if (token.getMessages().getJSONObject(0).getInt("from") == token.getCurrentConnection().getInt("id")) {
+                                int senderID = token.getMessages().getJSONObject(0).getInt("from");
+                                String sender = "error";
+                                for (int i = 0; i < token.getConnections().length(); i++) {
+                                    if (token.getConnections().getJSONObject(i).getInt("id") == senderID) {
+                                        sender = token.getConnections().getJSONObject(i).getString("fullname");
+                                    }
+                                }
+                                token.getConnections().getJSONObject(0).getInt("id");
+                                onMessage(token.getMessages().getJSONObject(0).getString("content"), sender);
+                                token.getMessages().remove(0);
+                            }
+                            else {
+                                temp.put(token.getMessages().getJSONObject(0));
+                                token.getMessages().remove(0);
+                            }
                         }
+                        token.setMessages(temp);
                     } catch (JSONException e) {}
                 });
             }
@@ -53,10 +66,10 @@ public class MessageListElder extends AppCompatActivity {
         };
         timer.schedule(task, 0,1000);
     }
-    public void onMessage(String message) {
+    public void onMessage(String message, String sender) {
         //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
         //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "astuti", false);
+        Message message1 = new Message(message, sender, false);
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
@@ -64,13 +77,17 @@ public class MessageListElder extends AppCompatActivity {
 
     @Override
     public void onPause(){
+        this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("stop");
+        startService(serviceIntent);
         super.onPause();
-        stopService(serviceIntent);
     }
 
     @Override
     public void onStop(){
+        this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("stop");
+        startService(serviceIntent);
         super.onStop();
-        stopService(serviceIntent);
     }
 }
