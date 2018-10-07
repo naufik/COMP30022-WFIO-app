@@ -15,6 +15,9 @@ import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.twilio.voice.*;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class CallActivity extends AppCompatActivity {
 
     public static final String TOKEN_ENDPOINT_URL = "https://rawon.naufik.net/voice/accessToken";
@@ -28,7 +31,6 @@ public class CallActivity extends AppCompatActivity {
         setContentView( R.layout.activity_call );
         this.notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         handleCallIntent(this.getIntent());
     }
 
@@ -46,8 +48,29 @@ public class CallActivity extends AppCompatActivity {
                     inv);
 
             // placeholder events, this declines all calls as soon as they are received.
-            twilio.declineCall(this);
+            // twilio.declineCall(this);
 
+            twilio.acceptCall( new TwilioUtils.TwilioCallListener() {
+                @Override
+                public void onConnected(Call call) {
+                    Toast.makeText( CallActivity.this,
+                            "NOW YOU ARE IN CALL",
+                            Toast.LENGTH_LONG).show();
+
+                    Timer t = new Timer();
+
+                }
+
+                @Override
+                public void onDisconnected(Call call) {
+
+                }
+
+                @Override
+                public void onFailure(Call call) {
+
+                }
+            } );
             this.notificationManager.cancel(twilio.getCurrentCallNotificationId());
         }
     }

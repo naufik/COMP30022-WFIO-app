@@ -41,19 +41,27 @@ public class TwilioUtils {
     }
 
     public void receiveCall(int notificationId, CallInvite invite) {
+        if (this.activeCall != null || this.activeCallInvite != null) {
+            invite.reject(this.pastContext);
+            return;
+        }
         this.activeCallInvite = invite;
         this.activeCallNotificationId = notificationId;
     }
 
-    private void setCall(Call call) {
-        this.activeCall = call;
+    public void acceptCall(TwilioCallListener listener) {
+        if (this.activeCallInvite != null) {
+            activeCallInvite.accept(pastContext,
+                    TwilioUtils.buildListener(pastContext, listener));
+        }
+        this.activeCallInvite = null;
     }
 
-    public void declineCall(Context ctx) {
+    public void declineCall() {
         if (this.activeCallInvite != null) {
-            this.activeCallInvite.reject(ctx);
-            this.activeCallInvite = null;
+            this.activeCallInvite.reject(this.pastContext);
         }
+        this.activeCallInvite = null;
     }
 
     public CallInvite getActiveCallInvite() {
