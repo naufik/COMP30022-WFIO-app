@@ -166,7 +166,7 @@ public class MessageList extends AppCompatActivity{
         inflater.inflate(R.menu.messaging, menu);
         callEventsHandler = new CallService.CallServiceReceiver() {
             private MenuItem item =
-                    findViewById(R.id.call_button);
+                    menu.getItem(0);
 
             @Override
             public void onDisconnect() {
@@ -249,10 +249,9 @@ public class MessageList extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.call_button:
-                MenuItem menu = (MenuItem) findViewById(R.id.call_button);
                 if (twilio.getCall() == null) {
                     makeCall();
-                    menu.setIcon(R.drawable.ic_hangup);
+                    item.setIcon(R.drawable.ic_hangup);
                 } else {
                     stopCall();
                 }
