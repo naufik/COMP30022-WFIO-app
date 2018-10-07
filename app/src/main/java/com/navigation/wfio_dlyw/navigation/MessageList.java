@@ -3,33 +3,39 @@ package com.navigation.wfio_dlyw.navigation;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.*;
+import com.twilio.voice.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.function.Function;
 
 
 public class MessageList extends AppCompatActivity{
+
+    private String toName;
+    private String toUserName;
+    private boolean onCall = false;
 
     private EditText editText;
     private MessageAdapter messageAdapter;
@@ -43,13 +49,13 @@ public class MessageList extends AppCompatActivity{
     private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
-    private MediaPlayer mPlayer = null;
     private Button mRecord;
 
     private ArrayList<String> fileNames = new ArrayList<>();
     private Button viewClips;
-    private Button playButton;
     private int fileCount = 0;
+
+    private int recipientID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +66,20 @@ public class MessageList extends AppCompatActivity{
         editText = findViewById(R.id.messageInput);
 
         Intent intent = getIntent();
+        /*
         ElderItem elderItem = intent.getParcelableExtra("Example Item");
         String name = elderItem.getmText1();
+        recipientID = elderItem.getmId(); */
+        try {
+            recipientID = Token.getInstance().getCurrentConnection().getInt("id");
+            Toolbar myToolbar = findViewById(R.id.toolbarML);
+            myToolbar.setTitle("");
+            setSupportActionBar(myToolbar);
+            this.toName = Token.getInstance().getCurrentConnection().getString("fullname");
+            this.toUserName = Token.getInstance().getCurrentConnection().getString("username");
+            myToolbar.setTitle(this.toName);
+        } catch (JSONException e) {}
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarML);
-        myToolbar.setTitle("");
-        setSupportActionBar(myToolbar);
-        myToolbar.setTitle(name);
 
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
@@ -91,18 +104,8 @@ public class MessageList extends AppCompatActivity{
                 return false;
             }
         });
-        viewClips = findViewById(R.id.viewClips);
-
-        viewClips.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), StoreClips.class);
-                intent.putExtra("fileNames", fileNames);
-                startActivity(intent);
-            }
-        });
-
     }
+
 
     private void startRecording() {
         mRecorder = new MediaRecorder();
@@ -152,12 +155,16 @@ public class MessageList extends AppCompatActivity{
     public void sendMessage(View view) {
         String message = editText.getText().toString();
 
+        if (message.equals("")){
+            return;
+        }
+
         Token token = Token.getInstance();
         Requester req = Requester.getInstance(this);
         try {
             JSONObject param = new JSONObject();
             //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
-            param.put("recipient",5).put("content", message);
+            param.put("recipient",recipientID).put("content", message);
             req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
         } catch (JSONException e) {}
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -170,9 +177,48 @@ public class MessageList extends AppCompatActivity{
     public void onMessage(String message) {
         //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
         //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "astuti", true);
+        Message message1 = new Message(message, "You", true);
         messageAdapter.add(message1);
         // scroll the ListView to the last added element
         messagesView.setSelection(messagesView.getCount() - 1);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.messaging,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String to = "alice";
+        switch (item.getItemId()) {
+            case R.id.call_button:
+                this.makeCall();
+                return true;
+            case R.id.clips_button:
+                Intent intent = new Intent(getApplicationContext(), StoreClips.class);
+                intent.putExtra("fileNames", fileNames);
+                startActivity(intent);
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void makeCall(){
+        try {
+            Intent callIntent = new Intent(this, CallActivity.class);
+            callIntent.setAction("call.start");
+            callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
+                .getString("username"));
+            startActivity(callIntent);
+        } catch (JSONException e) {
+            Toast.makeText( this, "currently not being connected to anyone" ,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }

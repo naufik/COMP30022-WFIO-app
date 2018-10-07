@@ -3,7 +3,6 @@ package com.navigation.wfio_dlyw.navigation;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -25,8 +24,7 @@ public class StoreClips extends AppCompatActivity implements View.OnClickListene
 
         setContentView(R.layout.activity_store_clips);
 
-        Log.d("Interactions",fileNames.size()+"");
-        parent = (LinearLayout)findViewById(R.id.list);
+        parent = findViewById(R.id.list);
         for(String i : fileNames){
             playButton = new Button(this);
             playButton.setId(counter);
@@ -60,8 +58,6 @@ public class StoreClips extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        String str = v.getTag().toString();
-        Log.d("Interactions",str);
 
         startPlaying(v.getTag());
     }

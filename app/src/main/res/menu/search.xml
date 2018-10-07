@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_action_search"
+        android:orderInCategory="100"
+        android:title="@string/abc_search_hint"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/back_button"
+        android:icon="@drawable/backspace"
+        android:title="@string/back"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/star_button"
+        android:icon="@drawable/ic_star"
+        android:title="@string/star"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/sms_button"
+        android:icon="@drawable/ic_sms"
+        android:title="@string/sms"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:id="@+id/sos_button"
+        android:icon="@drawable/ic_alert"
+        android:title="@string/sos"
+        app:showAsAction="ifRoom"
+        />
+</menu>

@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -11,19 +12,29 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class NewPassword extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_password);
+        Token token = Token.getInstance();
+        Requester req = Requester.getInstance(this);
 
-        Button newPasswordBtn = (Button)findViewById(R.id.newPasswordBtn);
+        Button newPasswordBtn = findViewById(R.id.newPasswordBtn);
         newPasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText newPassword = (EditText) findViewById(R.id.newPassword);
-                EditText retypeNewPassword = (EditText) findViewById(R.id.retypeNewPassword);
+                EditText newPassword = findViewById(R.id.newPassword);
+                EditText retypeNewPassword = findViewById(R.id.retypeNewPassword);
 
                 String newPasswordS = newPassword.getText().toString();
                 String retypeNewPasswordS = retypeNewPassword.getText().toString();
@@ -36,14 +47,29 @@ public class NewPassword extends AppCompatActivity {
                 }else if(!newPasswordS.equals(retypeNewPasswordS)){
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
                 }else{
-                    Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
-                    startActivity(startIntent);
+                    JSONObject params = new JSONObject();
+                    try {
+                        params.put("password", newPasswordS);
+                    } catch (JSONException e) {}
+                    req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t->{
+                    }, new Credentials(token.getEmail(), token.getValue()));
+                    Toast.makeText(NewPassword.this,"Password changes successfully",Toast.LENGTH_SHORT).show();
+                    if (token.getType().equals("ELDER")) {
+                        Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
+                        startActivity(startIntent);
+                        finish();
+                    }
+                    else {
+                        Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
+                        startActivity(startIntent);
+                        finish();
+                    }
                 }
             }
         });
 
         //for use outside of onclicklistener scope
-        EditText retypeNewPasswordEnter = (EditText) findViewById(R.id.retypeNewPassword);
+        EditText retypeNewPasswordEnter = findViewById(R.id.retypeNewPassword);
         retypeNewPasswordEnter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

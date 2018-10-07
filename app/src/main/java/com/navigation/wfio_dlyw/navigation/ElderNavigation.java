@@ -6,7 +6,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -24,28 +23,46 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
-public class ElderNavigation extends AppCompatActivity {
-    private NotificationManagerCompat notificationManager;
-    public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
-    public static final String channel_1_ID = "channel 1";
+import org.json.JSONException;
+import org.json.JSONObject;
 
-   private final Context context = this;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ElderNavigation extends AppCompatActivity {
+    public static final String EXTRA_DESTINATION = "com.navigation.wfio_dlyw.navigation.DESTINATION";
+    private static final int MAX_SUGGESTIONS = 100;
+    private Intent favouriteIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Token token = Token.getInstance();
-        Toast.makeText(this , token.getValue(), Toast.LENGTH_LONG).show();
         setContentView(R.layout.activity_elder_navigation);
-        createNotificationChannels();
-        notificationManager = NotificationManagerCompat.from(this);
 
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEN);
         setSupportActionBar(myToolbar);
-
-        Button elderMessage = (Button) findViewById(R.id.eldermsg);
+        String email = getIntent().getStringExtra("from");
+        if (email != null) {
+            for (int i = 0; i < token.getConnections().length(); i++){
+                try {
+                    JSONObject carer = token.getConnections().getJSONObject(i);
+                    if (carer.getString("email").equals(email)){
+                        token.setCurrentConnection(carer);
+                        Toast.makeText(this, "connected to " + carer.getString("fullname"), Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                } catch (JSONException e){}
+            }
+        }
+        Button elderMessage = findViewById(R.id.eldermsg);
         elderMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,72 +70,47 @@ public class ElderNavigation extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
-
-        Button arButton = (Button) findViewById(R.id.AR);
+        Button notifyAll = findViewById(R.id.nofifyAll);
+        notifyAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Requester minta = Requester.getInstance(getApplicationContext());
+                Token var = Token.getInstance();
+                minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+            }
+        });
+        Button arButton = findViewById(R.id.AR);
         arButton.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
+            startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(startIntent);
         });
+        Button favouriteButton = findViewById(R.id.favoritesButton);
+        favouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
+                startActivity(favouriteIntent);
 
+            }
+        });
 
     }
-
+    //currently carer maps for testing
     public void sendDestination(View view) {
         Intent intent = new Intent(this, ElderMaps.class);
-        EditText editText = (EditText) findViewById(R.id.navigationSearchField);
+        EditText editText = findViewById(R.id.navigationSearchField);
         String destination = editText.getText().toString();
         intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
     }
 
-    public void sendOnChannel(View v){
-        String title = "New Notif";
-        String message = "yeet";
-
-        //start an activity, then choose intent
-        Intent activityIntent = new Intent(this,     AnswerHelp.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this,
-                0, activityIntent, 0);
-
-        //instant intent
-        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
-        broadcastIntent.putExtra("toastMessage", message);
-        PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0,
-                broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification notification = new NotificationCompat.Builder(this, channel_1_ID)
-                .setSmallIcon(R.drawable.ic_child)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setColor(Color.BLUE)
-                //click this shows the new activity
-                .setContentIntent(contentIntent)
-                .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
-                //clicks Toast and creates new Intent use this to decline and answer help request immediately
-                .addAction(R.mipmap.ic_launcher, "Accept", actionIntent)
-                .addAction(R.mipmap.ic_launcher, "Decline",actionIntent)
-                .build();
-        //need to give different id's if you want to give multiple notifications instanteneously
-        notificationManager.notify(1, notification);
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
-
-
-    public void createNotificationChannels(){
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
-            NotificationChannel channel1= new NotificationChannel(
-                    channel_1_ID,
-                    "channel 1",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel1.setDescription("This is Channel 1");
-            channel1.enableVibration(true);
-            channel1.enableLights(true);
-
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel1);
-    }
-}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -133,7 +125,6 @@ public class ElderNavigation extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.back_button:
                 Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                Toast.makeText(this, "get back on it, come on come on", Toast.LENGTH_LONG).show();
                 startActivity(startIntent);
                 return true;
 
