@@ -56,7 +56,7 @@ public class ElderNavigation extends AppCompatActivity {
                     JSONObject carer = token.getConnections().getJSONObject(i);
                     if (carer.getString("email").equals(email)){
                         token.setCurrentConnection(carer);
-                        Toast.makeText(this, "connected to " + carer.getString("fullname"), Toast.LENGTH_SHORT).show();
+                        token.createSessionMessages();
                         break;
                     }
                 } catch (JSONException e){}

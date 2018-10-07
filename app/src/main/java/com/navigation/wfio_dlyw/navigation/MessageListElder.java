@@ -27,7 +27,7 @@ public class MessageListElder extends AppCompatActivity {
                 return;
             }
             populateUsersList();
-            handler.postDelayed(this,1500);
+            handler.postDelayed(this,700);
         }
     };
 
@@ -45,10 +45,8 @@ public class MessageListElder extends AppCompatActivity {
     private void populateUsersList() {
         Token token = Token.getInstance();
         // Construct the data source
-        Log.d("MLE", "populateUsersList Called");
         while (token.getServerMessages().length() > 0) {
             try {
-                Log.d("MLE", "Message exist in Token");
                 JSONObject curMessage = token.getServerMessages().getJSONObject(0);
                 if (curMessage.getInt("from") == token.getCurrentConnection().getInt("id")){
                     token.getSessionMessages().add(new Message(curMessage.getString("content"),token.getCurrentConnection().getString("fullname"),false));
@@ -77,6 +75,15 @@ public class MessageListElder extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        update= false;
+        this.serviceIntent = new Intent(this, MsgUpdateService.class);
+        this.serviceIntent.setAction("stop");
+        startService(serviceIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         update= false;
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
         this.serviceIntent.setAction("stop");

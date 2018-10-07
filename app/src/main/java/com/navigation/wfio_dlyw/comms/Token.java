@@ -32,7 +32,6 @@ public class Token{
 
     // Restrict the constructor from being instantiated
     private Token(){
-        this.serverMessages = new JSONArray();
     }
 
     public void setValue(String data){
@@ -92,7 +91,7 @@ public class Token{
         return instance;
     }
 
-    public JSONObject getCurrentConnection() {
+    public synchronized JSONObject getCurrentConnection() {
         return currentConnection;
     }
 
@@ -100,15 +99,16 @@ public class Token{
         this.currentConnection = currentConnection;
     }
 
-    public JSONArray getServerMessages() {
+    public synchronized JSONArray getServerMessages() {
         return serverMessages;
     }
 
-    public ArrayList<Message> getSessionMessages() {
+    public synchronized ArrayList<Message> getSessionMessages() {
         return sessionMessages;
     }
 
-    public void createSessionMessages () {
+    public synchronized void createSessionMessages () {
         this.sessionMessages = new ArrayList<>();
+        this.serverMessages = new JSONArray();
     }
 }
