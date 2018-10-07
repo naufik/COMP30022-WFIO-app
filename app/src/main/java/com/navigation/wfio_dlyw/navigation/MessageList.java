@@ -63,6 +63,12 @@ public class MessageList extends AppCompatActivity{
     private int recipientID;
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleCallIntent(intent);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
@@ -240,5 +246,17 @@ public class MessageList extends AppCompatActivity{
         Intent stopCallIntent = new Intent(this, CallService.class);
         stopCallIntent.setAction("call.stop");
         startService(stopCallIntent);
+    }
+
+    private void handleCallIntent(Intent intent) {
+        if (intent.getAction().equals("call.answer")) {
+            CallInvite invite = intent.getParcelableExtra("invite");
+            twilio.receiveCall(intent.getIntExtra("notificationId", 0),
+                    invite);
+            Intent answerIntent = new Intent(this, CallService.class);
+            answerIntent.setAction("call.answer");
+            answerIntent.putExtra("invite", invite);
+            startService(answerIntent);
+        }
     }
 }

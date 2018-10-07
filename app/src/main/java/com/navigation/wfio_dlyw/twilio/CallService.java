@@ -22,7 +22,7 @@ public class CallService extends IntentService {
             case "call.start":
                 startCall(intent);
                 break;
-            case "call.accept":
+            case "call.answer":
                 acceptCall(intent);
                 break;
 
