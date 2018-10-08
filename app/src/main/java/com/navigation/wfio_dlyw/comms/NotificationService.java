@@ -199,9 +199,11 @@ public class NotificationService extends IntentService {
                     x.setAction("i-can-help");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
-                    Bundle b = new Bundle();
-                    b.putString("route", content.getJSONArray("route").toString());
-                    x.putExtras(b);
+                    if (Token.getInstance().getType().equals("CARER")) {
+                        Bundle b = new Bundle();
+                        b.putString("route", content.getJSONArray("route").toString());
+                        x.putExtras(b);
+                    }
                     break;
                 }
                 default:
