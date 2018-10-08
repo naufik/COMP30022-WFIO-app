@@ -49,6 +49,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private PolylineOptions route = new PolylineOptions();
     private Circle elderLoc;
+    private boolean firstCamera = true;
 
     private static final String TAG = CarerMaps.class.getSimpleName();
 
@@ -196,7 +197,10 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
             elderLoc = mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(2).fillColor(Color.BLUE));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 20));
+            if(firstCamera){
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 15));
+                firstCamera = false;
+            }
         }
     }
 }
