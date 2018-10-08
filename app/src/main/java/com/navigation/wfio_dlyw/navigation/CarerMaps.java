@@ -34,6 +34,7 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.NotifyService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,7 +47,7 @@ import java.util.TimerTask;
 public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private PolylineOptions route;
+    private PolylineOptions route = new PolylineOptions();
     private Circle elderLoc;
 
     private static final String TAG = CarerMaps.class.getSimpleName();
@@ -72,6 +73,21 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         //make fake list
         String[] list = new String[]{"Barney", "is", "a", "dinosaur", "of", "our", "imagination"};
+
+        Token token = Token.getInstance(this);
+        String email = getIntent().getStringExtra("from");
+        if (email != null) {
+            for (int i = 0; i < token.getConnections().length(); i++){
+                try {
+                    JSONObject elder = token.getConnections().getJSONObject(i);
+                    if (elder.getString("email").equals(email)){
+                        token.setCurrentConnection(elder);
+                        token.createSessionMessages();
+                        break;
+                    }
+                } catch (JSONException e){}
+            }
+        }
     }
 
     @Override
@@ -116,13 +132,17 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         Intent intent = getIntent();
         try {
+            Log.d(TAG, "Getting Intent extra");
             Bundle b = intent.getExtras();
             JSONArray route = new JSONArray(b.getString("route"));
+            Log.d(TAG, "Route converted, grabbing checkpoints...");
             for (int i = 0; i < route.length(); i++) {
+                Log.d(TAG, "Checkpoint: "+i);
                 JSONObject JSONcheckpoint = route.getJSONObject(i);
                 LatLng checkpoint = new LatLng(JSONcheckpoint.getDouble("lat"), JSONcheckpoint.getDouble("long"));
                 this.route.add(checkpoint);
             }
+            Log.d(TAG, "Rendering to map");
             mMap.addPolyline(this.route);
         } catch (NullPointerException | JSONException e) {
             e.printStackTrace();
