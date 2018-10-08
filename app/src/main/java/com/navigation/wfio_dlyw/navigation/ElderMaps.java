@@ -125,7 +125,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     }
                     break;
                 case MSG_UPDATE_DESTINATION:
-
+                    favouritesItemFlag=true;
                     // After destination updated, grab new route, callback above
                     try {
                         Message resp = Message.obtain(null, MSG_REQUEST_ROUTE);
@@ -295,6 +295,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         });
     }
 
+    private boolean favouritesItemFlag;
+
     //inflate toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -303,6 +305,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
+        favouritesItemFlag=false;
 
         return true;
     }
@@ -316,7 +319,14 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 startActivity(startIntent);
                 return true;
             case R.id.star_button:
-                return true;
+                if(favouritesItemFlag){
+                    //do stuff (add to favorites)
+                    Toast.makeText(this, "Favorites added", Toast.LENGTH_LONG).show();
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please select a destination", Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.sms_button:
                 if (Token.getInstance(this).getCurrentConnection() != null) {
                     Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
