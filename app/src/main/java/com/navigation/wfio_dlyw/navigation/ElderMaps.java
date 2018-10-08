@@ -324,9 +324,34 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 return true;
             case R.id.sos_button:
                 Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
-                Requester minta = Requester.getInstance(getApplicationContext());
-                Token var = Token.getInstance();
-                minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+
+                try {
+                    JSONObject message = new JSONObject();
+                    JSONObject from = new JSONObject();
+                    JSONObject destination = new JSONObject();
+                    JSONArray route = new JSONArray();
+
+                    from.put("fullname", "").put("email", "");
+                    List<LatLng> routeCheckpoints = this.route.getPoints();
+                    for (int i = 0; i < routeCheckpoints.size(); i++) {
+                        JSONObject checkpoint = new JSONObject();
+                        checkpoint.put("lat", routeCheckpoints.get(i).latitude)
+                                .put("long", routeCheckpoints.get(i).longitude);
+                        route.put(checkpoint);
+                        if (i == routeCheckpoints.size() - 1) {
+                            destination = checkpoint;
+                        }
+                    }
+                    message.put("from", from)
+                            .put("route", route)
+                            .put("destination", destination);
+
+                    Requester req = Requester.getInstance(getApplicationContext());
+                    Token var = Token.getInstance();
+                    req.requestAction(ServerAction.CARER_SIGNAL, destination, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 return true;
             default:
                 // If we got here, the user's action was not recognized.
