@@ -46,6 +46,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -115,9 +116,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     break;
                 case MSG_REQUEST_ROUTE:
                     // Update map with new route
-                    route = (PolylineOptions) msg.obj;
-                    mMap.clear();
-                    mMap.addPolyline(route);
+                    try {
+                        route = (PolylineOptions) msg.obj;
+                        mMap.clear();
+                        mMap.addPolyline(route);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case MSG_UPDATE_DESTINATION:
                     // After destination updated, grab new route, callback above
@@ -140,10 +145,15 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "Service connected");
-            mService = new Messenger(iBinder);try {
+            mService = new Messenger(iBinder);
+            try {
                 Message msg = Message.obtain(null, MSG_REQUEST_LOCATION);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
+
+                Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
+                msg2.replyTo = mMessenger;
+                mService.send(msg2);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -254,7 +264,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
                 // Sends new destination to service
                 try {
-                    Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION);
+                    Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION, query);
                     msg.replyTo = mMessenger;
                     mService.send(msg);
                 } catch (RemoteException e) {
