@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
@@ -114,7 +115,8 @@ public class NotificationService extends IntentService {
                     (int)System.currentTimeMillis(), i.getValue(), 0));
         }
 
-        NotificationManagerCompat.from(this).notify(currentId++, newNotification.setAutoCancel(true).build());
+        Log.d("HELLO", "mantap anjing");
+        NotificationManagerCompat.from(this).notify((int) System.currentTimeMillis(), newNotification.setAutoCancel(true).build());
     }
 
     private void createNotificationChannels() {
@@ -142,6 +144,7 @@ public class NotificationService extends IntentService {
                         try {
                             JSONArray notifs = res.getJSONObject("result")
                                     .getJSONArray("notifications");
+                            //Log.d("asu", notifs.toString());
 
                             for (int i = 0; i < notifs.length(); ++i) {
                                 JSONObject currentMessage = notifs.getJSONObject(i)
@@ -160,10 +163,11 @@ public class NotificationService extends IntentService {
 
                                 buttons.put("Accept", testIntent);
 
+                                Log.d("HELLO", "Displaying notif...");
                                 displayNotification(title, subtitle, contentIntent, buttons);
                             }
                         } catch (JSONException e) {
-
+                            e.printStackTrace();
                         }
                     }, new Credentials(t.getEmail(), t.getValue()));
                 });
@@ -181,19 +185,29 @@ public class NotificationService extends IntentService {
 
 
             switch (action) {
-                case "sos.respond":
+                case "sos.respond": {
                     x = new Intent(this, AnswerHelp.class);
                     x.setAction("help-accept");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
+                    Bundle b = new Bundle();
+                    b.putString("route", content.getJSONArray("route").toString());
+                    x.putExtras(b);
                     break;
-                case "sos.autoaccept":
+                }
+                case "sos.autoaccept": {
                     x = new Intent(this, Token.getInstance().getType().equals("CARER") ?
-                        CarerMaps.class : ElderNavigation.class);
+                            CarerMaps.class : ElderMaps.class);
                     x.setAction("i-can-help");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
+                    if (Token.getInstance().getType().equals("CARER")) {
+                        Bundle b = new Bundle();
+                        b.putString("route", content.getJSONArray("route").toString());
+                        x.putExtras(b);
+                    }
                     break;
+                }
                 default:
                     // pass;
             }

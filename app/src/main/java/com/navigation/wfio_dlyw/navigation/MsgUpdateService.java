@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -12,9 +13,8 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,25 +49,29 @@ public class MsgUpdateService extends IntentService {
         super.onCreate();
     }
 
+
     private void startPolling() {
+        this.stopPolling();
         Requester req = Requester.getInstance(this);
-        Token token = Token.getInstance();
         TimerTask task = new TimerTask() {
 
             @Override
             public void run() {
                 h.post(() -> {
+                    Token token = Token.getInstance();
                     req.requestAction(ServerAction.MESSAGE_PULL, null, t->{
                         try {
                             for (int i=0; i<t.getJSONObject("result").getJSONArray("messages").length(); i++){
-                                token.getMessages().put(t.getJSONObject("result").getJSONArray("messages").getJSONObject(i));
+                                JSONObject message = t.getJSONObject("result").getJSONArray("messages").getJSONObject(i);
+                                token.getServerMessages().put(message);
                             }
                         }catch(JSONException e) {}
                     }, new Credentials(token.getEmail(), token.getValue()));
                 });
             }
         };
-        timer.schedule(task, 0,1000);
+        timer = new Timer();
+        timer.schedule(task, 0,500);
     }
 
     private void stopPolling() {
@@ -75,5 +79,6 @@ public class MsgUpdateService extends IntentService {
             timer.cancel();
         }
     }
+
 
 }

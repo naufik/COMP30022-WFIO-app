@@ -45,8 +45,13 @@ public class CallActivity extends AppCompatActivity {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         handleCallIntent(this.getIntent());
 
-
         setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+
+        ensureMicrophoneAccess();
+    }
+
+    private void ensureMicrophoneAccess() {
+
     }
 
 
@@ -104,6 +109,5 @@ public class CallActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        twilio.getCall().disconnect();
     }
 }

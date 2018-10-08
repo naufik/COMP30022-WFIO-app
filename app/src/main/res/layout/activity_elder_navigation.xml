@@ -62,8 +62,8 @@
         android:layout_marginBottom="224dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:onClick="getLocationPermission"
         android:layout_marginTop="9dp"
-        android:onClick="sendDestination"
         android:text="Search"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +108,8 @@
         app:layout_constraintBottom_toTopOf="@+id/nofifyAll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/favoritesButton" />
+        app:layout_constraintTop_toBottomOf="@+id/favoritesButton"
+        app:layout_constraintVertical_chainStyle="spread_inside" />
 
     <Button
         android:id="@+id/eldermsg"

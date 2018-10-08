@@ -7,6 +7,11 @@
         android:orderInCategory="100"
         android:title="@string/abc_search_hint"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/call_button"
+        android:icon="@drawable/ic_call"
+        android:title="@string/call"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/back_button"
@@ -25,7 +30,7 @@
     <item
         android:id="@+id/sms_button"
         android:icon="@drawable/ic_sms"
-        android:title="@string/sms"
+        android:title="@string/smsC"
         app:showAsAction="ifRoom"
         />
     <item

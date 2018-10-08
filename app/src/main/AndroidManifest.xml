@@ -4,9 +4,7 @@
     package="com.navigation.wfio_dlyw.navigation">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:remove="android:maxSdkVersion" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -31,7 +29,8 @@
         </activity>
         <activity
             android:name=".ElderNavigation"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"/>
+
         <activity
             android:name=".ElderSettings"
             android:label="@string/settings" />
@@ -61,7 +60,7 @@
             android:label="@string/MyElders" />
         <activity
             android:name=".Favourites"
-            android:label="@string/favourites" />
+            android:label="@string/favorites" />
         <activity
             android:name=".StoreClips"
             android:label="StoreClips" />
@@ -83,7 +82,9 @@
 
         <activity
             android:name=".ElderMaps"
-            android:label="@string/title_activity_elder_maps" />
+            android:windowSoftInputMode="adjustPan"
+            android:label="@string/title_activity_elder_maps"/>
+
         <activity
             android:name=".CarerMaps"
             android:label="@string/title_activity_carer_maps"
@@ -95,11 +96,15 @@
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
         <activity
-            android:name=".ApplicationAppearrance"
-            android:label="@string/ApplicationAppearrance" />
+            android:name=".ApplicationAppearance"
+            android:label="@string/ApplicationAppearance" />
         <activity android:name=".MessageList" />
         <activity android:name=".MessageListElder" />
 
+
+        <activity
+            android:name=".MapsPermissionTest"
+            android:label="@string/title_activity_maps_permission_test"></activity>
         <service android:name=".MsgUpdateService"/>
         <service android:name=".InitializeService"/>
         <service android:name="com.navigation.wfio_dlyw.comms.NotifyService" />
@@ -109,6 +114,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service android:name="com.navigation.wfio_dlyw.twilio.CallService"/>
         <activity android:name=".CallActivity"></activity>
     </application>
 

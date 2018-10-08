@@ -1,6 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
+import android.app.IntentService;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
@@ -9,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +22,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.*;
+import com.navigation.wfio_dlyw.twilio.CallService;
+import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.twilio.voice.*;
 
 import org.json.JSONException;
@@ -31,14 +35,15 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 
-public class MessageList extends AppCompatActivity{
+public class MessageList extends AppCompatActivity {
+
+    private TwilioUtils twilio;
 
     private String toName;
     private String toUserName;
     private boolean onCall = false;
 
     private EditText editText;
-    private MessageAdapter messageAdapter;
     private ListView messagesView;
 
     // Requesting permission to RECORD_AUDIO
@@ -62,14 +67,11 @@ public class MessageList extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list);
 
+        twilio = TwilioUtils.getInstance(this);
         // This is where we write the message
         editText = findViewById(R.id.messageInput);
 
         Intent intent = getIntent();
-        /*
-        ElderItem elderItem = intent.getParcelableExtra("Example Item");
-        String name = elderItem.getmText1();
-        recipientID = elderItem.getmId(); */
         try {
             recipientID = Token.getInstance().getCurrentConnection().getInt("id");
             Toolbar myToolbar = findViewById(R.id.toolbarML);
@@ -79,15 +81,10 @@ public class MessageList extends AppCompatActivity{
             this.toUserName = Token.getInstance().getCurrentConnection().getString("username");
             myToolbar.setTitle(this.toName);
         } catch (JSONException e) {}
-
-
+        /*********/
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest" + fileCount + ".3gp";
-
-        messageAdapter = new MessageAdapter(this);
-        messagesView = findViewById(R.id.messages_view);
-        messagesView.setAdapter(messageAdapter);
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
         mRecord = findViewById(R.id.recordButton);
@@ -104,8 +101,40 @@ public class MessageList extends AppCompatActivity{
                 return false;
             }
         });
+        /*********/
     }
 
+    public void sendMessage(View view) {
+        String message = editText.getText().toString();
+
+        if (message.equals("")){
+            return;
+        }
+
+        Token token = Token.getInstance();
+        Requester req = Requester.getInstance(this);
+        try {
+            JSONObject param = new JSONObject();
+            //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
+            param.put("recipient",recipientID).put("content", message);
+            req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
+        } catch (JSONException e) {}
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        if (message.length() > 0) {
+            token.getSessionMessages().add(new Message(message,null,true));
+            editText.getText().clear();
+            populateUsersList();
+        }
+    }
+
+    private void populateUsersList() {
+        Token token = Token.getInstance();
+        // Create the adapter to convert the array to views
+        CustomMessageAdapter adapter = new CustomMessageAdapter(this, token.getSessionMessages());
+        // Attach the adapter to a ListView
+        ListView listView = (ListView) findViewById(R.id.messages_view);
+        listView.setAdapter(adapter);
+    }
 
     private void startRecording() {
         mRecorder = new MediaRecorder();
@@ -152,37 +181,6 @@ public class MessageList extends AppCompatActivity{
         if (!permissionToRecordAccepted ) finish();
     }
 
-    public void sendMessage(View view) {
-        String message = editText.getText().toString();
-
-        if (message.equals("")){
-            return;
-        }
-
-        Token token = Token.getInstance();
-        Requester req = Requester.getInstance(this);
-        try {
-            JSONObject param = new JSONObject();
-            //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
-            param.put("recipient",recipientID).put("content", message);
-            req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
-        } catch (JSONException e) {}
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        if (message.length() > 0) {
-            onMessage(message);
-            editText.getText().clear();
-        }
-    }
-
-    public void onMessage(String message) {
-        //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
-        //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "You", true);
-        messageAdapter.add(message1);
-        // scroll the ListView to the last added element
-        messagesView.setSelection(messagesView.getCount() - 1);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -192,10 +190,14 @@ public class MessageList extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        String to = "alice";
         switch (item.getItemId()) {
             case R.id.call_button:
-                this.makeCall();
+                if (twilio.getCall() == null) {
+                    makeCall();
+                } else {
+                    stopCall();
+                }
+                changeUI(item);
                 return true;
             case R.id.clips_button:
                 Intent intent = new Intent(getApplicationContext(), StoreClips.class);
@@ -209,16 +211,32 @@ public class MessageList extends AppCompatActivity{
         }
     }
 
-    private void makeCall(){
+    private void changeUI(MenuItem item) {
+        item.setIcon(twilio.getCall() == null ? R.drawable.ic_call : R.drawable.ic_hangup);
+    }
+
+    private void makeCall() {
         try {
-            Intent callIntent = new Intent(this, CallActivity.class);
+            Intent callIntent = new Intent(this, CallService.class);
             callIntent.setAction("call.start");
             callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
                 .getString("username"));
-            startActivity(callIntent);
+            startService(callIntent);
         } catch (JSONException e) {
             Toast.makeText( this, "currently not being connected to anyone" ,
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void stopCall() {
+        Intent stopCallIntent = new Intent(this, CallService.class);
+        stopCallIntent.setAction("call.stop");
+        startService(stopCallIntent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        populateUsersList();
     }
 }
