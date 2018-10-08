@@ -23,6 +23,9 @@ android {
 
     defaultConfig {
         multiDexEnabled true
+        ndk {
+            abiFilters "armeabi-v7a", "x86", "armeabi", "mips"
+        }
     }
 }
 

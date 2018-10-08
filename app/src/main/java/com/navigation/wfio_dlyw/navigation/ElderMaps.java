@@ -46,6 +46,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.Task;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -107,11 +108,22 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         public void handleMessage(Message msg) {
             Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
+                case MSG_REQUEST_LOCATION:
+                    mCurrentLocation = (Location) msg.obj;
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(mCurrentLocation.getLatitude(),
+                                    mCurrentLocation.getLongitude()), DEFAULT_ZOOM));
+                    break;
                 case MSG_REQUEST_ROUTE:
                     // Update map with new route
-                    route = (PolylineOptions) msg.obj;
-                    mMap.clear();
-                    mMap.addPolyline(route);
+                    try {
+                        route = (PolylineOptions) msg.obj;
+                        mMap.clear();
+                        mMap.addPolyline(route);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 case MSG_UPDATE_DESTINATION:
                     // After destination updated, grab new route, callback above
                     try {
@@ -121,12 +133,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
-                case MSG_PAUSE_UPDATE:
-                    // Only called when this activity is closed, thus we unbind
-                    if (mIsBound) {
-                        unbindService(mConnection);
-                    }
-                    mIsBound = false;
+                    break;
             }
         }
     }
@@ -139,11 +146,14 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "Service connected");
             mService = new Messenger(iBinder);
-
             try {
-                Message msg = Message.obtain(null, MSG_RESUME_UPDATE);
+                Message msg = Message.obtain(null, MSG_REQUEST_LOCATION);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
+
+                Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
+                msg2.replyTo = mMessenger;
+                mService.send(msg2);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -254,7 +264,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
                 // Sends new destination to service
                 try {
-                    Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION);
+                    Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION, query);
                     msg.replyTo = mMessenger;
                     mService.send(msg);
                 } catch (RemoteException e) {
@@ -336,24 +346,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mIsBound = true;
     }
 
+    @SuppressLint("MissingPermission")
     private void updateLocationUI() {
         Log.d(TAG, "Updating location UI");
-        if (mMap == null) {
-            return;
-        }
-        try {
-            if (mLocationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mCurrentLocation = null;
-                //getLocationPermission();
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
     @Override
@@ -380,13 +377,17 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onStop() {
         super.onStop();
-        try {
+        /*try {
             Message msg = Message.obtain(null, MSG_PAUSE_UPDATE);
             msg.replyTo = mMessenger;
             mService.send(msg);
         } catch (RemoteException e) {
             e.printStackTrace();
+        }*/
+        if (mIsBound) {
+            unbindService(mConnection);
         }
+        mIsBound = false;
     }
 
     @Override

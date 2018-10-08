@@ -54,13 +54,6 @@ public class ElderHome extends AppCompatActivity {
             }
         });
 
-        Button arButton = findViewById(R.id.ARbtn);
-        arButton.setOnClickListener(view -> {
-            Intent startIntent = new Intent(getApplicationContext(), UnityPlayerActivity.class);
-            startIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(startIntent);
-        });
-
         Button favouriteButton = findViewById(R.id.favoritesBtn);
         favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +109,8 @@ public class ElderHome extends AppCompatActivity {
     }
 
     private void onPermissionGranted() {
-        Intent intent = new Intent(this, ElderMaps.class);
+        Intent intent = new Intent(this, UnityPlayerActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
