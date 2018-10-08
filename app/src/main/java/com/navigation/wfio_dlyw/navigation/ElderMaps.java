@@ -107,11 +107,18 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         public void handleMessage(Message msg) {
             Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
+                case MSG_REQUEST_LOCATION:
+                    mCurrentLocation = (Location) msg.obj;
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(mCurrentLocation.getLatitude(),
+                                    mCurrentLocation.getLongitude()), DEFAULT_ZOOM));
+                    break;
                 case MSG_REQUEST_ROUTE:
                     // Update map with new route
                     route = (PolylineOptions) msg.obj;
                     mMap.clear();
                     mMap.addPolyline(route);
+                    break;
                 case MSG_UPDATE_DESTINATION:
                     // After destination updated, grab new route, callback above
                     try {
@@ -121,6 +128,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
+                    break;
             }
         }
     }
@@ -132,15 +140,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "Service connected");
-            mService = new Messenger(iBinder);
-
-            /*try {
-                Message msg = Message.obtain(null, MSG_RESUME_UPDATE);
+            mService = new Messenger(iBinder);try {
+                Message msg = Message.obtain(null, MSG_REQUEST_LOCATION);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
             } catch (RemoteException e) {
                 e.printStackTrace();
-            }*/
+            }
         }
 
         @Override
@@ -330,24 +336,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mIsBound = true;
     }
 
+    @SuppressLint("MissingPermission")
     private void updateLocationUI() {
         Log.d(TAG, "Updating location UI");
-        if (mMap == null) {
-            return;
-        }
-        try {
-            if (mLocationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                mCurrentLocation = null;
-                //getLocationPermission();
-            }
-        } catch (SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
     @Override
