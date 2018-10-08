@@ -324,7 +324,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.sos_button:
-<<<<<<<<< Temporary merge branch 1
                 if(routeGenerated) {
                     try {
                         JSONObject message = new JSONObject();
