@@ -23,9 +23,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.miguelcatalan.materialsearchview.SearchAdapter;
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -35,6 +37,7 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -43,7 +46,8 @@ import java.util.TimerTask;
 public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private LatLng dest;
+    private PolylineOptions route;
+    private Circle elderLoc;
 
     private static final String TAG = CarerMaps.class.getSimpleName();
 
@@ -110,18 +114,32 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        Intent intent = getIntent();
+        try {
+            Bundle b = intent.getExtras();
+            JSONArray route = new JSONArray(b.getString("route"));
+            for (int i = 0; i < route.length(); i++) {
+                JSONObject JSONcheckpoint = route.getJSONObject(i);
+                LatLng checkpoint = new LatLng(JSONcheckpoint.getDouble("lat"), JSONcheckpoint.getDouble("long"));
+                this.route.add(checkpoint);
+            }
+            mMap.addPolyline(this.route);
+        } catch (NullPointerException | JSONException e) {
+            e.printStackTrace();
+        }
+
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 CarerMaps.this.runOnUiThread(() -> {
-                    getLocationsFromServer();
+                    getLocationFromServer();
                 });
             }
         }, 0, 1000);
     }
 
-    private void getLocationsFromServer() {
+    private void getLocationFromServer() {
         Requester req = Requester.getInstance(this);
         req.requestAction(ServerAction.MESSAGE_PULL, null, t -> {
             try {
@@ -140,20 +158,9 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                     location = new Location("location");
                     location.setLatitude(JSONlocation.getDouble(0));
                     location.setLongitude(JSONlocation.getDouble(1));
-
-                    if(locations.length() != 1) {
-                        JSONArray JSONdest = locations
-                                .getJSONObject(locations.length() - 1)
-                                .getJSONObject("location")
-                                .getJSONArray("coordinates");
-
-                        destination = new Location("destination");
-                        destination.setLatitude(JSONdest.getDouble(0));
-                        destination.setLongitude(JSONdest.getDouble(1));
-                    }
                 }
 
-                renderLocs(location, destination);
+                renderLoc(location);
 
             } catch(JSONException e) {
                 Log.e(TAG, e.getMessage());
@@ -161,19 +168,15 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         }, new Credentials("dropcomputing@gmail.com","kontol"));
     }
 
-    private void renderLocs(Location loc, Location dest) {
+    private void renderLoc(Location loc) {
         if(loc != null) {
-            mMap.clear();
+            if(elderLoc != null){
+                elderLoc.remove();
+            }
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
-            mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(3).fillColor(Color.BLUE));
+            elderLoc = mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(2).fillColor(Color.BLUE));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 20));
-
-            if(dest != null) {
-                LatLng latLngDest = new LatLng(dest.getLatitude(), dest.getLongitude());
-                this.dest = latLngDest;
-            }
-            mMap.addMarker(new MarkerOptions().position(this.dest));
         }
     }
 }

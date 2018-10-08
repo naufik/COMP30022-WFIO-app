@@ -322,11 +322,35 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 break;
             case R.id.sos_button:
                 if(routeGenerated) {
-                    Toast.makeText(this, "Contacting Carer", Toast.LENGTH_LONG).show();
-                    Requester minta = Requester.getInstance(getApplicationContext());
-                    Token var = Token.getInstance();
-                    minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {
-                    }, new Credentials(var.getEmail(), var.getValue()));
+                    Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
+
+                    try {
+                        JSONObject message = new JSONObject();
+                        JSONObject from = new JSONObject();
+                        JSONObject destination = new JSONObject();
+                        JSONArray route = new JSONArray();
+    
+                        from.put("fullname", "").put("email", "");
+                        List<LatLng> routeCheckpoints = this.route.getPoints();
+                        for (int i = 0; i < routeCheckpoints.size(); i++) {
+                            JSONObject checkpoint = new JSONObject();
+                            checkpoint.put("lat", routeCheckpoints.get(i).latitude)
+                                    .put("long", routeCheckpoints.get(i).longitude);
+                            route.put(checkpoint);
+                            if (i == routeCheckpoints.size() - 1) {
+                                destination = checkpoint;
+                            }
+                        }
+                        message.put("from", from)
+                                .put("route", route)
+                                .put("destination", destination);
+    
+                        Requester req = Requester.getInstance(getApplicationContext());
+                        Token var = Token.getInstance();
+                        req.requestAction(ServerAction.CARER_SIGNAL, destination, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     return true;
                 }else{
                     Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();

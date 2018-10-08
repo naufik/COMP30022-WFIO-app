@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
@@ -193,6 +194,9 @@ public class NotificationService extends IntentService {
                     x.setAction("i-can-help");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
+                    Bundle b = new Bundle();
+                    b.putString("route", content.getJSONArray("route").toString());
+                    x.putExtras(b);
                     break;
                 default:
                     // pass;
