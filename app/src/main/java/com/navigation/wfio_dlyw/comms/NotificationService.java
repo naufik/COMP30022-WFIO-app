@@ -115,6 +115,7 @@ public class NotificationService extends IntentService {
                     (int)System.currentTimeMillis(), i.getValue(), 0));
         }
 
+
         NotificationManagerCompat.from(this).notify(currentId++, newNotification.setAutoCancel(true).build());
     }
 
@@ -182,15 +183,19 @@ public class NotificationService extends IntentService {
 
 
             switch (action) {
-                case "sos.respond":
+                case "sos.respond": {
                     x = new Intent(this, AnswerHelp.class);
                     x.setAction("help-accept");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
+                    Bundle b = new Bundle();
+                    b.putString("route", content.getJSONArray("route").toString());
+                    x.putExtras(b);
                     break;
-                case "sos.autoaccept":
+                }
+                case "sos.autoaccept": {
                     x = new Intent(this, Token.getInstance().getType().equals("CARER") ?
-                        CarerMaps.class : ElderMaps.class);
+                            CarerMaps.class : ElderMaps.class);
                     x.setAction("i-can-help");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
@@ -198,6 +203,7 @@ public class NotificationService extends IntentService {
                     b.putString("route", content.getJSONArray("route").toString());
                     x.putExtras(b);
                     break;
+                }
                 default:
                     // pass;
             }
