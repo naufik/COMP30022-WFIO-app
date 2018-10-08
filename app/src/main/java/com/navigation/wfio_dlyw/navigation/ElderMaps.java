@@ -1,12 +1,10 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,11 +15,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,13 +26,8 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -46,9 +35,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.Task;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -62,8 +49,6 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
-    private MaterialSearchView searchView;
-
     // Location variables
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -102,6 +87,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
+    //other variables
+    private MaterialSearchView searchView;
+    private boolean routeGenerated;
+
     // Service to client message handler
     class IncomingHandler extends Handler {
         @Override
@@ -125,6 +114,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     }
                     break;
                 case MSG_UPDATE_DESTINATION:
+                    routeGenerated =true;
                     // After destination updated, grab new route, callback above
                     try {
                         Message resp = Message.obtain(null, MSG_REQUEST_ROUTE);
@@ -302,6 +292,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
+        routeGenerated =false;
 
         return true;
     }
@@ -311,53 +302,75 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
+                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                 startActivity(startIntent);
                 return true;
             case R.id.star_button:
-                Toast.makeText(this, "awas", Toast.LENGTH_LONG).show();
-                return true;
+                if(routeGenerated){
+                    //do stuff (add to favorites)
+                    Toast.makeText(this, "Favorites added", Toast.LENGTH_LONG).show();
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please select a destination", Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.sms_button:
-                Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
-                Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
-                startActivity(smsintent);
-                return true;
+                if (Token.getInstance(this).getCurrentConnection() != null) {
+                    Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
+                    startActivity(smsintent);
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.sos_button:
                 Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
+                if(routeGenerated) {
+                    try {
+                        JSONObject message = new JSONObject();
+                        JSONObject from = new JSONObject();
+                        JSONObject destination = new JSONObject();
+                        JSONArray route = new JSONArray();
 
-                try {
-                    JSONObject message = new JSONObject();
-                    JSONObject from = new JSONObject();
-                    JSONObject destination = new JSONObject();
-                    JSONArray route = new JSONArray();
-
-                    from.put("fullname", "").put("email", "");
-                    List<LatLng> routeCheckpoints = this.route.getPoints();
-                    for (int i = 0; i < routeCheckpoints.size(); i++) {
-                        JSONObject checkpoint = new JSONObject();
-                        checkpoint.put("lat", routeCheckpoints.get(i).latitude)
-                                .put("long", routeCheckpoints.get(i).longitude);
-                        route.put(checkpoint);
-                        if (i == routeCheckpoints.size() - 1) {
-                            destination = checkpoint;
+                        from.put("fullname", "").put("email", "");
+                        List<LatLng> routeCheckpoints = this.route.getPoints();
+                        for (int i = 0; i < routeCheckpoints.size(); i++) {
+                            JSONObject checkpoint = new JSONObject();
+                            checkpoint.put("lat", routeCheckpoints.get(i).latitude)
+                                    .put("long", routeCheckpoints.get(i).longitude);
+                            route.put(checkpoint);
+                            if (i == routeCheckpoints.size() - 1) {
+                                destination = checkpoint;
+                            }
                         }
-                    }
-                    message.put("from", from)
-                            .put("route", route)
-                            .put("destination", destination);
+                        message.put("from", from)
+                                .put("route", route)
+                                .put("destination", destination);
 
-                    Requester req = Requester.getInstance(getApplicationContext());
-                    Token var = Token.getInstance();
-                    req.requestAction(ServerAction.CARER_SIGNAL, destination, response -> {}, new Credentials(var.getEmail(), var.getValue()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        Requester req = Requester.getInstance(getApplicationContext());
+                        Token var = Token.getInstance();
+                        req.requestAction(ServerAction.CARER_SIGNAL, destination, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
                 }
-                return true;
+                break;
+            case R.id.call_button:
+                if (Token.getInstance(this).getCurrentConnection() != null) {
+                    Intent callintent = new Intent(getApplicationContext(), MessageListElder.class);
+                    startActivity(callintent);
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
+                }
+                break;
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
