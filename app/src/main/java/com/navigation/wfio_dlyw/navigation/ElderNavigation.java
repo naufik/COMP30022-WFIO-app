@@ -64,20 +64,6 @@ public class ElderNavigation extends AppCompatActivity {
             startActivity(startIntent);
         });
 
-        String email = getIntent().getStringExtra("from");
-        if (email != null) {
-            for (int i = 0; i < token.getConnections().length(); i++){
-                try {
-                    JSONObject carer = token.getConnections().getJSONObject(i);
-                    if (carer.getString("email").equals(email)){
-                        token.setCurrentConnection(carer);
-                        Toast.makeText(this, "connected to " + carer.getString("fullname"), Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-                } catch (JSONException e){}
-            }
-        }
-
         Button notifyAll = findViewById(R.id.nofifyAll);
         notifyAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,12 +129,12 @@ public class ElderNavigation extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //currently carer maps for testing
+    //not used
     public void sendDestination(View view) {
-        Intent intent = new Intent(this, CarerMaps.class);
-//        EditText editText = findViewById(R.id.navigationSearchField);
-//        String destination = editText.getText().toString();
-//        intent.putExtra(EXTRA_DESTINATION, destination);
+        Intent intent = new Intent(this, ElderMaps.class);
+        EditText editText = findViewById(R.id.navigationSearchField);
+        String destination = editText.getText().toString();
+        intent.putExtra(EXTRA_DESTINATION, destination);
         startActivity(intent);
     }
 
@@ -191,4 +177,6 @@ public class ElderNavigation extends AppCompatActivity {
         Intent intent = new Intent(activity, ElderNavigation.class);
         activity.startActivity(intent);
     }
+
+
 }

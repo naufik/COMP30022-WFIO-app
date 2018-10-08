@@ -52,6 +52,7 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -104,6 +105,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
+            Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
                 case MSG_REQUEST_ROUTE:
                     // Update map with new route
@@ -153,6 +155,22 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         Log.d(TAG, "ElderMaps created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_maps);
+        Token token = Token.getInstance(this);
+
+        // Connects to a carer if available
+        String email = getIntent().getStringExtra("from");
+        if (email != null) {
+            for (int i = 0; i < token.getConnections().length(); i++){
+                try {
+                    JSONObject carer = token.getConnections().getJSONObject(i);
+                    if (carer.getString("email").equals(email)){
+                        token.setCurrentConnection(carer);
+                        token.createSessionMessages();
+                        break;
+                    }
+                } catch (JSONException e){}
+            }
+        }
 
         // Asynchronously setup map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -290,6 +308,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 return true;
             case R.id.sos_button:
                 Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
+                Requester minta = Requester.getInstance(getApplicationContext());
+                Token var = Token.getInstance();
+                minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
                 return true;
             default:
                 // If we got here, the user's action was not recognized.

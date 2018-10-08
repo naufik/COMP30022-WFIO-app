@@ -11,6 +11,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.view.KeyEvent;
 import android.speech.tts.TextToSpeech;
+
+import com.google.firebase.FirebaseApp;
 import com.navigation.wfio_dlyw.utility.*;
 import android.speech.tts.TextToSpeech.OnInitListener;
 
@@ -19,8 +21,6 @@ import com.navigation.wfio_dlyw.comms.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Locale;
-
 public class LogIn extends AppCompatActivity {
 
 
@@ -28,12 +28,16 @@ public class LogIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Requester req = Requester.getInstance(this);
-        Token token = Token.getInstance();
+        FirebaseApp.initializeApp(this.getApplicationContext());
+        Token token = Token.getInstance(this.getApplicationContext());
+
+        Intent initIntent = new Intent(this, InitializeService.class);
+        startService(initIntent);
 
         setContentView(R.layout.activity_log_in);
         EditText username = findViewById(R.id.username);
         EditText password = findViewById(R.id.password);
-        text2speech t2t = new text2speech(getApplicationContext());
+        Text2Speech t2t = new Text2Speech(getApplicationContext());
 
         Button b1 = (Button)findViewById(R.id.forgotPassword);
 
@@ -61,7 +65,7 @@ public class LogIn extends AppCompatActivity {
                         String s = t.getJSONObject("result").getString("token");
                         token.setValue(s);
                         token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
-                        Toast.makeText(this.getApplicationContext(), token.getType(), Toast.LENGTH_LONG).show();
+                        //  Toast.makeText(this.getApplicationContext(), token.getType(), Toast.LENGTH_LONG).show();
                         token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
                         token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
                         token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
@@ -73,7 +77,7 @@ public class LogIn extends AppCompatActivity {
                                     token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
                                     } catch (JSONException e) {}
                              }, new Credentials(token.getEmail(), token.getValue()));
-
+                            token.createSessionMessages();
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
@@ -84,7 +88,7 @@ public class LogIn extends AppCompatActivity {
                                     token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
                                 } catch (JSONException e) {}
                             }, new Credentials(token.getEmail(), token.getValue()));
-
+                            token.createSessionMessages();
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);

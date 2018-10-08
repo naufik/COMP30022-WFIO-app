@@ -189,7 +189,7 @@ public class NotificationService extends IntentService {
                     break;
                 case "sos.autoaccept":
                     x = new Intent(this, Token.getInstance().getType().equals("CARER") ?
-                        CarerMaps.class : ElderNavigation.class);
+                        CarerMaps.class : ElderMaps.class);
                     x.setAction("i-can-help");
                     x.putExtra("from", content.getJSONObject("from").getString("email"));
                     x.putExtra("fromName", content.getJSONObject("from").getString("fullname"));
