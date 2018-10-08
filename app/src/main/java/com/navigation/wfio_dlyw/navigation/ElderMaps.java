@@ -327,11 +327,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 if(routeGenerated) {
                     try {
                         JSONObject message = new JSONObject();
-                        JSONObject from = new JSONObject();
                         JSONObject destination = new JSONObject();
                         JSONArray route = new JSONArray();
 
-                        from.put("fullname", "").put("email", "");
                         List<LatLng> routeCheckpoints = this.route.getPoints();
                         for (int i = 0; i < routeCheckpoints.size(); i++) {
                             JSONObject checkpoint = new JSONObject();
@@ -342,13 +340,12 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                                 destination = checkpoint;
                             }
                         }
-                        message.put("from", from)
-                                .put("route", route)
+                        message.put("route", route)
                                 .put("destination", destination);
 
                         Requester req = Requester.getInstance(getApplicationContext());
                         Token var = Token.getInstance();
-                        req.requestAction(ServerAction.CARER_SIGNAL, destination, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+                        req.requestAction(ServerAction.CARER_SIGNAL, message, response -> {}, new Credentials(var.getEmail(), var.getValue()));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
