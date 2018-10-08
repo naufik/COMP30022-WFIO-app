@@ -1,12 +1,10 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,11 +15,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,13 +26,8 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -46,24 +35,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.Task;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
-    private MaterialSearchView searchView;
-
     // Location variables
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -102,6 +84,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
+    //other variables
+    private MaterialSearchView searchView;
+    private boolean routeGenerated;
+
     // Service to client message handler
     class IncomingHandler extends Handler {
         @Override
@@ -125,7 +111,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     }
                     break;
                 case MSG_UPDATE_DESTINATION:
-                    favouritesItemFlag=true;
+                    routeGenerated =true;
                     // After destination updated, grab new route, callback above
                     try {
                         Message resp = Message.obtain(null, MSG_REQUEST_ROUTE);
@@ -295,8 +281,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         });
     }
 
-    private boolean favouritesItemFlag;
-
     //inflate toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -305,7 +289,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
-        favouritesItemFlag=false;
+        routeGenerated =false;
 
         return true;
     }
@@ -319,7 +303,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 startActivity(startIntent);
                 return true;
             case R.id.star_button:
-                if(favouritesItemFlag){
+                if(routeGenerated){
                     //do stuff (add to favorites)
                     Toast.makeText(this, "Favorites added", Toast.LENGTH_LONG).show();
                     return true;
@@ -337,18 +321,24 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.sos_button:
-                Toast.makeText(this, "Contacting Carer", Toast.LENGTH_LONG).show();
-                Requester minta = Requester.getInstance(getApplicationContext());
-                Token var = Token.getInstance();
-                minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
-                return true;
+                if(routeGenerated) {
+                    Toast.makeText(this, "Contacting Carer", Toast.LENGTH_LONG).show();
+                    Requester minta = Requester.getInstance(getApplicationContext());
+                    Token var = Token.getInstance();
+                    minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {
+                    }, new Credentials(var.getEmail(), var.getValue()));
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.call_button:
                 if (Token.getInstance(this).getCurrentConnection() != null) {
                     Intent callintent = new Intent(getApplicationContext(), MessageListElder.class);
                     startActivity(callintent);
                     return true;
                 }else{
-                    Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
                 }
                 break;
             default:
