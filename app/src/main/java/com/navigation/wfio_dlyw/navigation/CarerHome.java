@@ -37,13 +37,6 @@ public class CarerHome extends AppCompatActivity {
             startActivity(startIntent);
         });
 
-        Button tempe = (Button)findViewById(R.id.tempe);
-        tempe.setOnClickListener(view -> {
-            Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
-            startActivity(startIntent);
-        });
-
-
         this.serviceIntent = new Intent(this, NotificationService.class);
         serviceIntent.setAction("poll");
         startService(serviceIntent);
