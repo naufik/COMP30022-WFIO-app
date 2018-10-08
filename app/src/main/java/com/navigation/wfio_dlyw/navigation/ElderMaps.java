@@ -125,6 +125,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     }
                     break;
                 case MSG_UPDATE_DESTINATION:
+
                     // After destination updated, grab new route, callback above
                     try {
                         Message resp = Message.obtain(null, MSG_REQUEST_ROUTE);
@@ -302,7 +303,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
-
+        
         return true;
     }
 
@@ -311,28 +312,39 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), ElderNavigation.class);
+                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                 startActivity(startIntent);
                 return true;
             case R.id.star_button:
-                Toast.makeText(this, "awas", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.sms_button:
-                Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
-                Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
-                startActivity(smsintent);
-                return true;
+                if (Token.getInstance(this).getCurrentConnection() != null) {
+                    Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
+                    startActivity(smsintent);
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.sos_button:
-                Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Contacting Carer", Toast.LENGTH_LONG).show();
                 Requester minta = Requester.getInstance(getApplicationContext());
                 Token var = Token.getInstance();
                 minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
                 return true;
+            case R.id.call_button:
+                if (Token.getInstance(this).getCurrentConnection() != null) {
+                    Intent callintent = new Intent(getApplicationContext(), MessageListElder.class);
+                    startActivity(callintent);
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+                }
+                break;
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
