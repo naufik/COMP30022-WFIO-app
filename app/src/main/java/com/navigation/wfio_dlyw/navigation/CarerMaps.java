@@ -191,14 +191,15 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private void renderLoc(Location loc) {
         if(loc != null) {
+            Log.d(TAG, loc.toString());
             if(elderLoc != null){
                 elderLoc.remove();
             }
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
-            elderLoc = mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(2).fillColor(Color.BLUE));
+            elderLoc = mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(1).fillColor(Color.RED));
             if(firstCamera){
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 15));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 18));
                 firstCamera = false;
             }
         }

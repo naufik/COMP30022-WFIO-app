@@ -144,7 +144,7 @@ public class NotificationService extends IntentService {
                         try {
                             JSONArray notifs = res.getJSONObject("result")
                                     .getJSONArray("notifications");
-                            Log.d("asu", notifs.toString());
+                            //Log.d("asu", notifs.toString());
 
                             for (int i = 0; i < notifs.length(); ++i) {
                                 JSONObject currentMessage = notifs.getJSONObject(i)
