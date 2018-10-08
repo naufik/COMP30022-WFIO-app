@@ -115,8 +115,8 @@ public class NotificationService extends IntentService {
                     (int)System.currentTimeMillis(), i.getValue(), 0));
         }
 
-
-        NotificationManagerCompat.from(this).notify(currentId++, newNotification.setAutoCancel(true).build());
+        Log.d("HELLO", "mantap anjing");
+        NotificationManagerCompat.from(this).notify((int) System.currentTimeMillis(), newNotification.setAutoCancel(true).build());
     }
 
     private void createNotificationChannels() {
@@ -144,6 +144,7 @@ public class NotificationService extends IntentService {
                         try {
                             JSONArray notifs = res.getJSONObject("result")
                                     .getJSONArray("notifications");
+                            Log.d("asu", notifs.toString());
 
                             for (int i = 0; i < notifs.length(); ++i) {
                                 JSONObject currentMessage = notifs.getJSONObject(i)
@@ -162,10 +163,11 @@ public class NotificationService extends IntentService {
 
                                 buttons.put("Accept", testIntent);
 
+                                Log.d("HELLO", "Displaying notif...");
                                 displayNotification(title, subtitle, contentIntent, buttons);
                             }
                         } catch (JSONException e) {
-
+                            e.printStackTrace();
                         }
                     }, new Credentials(t.getEmail(), t.getValue()));
                 });
