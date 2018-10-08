@@ -44,7 +44,6 @@ public class MessageList extends AppCompatActivity {
     private boolean onCall = false;
 
     private EditText editText;
-    private MessageAdapter messageAdapter;
     private ListView messagesView;
 
     // Requesting permission to RECORD_AUDIO
