@@ -42,8 +42,11 @@ import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     // Location variables
@@ -321,15 +324,14 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.sos_button:
+<<<<<<<<< Temporary merge branch 1
                 if(routeGenerated) {
-                    Toast.makeText(this, "sule", Toast.LENGTH_LONG).show();
-
                     try {
                         JSONObject message = new JSONObject();
                         JSONObject from = new JSONObject();
                         JSONObject destination = new JSONObject();
                         JSONArray route = new JSONArray();
-    
+
                         from.put("fullname", "").put("email", "");
                         List<LatLng> routeCheckpoints = this.route.getPoints();
                         for (int i = 0; i < routeCheckpoints.size(); i++) {
@@ -344,7 +346,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                         message.put("from", from)
                                 .put("route", route)
                                 .put("destination", destination);
-    
+
                         Requester req = Requester.getInstance(getApplicationContext());
                         Token var = Token.getInstance();
                         req.requestAction(ServerAction.CARER_SIGNAL, destination, response -> {}, new Credentials(var.getEmail(), var.getValue()));
