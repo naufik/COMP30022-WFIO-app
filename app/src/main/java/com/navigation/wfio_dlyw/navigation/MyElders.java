@@ -98,19 +98,6 @@ public class MyElders extends AppCompatActivity {
 
         mAdapter.setOnItemClickListener(new ConnectAdapter.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(int position){
-                Intent intent = new Intent(MyElders.this, MessageList.class);
-                intent.putExtra("Example Item", elders.get(position));
-                try {
-                    Token.getInstance().setCurrentConnection(Token.getInstance().getConnections()
-                            .getJSONObject(position));
-                    startActivity(intent);
-                } catch (JSONException e) {
-
-                }
-            }
-
             //CarerHome should be changed to ElderMaps instead
             @Override
             public void onMapClick(int position){

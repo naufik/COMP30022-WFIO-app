@@ -15,7 +15,6 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener{
-        void onItemClick(int position);
         void onDeleteClick(int position);
         void onMapClick(int position);
     }
@@ -38,17 +37,6 @@ public class ConnectAdapter extends RecyclerView.Adapter<ConnectAdapter.ExampleV
             mDeleteImage = itemView.findViewById(R.id.image_delete);
             mOpenMap = itemView.findViewById(R.id.image_map);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(listener !=null){
-                        int position = getAdapterPosition();
-                        if(position!=RecyclerView.NO_POSITION){
-                            listener.onItemClick(position);
-                        }
-                    }
-                }
-            });
 
             mDeleteImage.setOnClickListener(new View.OnClickListener() {
                 @Override
