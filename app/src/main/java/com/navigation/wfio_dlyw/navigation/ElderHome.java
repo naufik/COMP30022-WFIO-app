@@ -132,8 +132,8 @@ public class ElderHome extends AppCompatActivity {
         activity.startActivity(intent);
     }
 
-    public static void CallAgain(Activity activity){
-        Intent intent = new Intent(activity, ElderNavigation.class);
-        activity.startActivity(intent);
-    }
+//    public static void CallAgain(Activity activity){
+//        Intent intent = new Intent(activity, ElderNavigation.class);
+//        activity.startActivity(intent);
+//    }
 }
