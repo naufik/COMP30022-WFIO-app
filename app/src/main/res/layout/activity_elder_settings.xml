@@ -101,7 +101,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changeAppearrance"
+        app:layout_constraintTop_toBottomOf="@+id/rncButton"
         app:layout_constraintVertical_bias="1.0" />
 
     <android.support.v7.widget.Toolbar
@@ -129,12 +129,12 @@
         app:layout_constraintTop_toBottomOf="@+id/applyChangesES" />
 
     <Button
-        android:id="@+id/changeAppearrance"
+        android:id="@+id/rncButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Change Application Appearrance"
+        android:text="Register New Carer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/changePasswordES" />

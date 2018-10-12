@@ -27,9 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ElderNavigation"
-            android:label="@string/app_name"/>
 
         <activity
             android:name=".ElderSettings"
@@ -95,9 +92,6 @@
         <activity android:name=".AnswerHelp" />
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
-        <activity
-            android:name=".ApplicationAppearance"
-            android:label="@string/ApplicationAppearance" />
         <activity android:name=".MessageList" />
         <activity android:name=".MessageListElder" />
 

@@ -45,15 +45,6 @@ public class ElderHome extends AppCompatActivity {
         notifier.setAction("poll");
         startService(notifier);
 
-        Button connectBtn = findViewById(R.id.rncButton);
-        connectBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Intent startIntent = new Intent(getApplicationContext(), ElderConnect.class);
-                startActivity(startIntent);
-            }
-        });
-
         Button favouriteButton = findViewById(R.id.favoritesBtn);
         favouriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,8 +132,8 @@ public class ElderHome extends AppCompatActivity {
         activity.startActivity(intent);
     }
 
-    public static void CallAgain(Activity activity){
-        Intent intent = new Intent(activity, ElderNavigation.class);
-        activity.startActivity(intent);
-    }
+//    public static void CallAgain(Activity activity){
+//        Intent intent = new Intent(activity, ElderNavigation.class);
+//        activity.startActivity(intent);
+//    }
 }

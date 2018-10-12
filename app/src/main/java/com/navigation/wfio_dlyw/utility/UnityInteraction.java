@@ -9,7 +9,6 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.navigation.ElderHome;
 import com.navigation.wfio_dlyw.navigation.ElderMaps;
-import com.navigation.wfio_dlyw.navigation.ElderNavigation;
 import com.unity3d.player.UnityPlayer;
 
 public class UnityInteraction {
