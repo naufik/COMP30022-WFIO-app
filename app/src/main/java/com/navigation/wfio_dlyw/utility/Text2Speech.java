@@ -1,4 +1,4 @@
-package com.navigation.wfio_dlyw.navigation;
+package com.navigation.wfio_dlyw.utility;
 
 import android.app.Activity;
 import android.app.Application;

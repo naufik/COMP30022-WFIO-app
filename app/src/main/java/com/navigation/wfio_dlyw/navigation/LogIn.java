@@ -10,11 +10,9 @@ import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.view.KeyEvent;
-import android.speech.tts.TextToSpeech;
 
 import com.google.firebase.FirebaseApp;
 import com.navigation.wfio_dlyw.utility.*;
-import android.speech.tts.TextToSpeech.OnInitListener;
 
 import com.navigation.wfio_dlyw.comms.*;
 
