@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
@@ -282,6 +283,49 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 //Do some magic
             }
         });
+
+        Button viewMessages = (Button) findViewById(R.id.viewMessages);
+        viewMessages.setOnClickListener(view -> {
+            if (Token.getInstance(this).getCurrentConnection() != null) {
+                Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
+                startActivity(smsintent);
+            }else{
+                Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        routeGenerated =false;
+        Button helpMe = (Button) findViewById(R.id.helpMe);
+        helpMe.setOnClickListener(view -> {
+            if(routeGenerated) {
+                try {
+                    JSONObject message = new JSONObject();
+                    JSONObject destination = new JSONObject();
+                    JSONArray route = new JSONArray();
+
+                    List<LatLng> routeCheckpoints = this.route.getPoints();
+                    for (int i = 0; i < routeCheckpoints.size(); i++) {
+                        JSONObject checkpoint = new JSONObject();
+                        checkpoint.put("lat", routeCheckpoints.get(i).latitude)
+                                .put("long", routeCheckpoints.get(i).longitude);
+                        route.put(checkpoint);
+                        if (i == routeCheckpoints.size() - 1) {
+                            destination = checkpoint;
+                        }
+                    }
+                    message.put("route", route)
+                            .put("destination", destination);
+
+                    Requester req = Requester.getInstance(getApplicationContext());
+                    Token var = Token.getInstance();
+                    req.requestAction(ServerAction.CARER_SIGNAL, message, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     //inflate toolbar
@@ -292,8 +336,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
-        routeGenerated =false;
-
         return true;
     }
 
@@ -312,46 +354,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     return true;
                 }else{
                     Toast.makeText(this, "Please select a destination", Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.sms_button:
-                if (Token.getInstance(this).getCurrentConnection() != null) {
-                    Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
-                    startActivity(smsintent);
-                    return true;
-                }else{
-                    Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.sos_button:
-                if(routeGenerated) {
-                    try {
-                        JSONObject message = new JSONObject();
-                        JSONObject destination = new JSONObject();
-                        JSONArray route = new JSONArray();
-
-                        List<LatLng> routeCheckpoints = this.route.getPoints();
-                        for (int i = 0; i < routeCheckpoints.size(); i++) {
-                            JSONObject checkpoint = new JSONObject();
-                            checkpoint.put("lat", routeCheckpoints.get(i).latitude)
-                                    .put("long", routeCheckpoints.get(i).longitude);
-                            route.put(checkpoint);
-                            if (i == routeCheckpoints.size() - 1) {
-                                destination = checkpoint;
-                            }
-                        }
-                        message.put("route", route)
-                                .put("destination", destination);
-
-                        Requester req = Requester.getInstance(getApplicationContext());
-                        Token var = Token.getInstance();
-                        req.requestAction(ServerAction.CARER_SIGNAL, message, response -> {}, new Credentials(var.getEmail(), var.getValue()));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return true;
-                }else{
-                    Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.call_button:
