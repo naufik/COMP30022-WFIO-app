@@ -7,6 +7,7 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.navigation.ElderHome;
 import com.navigation.wfio_dlyw.navigation.ElderMaps;
 import com.navigation.wfio_dlyw.navigation.ElderNavigation;
 import com.unity3d.player.UnityPlayer;
@@ -19,7 +20,7 @@ public class UnityInteraction {
     }
 
     public static void goBack(Activity activity){
-        Intent intent = new Intent(activity, ElderNavigation.class);
+        Intent intent = new Intent(activity, ElderHome.class);
         activity.startActivity(intent);
     }
 
