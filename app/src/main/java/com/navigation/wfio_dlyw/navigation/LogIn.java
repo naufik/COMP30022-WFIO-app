@@ -37,11 +37,6 @@ public class LogIn extends AppCompatActivity {
         EditText password = findViewById(R.id.password);
         Text2Speech t2t = new Text2Speech(getApplicationContext());
 
-        Button b1 = (Button)findViewById(R.id.forgotPassword);
-
-        t2t.buttonTalk(b1, "Johny Johny... YES PAPA!");
-
-
         //for the moment it only redirects to the elder's home page
         Button enterBtn = findViewById(R.id.enterBtn);
         enterBtn.setOnClickListener(view -> {
@@ -76,6 +71,7 @@ public class LogIn extends AppCompatActivity {
                                     } catch (JSONException e) {}
                              }, new Credentials(token.getEmail(), token.getValue()));
                             token.createSessionMessages();
+                            t2t.read("Welcome "+token.getFullName());
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
@@ -87,6 +83,7 @@ public class LogIn extends AppCompatActivity {
                                 } catch (JSONException e) {}
                             }, new Credentials(token.getEmail(), token.getValue()));
                             token.createSessionMessages();
+                            t2t.read("Welcome "+token.getFullName()+" Nice to see you helping others today");
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);
