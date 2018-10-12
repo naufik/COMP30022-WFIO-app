@@ -1,12 +1,12 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.content.Intent;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 
 public class ChooseAccountType extends AppCompatActivity {
 
@@ -14,7 +14,7 @@ public class ChooseAccountType extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_account_type);
-        ImageView chooseCarer = (ImageView) findViewById(R.id.chooseCarer);
+        ImageView chooseCarer = findViewById(R.id.chooseCarer);
         chooseCarer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -23,7 +23,7 @@ public class ChooseAccountType extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
-        ImageView chooseElder = (ImageView) findViewById(R.id.chooseElder);
+        ImageView chooseElder = findViewById(R.id.chooseElder);
         chooseElder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -33,7 +33,7 @@ public class ChooseAccountType extends AppCompatActivity {
             }
         });
 
-        TextView carerText = (TextView) findViewById(R.id.carerText);
+        TextView carerText = findViewById(R.id.carerText);
         carerText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -42,7 +42,7 @@ public class ChooseAccountType extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
-        TextView elderText = (TextView) findViewById(R.id.elderText);
+        TextView elderText = findViewById(R.id.elderText);
         elderText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -9,10 +9,11 @@ public class Credentials {
 
     public Credentials(String email, String token) throws NullPointerException {
         if (email == null || token == null) {
-            throw new NullPointerException();
+            //throw new NullPointerException();
+        } else{
+            this.email = email;
+            this.tokenAuth = token;
         }
-        this.email = email;
-        this.tokenAuth = token;
     }
 
     public String getEmail() {

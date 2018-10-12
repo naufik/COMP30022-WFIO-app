@@ -4,13 +4,26 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ElderSettings extends AppCompatActivity {
 
@@ -18,47 +31,72 @@ public class ElderSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_settings);
+        Requester req = Requester.getInstance(this);
+        Token token = Token.getInstance();
+
         //instead of doing this, setHint "onCreate" by grabbing the user's current data
 
-        EditText fullname = (EditText) findViewById(R.id.fullNameES);
-        EditText lastname = (EditText) findViewById(R.id.usernameES);
-        EditText email = (EditText) findViewById(R.id.emailES);
+        EditText fullname = findViewById(R.id.fullNameES);
+        TextView email = findViewById(R.id.emailES);
+        TextView username = findViewById(R.id.usernameES);
 
-        String fullnameS = fullname.getText().toString();
-        String lastnameS = lastname.getText().toString();
-        String emailS = email.getText().toString();
+        //get Information from server :)
+        req.requestAction(ServerAction.USER_GET_INFO, null,
+                t-> {
+                    try {
+                        fullname.setHint(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
+                        email.setText(t.getJSONObject("result").getJSONObject("user").getString("email"));
+                        username.setText(t.getJSONObject("result").getJSONObject("user").getString("username"));
+                    } catch (JSONException e) {
+                    }
+                }, new Credentials(token.getEmail(), token.getValue()));
 
         Button applyChangesES = (Button) findViewById(R.id.applyChangesES);
-        applyChangesES.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        applyChangesES.setOnClickListener(view -> {
+            String fullnameS = fullname.getText().toString();
+            try {
+                Pattern p = Pattern.compile("^[ A-Za-z]+$");
+                JSONObject params = new JSONObject();
                 if (!fullnameS.isEmpty()) {
-                    fullname.setHint(fullnameS);
-                    Toast.makeText(getApplicationContext(), "Changes Applied", Toast.LENGTH_LONG).show();
+                    if (p.matcher(fullnameS).matches()) {
+                        params.put("fullName", fullnameS);
+
+                        req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
+                                try {
+                                    if (t.getBoolean("ok")) {
+                                        Toast.makeText(ElderSettings.this, "Full name changed successfully", Toast.LENGTH_LONG).show();
+                                        fullname.setHint(fullnameS);
+                                        token.setFullname(fullnameS);
+                                    }
+                                } catch (JSONException e) {}
+                        }, new Credentials(token.getEmail(), token.getValue()));
+                    }
+                    else {
+                        Toast.makeText(this, "Please only usse alphabets and spaces", Toast.LENGTH_LONG).show();
+                    }
                 }
-                if (!lastnameS.isEmpty()) {
-                    lastname.setHint(lastnameS);
+                else {
+                    Toast.makeText(this, "Please insert a valid full name", Toast.LENGTH_LONG).show();
                 }
-                if (!emailS.isEmpty()) {
-                    email.setHint(emailS);
-                }
-            }
+            } catch (JSONException e) {}
         });
 
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarES);
+        Toolbar myToolbar = findViewById(R.id.toolbarES);
         setSupportActionBar(myToolbar);
 
-        Button elderLogOutBtn = (Button)findViewById(R.id.elderLogOutBtn);
+        Button elderLogOutBtn = findViewById(R.id.elderLogOutBtn);
         elderLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
-                startActivity(startIntent);
+                Token.reset();
+                Intent intent = new Intent(getApplicationContext(), LogIn.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
 
-        Button changePassword = (Button)findViewById(R.id.changePasswordES);
+        Button changePassword = findViewById(R.id.changePasswordES);
         changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,11 +105,11 @@ public class ElderSettings extends AppCompatActivity {
             }
         });
 
-        Button applicationAppearrance = (Button) findViewById(R.id.changeAppearrance);
+        Button applicationAppearrance = findViewById(R.id.changeAppearrance);
         applicationAppearrance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), ApplicationAppearrance.class);
+                Intent startIntent = new Intent(getApplicationContext(), ApplicationAppearance.class);
                 startActivity(startIntent);
             }
         });
