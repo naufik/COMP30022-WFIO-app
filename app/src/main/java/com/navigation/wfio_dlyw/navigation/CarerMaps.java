@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
@@ -11,6 +12,7 @@ import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -38,6 +40,7 @@ import com.navigation.wfio_dlyw.comms.NotifyService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.DialogBuilder;
 import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 
@@ -162,8 +165,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
-                startActivity(startIntent);
+                this.onBackPressed();
                 return true;
             case R.id.sms_button:
                 Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
@@ -276,5 +278,34 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 firstCamera = false;
             }
         }
+    }
+    @Override
+    public void onBackPressed() {
+        Token t = Token.getInstance();
+
+        String text = "Are you sure you want to leave navigation?";
+        AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, CarerMaps.this);
+        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                Intent serviceIntent = new Intent(CarerMaps.this, MsgUpdateService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
+                t.setCurrentConnection(null);
+                Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                return;
+            }
+        });
+
+        builder.show();
+
     }
 }

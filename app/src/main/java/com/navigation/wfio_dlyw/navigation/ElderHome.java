@@ -22,13 +22,14 @@ import com.navigation.wfio_dlyw.comms.NotificationService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.Text2Speech;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
 public class ElderHome extends AppCompatActivity {
-
+    private Text2Speech t2t;
     private Intent favouriteIntent;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
@@ -44,6 +45,7 @@ public class ElderHome extends AppCompatActivity {
         Intent notifier = new Intent(this, NotificationService.class);
         notifier.setAction("poll");
         startService(notifier);
+        t2t = new Text2Speech(getApplicationContext());
 
         Button favouriteButton = findViewById(R.id.favoritesBtn);
         favouriteButton.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +73,7 @@ public class ElderHome extends AppCompatActivity {
     }
 
     public void getLocationPermission(View view) {
+        t2t.read("Where do you wanna go today?");
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {

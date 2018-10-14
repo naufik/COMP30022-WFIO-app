@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -17,6 +18,7 @@ import android.os.Messenger;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,6 +47,7 @@ import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
+import com.navigation.wfio_dlyw.utility.DialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -378,8 +381,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                startActivity(startIntent);
+                this.onBackPressed();
                 return true;
             case R.id.star_button:
                 if(routeGenerated){
@@ -485,9 +487,32 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        Token t = Token.getInstance();
+
+        String text = "Are you sure you want to leave navigation?";
+        AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
+        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
+                t.setCurrentConnection(null);
+                Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                return;
+            }
+        });
+
+        builder.show();
+
     }
 
 }
