@@ -305,8 +305,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                startActivity(startIntent);
+                this.onBackPressed();
                 return true;
             case R.id.star_button:
                 if(routeGenerated){
@@ -429,7 +428,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
-        Toast.makeText(this, "WHAAAAAT", Toast.LENGTH_SHORT).show();
         Token t = Token.getInstance();
 
         String text = "Are you sure you want to leave navigation?";
@@ -437,6 +435,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
+                Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
                 t.setCurrentConnection(null);
                 Intent intent = new Intent(getApplicationContext(), ElderHome.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
