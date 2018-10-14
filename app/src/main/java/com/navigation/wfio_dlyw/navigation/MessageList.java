@@ -13,6 +13,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 
-public class MessageList extends AppCompatActivity{
+public class MessageList extends AppCompatActivity {
 
     private TwilioUtils twilio;
     private BroadcastReceiver callEventsHandler;
@@ -47,7 +48,6 @@ public class MessageList extends AppCompatActivity{
     private boolean onCall = false;
 
     private EditText editText;
-    private MessageAdapter messageAdapter;
     private ListView messagesView;
 
     // Requesting permission to RECORD_AUDIO
@@ -82,10 +82,6 @@ public class MessageList extends AppCompatActivity{
         editText = findViewById(R.id.messageInput);
 
         Intent intent = getIntent();
-        /*
-        ElderItem elderItem = intent.getParcelableExtra("Example Item");
-        String name = elderItem.getmText1();
-        recipientID = elderItem.getmId(); */
         try {
             recipientID = Token.getInstance().getCurrentConnection().getInt("id");
             Toolbar myToolbar = findViewById(R.id.toolbarML);
@@ -95,15 +91,10 @@ public class MessageList extends AppCompatActivity{
             this.toUserName = Token.getInstance().getCurrentConnection().getString("username");
             myToolbar.setTitle(this.toName);
         } catch (JSONException e) {}
-
-
+        /*********/
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest" + fileCount + ".3gp";
-
-        messageAdapter = new MessageAdapter(this);
-        messagesView = findViewById(R.id.messages_view);
-        messagesView.setAdapter(messageAdapter);
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
         mRecord = findViewById(R.id.recordButton);
@@ -121,8 +112,17 @@ public class MessageList extends AppCompatActivity{
             }
         });
 
+        /*********/
     }
 
+    private void populateUsersList() {
+        Token token = Token.getInstance();
+        // Create the adapter to convert the array to views
+        CustomMessageAdapter adapter = new CustomMessageAdapter(this, token.getSessionMessages());
+        // Attach the adapter to a ListView
+        ListView listView = (ListView) findViewById(R.id.messages_view);
+        listView.setAdapter(adapter);
+    }
 
     private void startRecording() {
         mRecorder = new MediaRecorder();
@@ -241,20 +241,10 @@ public class MessageList extends AppCompatActivity{
         } catch (JSONException e) {}
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         if (message.length() > 0) {
-            onMessage(message);
+            token.getSessionMessages().add(new Message(message, null, true));
             editText.getText().clear();
         }
     }
-
-    public void onMessage(String message) {
-        //if message sent by self, belongsToCurrentUser is True and dialog pops up on right
-        //if false, dialog pops on the left, set name to the carer's/elder's username
-        Message message1 = new Message(message, "You", true);
-        messageAdapter.add(message1);
-        // scroll the ListView to the last added element
-        messagesView.setSelection(messagesView.getCount() - 1);
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -301,14 +291,20 @@ public class MessageList extends AppCompatActivity{
     }
 
     private void handleCallIntent(Intent intent) {
-        if (intent.getAction().equals("call.answer")) {
-            CallInvite invite = intent.getParcelableExtra("invite");
-            twilio.receiveCall(intent.getIntExtra("notificationId", 0),
-                    invite);
-            Intent answerIntent = new Intent(this, CallService.class);
-            answerIntent.setAction("call.answer");
-            answerIntent.putExtra("invite", invite);
-            startService(answerIntent);
+        if (intent.getAction().equals( "call.answer" )) {
+            CallInvite invite = intent.getParcelableExtra( "invite" );
+            twilio.receiveCall( intent.getIntExtra( "notificationId", 0 ),
+                    invite );
+            Intent answerIntent = new Intent( this, CallService.class );
+            answerIntent.setAction( "call.answer" );
+            answerIntent.putExtra( "invite", invite );
+            startService( answerIntent );
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        populateUsersList();
     }
 }

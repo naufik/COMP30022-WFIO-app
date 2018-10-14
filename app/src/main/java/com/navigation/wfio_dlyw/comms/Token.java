@@ -15,10 +15,12 @@ import com.twilio.voice.RegistrationException;
 import com.twilio.voice.RegistrationListener;
 import com.twilio.voice.Voice;
 
+import com.navigation.wfio_dlyw.navigation.Message;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Date;
+import java.util.ArrayList;
 
 public class Token{
     private static final String TOKEN_ENDPOINT_URL = "https://rawon.naufik.net/voice/accessToken";
@@ -33,7 +35,8 @@ public class Token{
     private String email;
     private String fullname;
     private JSONArray connections;
-    private JSONArray messages;
+    private JSONArray serverMessages;
+    private ArrayList<Message> sessionMessages;
     private JSONObject currentConnection;
     private String username;
     private String twilioVoiceToken;
@@ -61,7 +64,6 @@ public class Token{
 
     // Restrict the constructor from being instantiated
     private Token(){
-        this.messages = new JSONArray();
     }
 
     public void setValue(String data){
@@ -132,7 +134,7 @@ public class Token{
         return instance;
     }
 
-    public JSONObject getCurrentConnection() {
+    public synchronized JSONObject getCurrentConnection() {
         return currentConnection;
     }
 
@@ -140,12 +142,12 @@ public class Token{
         this.currentConnection = currentConnection;
     }
 
-    public JSONArray getMessages() {
-        return messages;
+    public synchronized JSONArray getServerMessages() {
+        return serverMessages;
     }
 
-    public void setMessages(JSONArray messages) {
-        this.messages = messages;
+    public synchronized ArrayList<Message> getSessionMessages() {
+        return sessionMessages;
     }
 
     private void loadTwilioToken() {
@@ -185,5 +187,10 @@ public class Token{
 
     public void startVoice() {
         this.loadTwilioToken();
+    }
+
+    public synchronized void createSessionMessages () {
+        this.sessionMessages = new ArrayList<>();
+        this.serverMessages = new JSONArray();
     }
 }

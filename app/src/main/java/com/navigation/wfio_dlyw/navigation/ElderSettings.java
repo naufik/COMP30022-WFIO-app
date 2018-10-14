@@ -90,8 +90,9 @@ public class ElderSettings extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Token.reset();
-                Intent startIntent = new Intent(getApplicationContext(), LogIn.class);
-                startActivity(startIntent);
+                Intent intent = new Intent(getApplicationContext(), LogIn.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
 
@@ -104,11 +105,11 @@ public class ElderSettings extends AppCompatActivity {
             }
         });
 
-        Button applicationAppearrance = findViewById(R.id.changeAppearrance);
-        applicationAppearrance.setOnClickListener(new View.OnClickListener() {
+        Button connectBtn = findViewById(R.id.rncButton);
+        connectBtn.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick(View view) {
-                Intent startIntent = new Intent(getApplicationContext(), ApplicationAppearrance.class);
+            public void onClick(View view){
+                Intent startIntent = new Intent(getApplicationContext(), ElderConnect.class);
                 startActivity(startIntent);
             }
         });

@@ -1,9 +1,13 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,13 +15,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.comms.Credentials;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.concurrent.Executor;
 
 
 public class CarerConnect extends AppCompatActivity {
@@ -44,17 +54,24 @@ public class CarerConnect extends AppCompatActivity {
                 linkRequest.put("code", code);
 
                 req.requestAction(ServerAction.CARER_LINK, linkRequest,
-                        t-> {
-                            try {
-                                String s = t.getJSONObject("result").getString("elderId");
-                                Toast.makeText(this , s, Toast.LENGTH_LONG).show();
-                            } catch (JSONException e) {}
-                        }, new Credentials(token.getEmail(), token.getValue()));
+                        t-> {}, new Credentials(token.getEmail(), token.getValue()));
             } catch (JSONException e) {}
 
             req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
                 try {
-                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
+                    try {
+                        Thread.sleep(500);
+                    } catch (Exception e) {
+                        Log.d("CC", "Problem");
+                    }
+                    JSONArray newConnection = t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList");
+                    token.setConnections(newConnection);
+                    Intent startIntent = new Intent(getApplicationContext(), MyElders.class);
+                    startIntent.setAction("feedback");
+                    startIntent.putExtra("name", newConnection.getJSONObject(newConnection.length()-1).getString("fullname"));
+                    Log.d("CC",""+newConnection.length());
+                    Log.d("CC",""+token.getConnections().length());
+                    startActivity(startIntent);
                 } catch (JSONException e) {}
             }, new Credentials(token.getEmail(), token.getValue()));
         });

@@ -2,14 +2,23 @@ package com.navigation.wfio_dlyw.utility;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.navigation.ElderHome;
 import com.navigation.wfio_dlyw.navigation.ElderMaps;
-import com.navigation.wfio_dlyw.navigation.ElderNavigation;
+import com.navigation.wfio_dlyw.navigation.MessageListElder;
 import com.unity3d.player.UnityPlayer;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
 
 public class UnityInteraction {
 
@@ -19,7 +28,7 @@ public class UnityInteraction {
     }
 
     public static void goBack(Activity activity){
-        Intent intent = new Intent(activity, ElderNavigation.class);
+        Intent intent = new Intent(activity, ElderHome.class);
         activity.startActivity(intent);
     }
 
@@ -28,9 +37,25 @@ public class UnityInteraction {
         activity.startActivity(intent);
     }
 
+    public static void goChat(Activity activity){
+        if (Token.getInstance(activity).getCurrentConnection() != null) {
+            Intent smsintent = new Intent(activity, MessageListElder.class);
+            activity.startActivity(smsintent);
+        }else{
+            Toast.makeText(activity, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void callPhone(Activity activity){
+        if (Token.getInstance(activity).getCurrentConnection() != null) {
+            Intent callintent = new Intent(activity, MessageListElder.class);
+            activity.startActivity(callintent);
+        }else{
+            Toast.makeText(activity, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
+        }
+    }
+
     public static void sendHelp(Activity activity){
-        Requester minta = Requester.getInstance(activity.getApplicationContext());
-        Token var = Token.getInstance();
-        minta.requestAction(ServerAction.CARER_SIGNAL, null, response -> {}, new Credentials(var.getEmail(), var.getValue()));
+
     }
 }

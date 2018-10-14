@@ -28,6 +28,7 @@ public class AnswerHelp extends AppCompatActivity {
                 JSONObject elder = token.getConnections().getJSONObject(i);
                 if(elder.getString("email").equals(getIntent().getStringExtra("from"))){
                     token.setCurrentConnection(elder);
+                    token.createSessionMessages();
                     Toast.makeText(this, elder.getString("fullname"), Toast.LENGTH_SHORT).show();
                     break;
                 }

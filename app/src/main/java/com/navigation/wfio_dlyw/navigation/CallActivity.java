@@ -109,6 +109,5 @@ public class CallActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        twilio.getCall().disconnect();
     }
 }
