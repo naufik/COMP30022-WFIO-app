@@ -258,7 +258,6 @@ public class MessageList extends AppCompatActivity{
             case R.id.call_button:
                 if (twilio.getCall() == null) {
                     makeCall();
-                    item.setIcon(R.drawable.ic_hangup);
                 } else {
                     stopCall();
                 }
