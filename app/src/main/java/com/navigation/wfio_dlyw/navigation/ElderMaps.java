@@ -400,11 +400,16 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.call_button:
-                if (TwilioUtils.getInstance(this).getCall() == null) {
-                    makeCall();
-                    item.setEnabled(false);
-                } else {
-                    stopCall();
+                if(Token.getInstance(this).getCurrentConnection() != null) {
+                    if (TwilioUtils.getInstance(this).getCall() == null) {
+                        makeCall();
+                        item.setEnabled(false);
+                    } else {
+                        stopCall();
+                    }
+                    return true;
+                }else{
+                    Toast.makeText(this, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
                 }
                 break;
             default:
