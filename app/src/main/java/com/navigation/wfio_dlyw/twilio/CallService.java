@@ -1,14 +1,38 @@
 package com.navigation.wfio_dlyw.twilio;
 
 import android.app.IntentService;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.twilio.voice.Call;
 
-public class CallService extends IntentService {
+import java.io.FileDescriptor;
+
+public class CallService extends Service {
+
+    public CallService() {
+        super();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        handleIntent(intent);
+        return super.onStartCommand( intent, flags, startId );
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     private TwilioUtils twilio;
 
@@ -37,12 +61,9 @@ public class CallService extends IntentService {
         }
     }
 
-    public CallService() {
-        super("CallService");
-    }
 
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+
+    private void handleIntent(@Nullable Intent intent) {
         twilio = TwilioUtils.getInstance(this);
         String action = intent.getAction();
         switch (action) {
@@ -61,12 +82,10 @@ public class CallService extends IntentService {
             default:
                 break;
         }
-
-        while (twilio.getCall() != null);
     }
 
     private void acceptCall(Intent intent) {
-        twilio.acceptCall( new TwilioUtils.TwilioCallListener() {
+        twilio.acceptCall(new TwilioUtils.TwilioCallListener() {
             @Override
             public void onConnected(Call call) {
                 Intent i = new Intent();
