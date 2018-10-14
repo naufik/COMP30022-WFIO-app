@@ -81,6 +81,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public static final int MSG_PAUSE_UPDATE = 5;
     public static final int MSG_RESUME_UPDATE = 6;
     public static final int MSG_SEND_ROUTE = 7;
+    public static final int MSG_SEND_CREDENTIALS = 8;
+    public static final int MSG_REQUEST_DISTANCE = 9;
 
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
@@ -146,6 +148,12 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
                 msg2.replyTo = mMessenger;
                 mService.send(msg2);
+
+                Token token = Token.getInstance(ElderMaps.this);
+                String[] credentials = {token.getEmail(), token.getValue()};
+                Message msg3 = Message.obtain(null, MSG_SEND_CREDENTIALS, credentials);
+                msg3.replyTo = mMessenger;
+                mService.send(msg3);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -298,30 +306,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         Button helpMe = (Button) findViewById(R.id.helpMe);
         helpMe.setOnClickListener(view -> {
             if(routeGenerated) {
-                /*try {
-                    JSONObject message = new JSONObject();
-                    JSONObject destination = new JSONObject();
-                    JSONArray route = new JSONArray();
-
-                    List<LatLng> routeCheckpoints = this.route.getPoints();
-                    for (int i = 0; i < routeCheckpoints.size(); i++) {
-                        JSONObject checkpoint = new JSONObject();
-                        checkpoint.put("lat", routeCheckpoints.get(i).latitude)
-                                .put("long", routeCheckpoints.get(i).longitude);
-                        route.put(checkpoint);
-                        if (i == routeCheckpoints.size() - 1) {
-                            destination = checkpoint;
-                        }
-                    }
-                    message.put("route", route)
-                            .put("destination", destination);
-
-                    Requester req = Requester.getInstance(getApplicationContext());
-                    Token var = Token.getInstance();
-                    req.requestAction(ServerAction.CARER_SIGNAL, message, response -> {}, new Credentials(var.getEmail(), var.getValue()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }*/
                 try {
                     Message msg = Message.obtain(null, MSG_SEND_ROUTE);
                     msg.replyTo = mMessenger;
