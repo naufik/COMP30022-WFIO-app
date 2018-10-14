@@ -18,6 +18,9 @@ import com.twilio.voice.Call;
 import java.io.FileDescriptor;
 
 public class CallService extends Service {
+    public static String ON_DISCONNECT = "call.ondisconnect";
+    public static String ON_CONNECT = "call.onconnected";
+    public static String ON_FAILURE = "call.onfailure";
 
     public CallService() {
         super();
