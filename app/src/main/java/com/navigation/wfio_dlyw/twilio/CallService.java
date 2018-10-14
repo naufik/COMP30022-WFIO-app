@@ -97,7 +97,7 @@ public class CallService extends Service {
             @Override
             public void onDisconnected(Call call) {
                 Intent i = new Intent();
-                i.setAction("call.ondisonnect");
+                i.setAction("call.ondisconnect");
                 sendBroadcast(i);
                 stopSelf();
             }
@@ -134,7 +134,7 @@ public class CallService extends Service {
             @Override
             public void onDisconnected(Call call) {
                 Intent i = new Intent();
-                i.setAction("call.ondisonnect");
+                i.setAction("call.ondisconnect");
                 sendBroadcast(i);
                 stopSelf();
             }
