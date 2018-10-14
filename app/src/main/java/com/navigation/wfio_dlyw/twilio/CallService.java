@@ -61,6 +61,8 @@ public class CallService extends IntentService {
             default:
                 break;
         }
+
+        while (twilio.getCall() != null);
     }
 
     private void acceptCall(Intent intent) {
