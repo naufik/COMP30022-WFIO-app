@@ -1,5 +1,7 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
@@ -35,6 +37,8 @@ import com.navigation.wfio_dlyw.comms.NotifyService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.twilio.CallService;
+import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +54,8 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     private PolylineOptions route = new PolylineOptions();
     private Circle elderLoc;
     private boolean firstCamera = true;
+
+    private CallService.CallServiceReceiver callEventsListener = null;
 
     private static final String TAG = CarerMaps.class.getSimpleName();
 
@@ -73,7 +79,6 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         //make fake list
-        String[] list = new String[]{"Barney", "is", "a", "dinosaur", "of", "our", "imagination"};
 
         Token token = Token.getInstance(this);
         String email = getIntent().getStringExtra("from");
@@ -89,13 +94,51 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 } catch (JSONException e){}
             }
         }
+
     }
+
+    private void initializeCallEventsListener(Menu menu) {
+        callEventsListener = new CallService.CallServiceReceiver() {
+            private MenuItem item = menu.getItem(0);
+
+            @Override
+            public void onDisconnect() {
+                item.setIcon(R.drawable.ic_call);
+            }
+
+            @Override
+            public void onConnected() {
+                item.setIcon(R.drawable.ic_hangup);
+            }
+
+            @Override
+            public void onCallFailure() {
+                item.setIcon(R.drawable.ic_call);
+            }
+        };
+    }
+
+    private void makeCall() {
+        try {
+            Intent callIntent = new Intent(this, CallService.class);
+            callIntent.setAction("call.start");
+            callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
+                    .getString("username"));
+            startService(callIntent);
+        } catch (JSONException e) {
+            Toast.makeText( this, "currently not being connected to anyone" ,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.carermaps,menu);
+
+        initializeCallEventsListener(menu);
         return true;
     }
 
@@ -111,11 +154,25 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 Intent smsintent = new Intent(getApplicationContext(), MessageList.class);
                 startActivity(smsintent);
                 return true;
+
+            case R.id.call_button:
+                if (TwilioUtils.getInstance(this).getCall() == null) {
+                    makeCall();
+                } else {
+                    stopCall();
+                }
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void stopCall() {
+        Intent stopCallIntent = new Intent();
+        stopCallIntent.setAction("call.stop");
+        startService(stopCallIntent);
     }
 
     /**

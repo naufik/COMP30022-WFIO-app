@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -42,6 +43,8 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.twilio.CallService;
+import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,6 +94,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     //other variables
     private MaterialSearchView searchView;
     private boolean routeGenerated;
+    private CallService.CallServiceReceiver callEventsHandler;
 
     // Service to client message handler
     class IncomingHandler extends Handler {
@@ -336,7 +340,46 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
+
+        callEventsHandler = new CallService.CallServiceReceiver() {
+            private MenuItem item =
+                    menu.getItem( 0 );
+
+            @Override
+            public void onDisconnect() {
+                item.setIcon( R.drawable.ic_call );
+                item.setEnabled( true );
+            }
+
+            @Override
+            public void onConnected() {
+                Toolbar toolbar = findViewById( R.id.toolbarML );
+
+                item.setIcon( R.drawable.ic_hangup );
+                item.setEnabled( true );
+            }
+
+            @Override
+            public void onCallFailure() {
+                Toolbar toolbar = findViewById( R.id.toolbarML );
+                item.setIcon( R.drawable.ic_call );
+                item.setEnabled( true );
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CallService.ON_CONNECT);
+        filter.addAction( CallService.ON_DISCONNECT );
+        filter.addAction( CallService.ON_FAILURE );
+        registerReceiver(callEventsHandler, filter);
         return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(callEventsHandler);
+        callEventsHandler = null;
+        super.onDestroy();
     }
 
     //setmenu item
@@ -357,18 +400,36 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.call_button:
-                if (Token.getInstance(this).getCurrentConnection() != null) {
-                    Intent callintent = new Intent(getApplicationContext(), MessageListElder.class);
-                    startActivity(callintent);
-                    return true;
-                }else{
-                    Toast.makeText(this, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
+                if (TwilioUtils.getInstance(this).getCall() == null) {
+                    makeCall();
+                    item.setEnabled(false);
+                } else {
+                    stopCall();
                 }
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void stopCall() {
+        Intent stopCallIntent = new Intent(this, CallService.class);
+        stopCallIntent.setAction("call.stop");
+        startService(stopCallIntent);
+    }
+
+    private void makeCall() {
+        try {
+            Intent callIntent = new Intent(this, CallService.class);
+            callIntent.setAction("call.start");
+            callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
+                    .getString("username"));
+            startService(callIntent);
+        } catch (JSONException e) {
+            Toast.makeText( this, "currently not being connected to anyone" ,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

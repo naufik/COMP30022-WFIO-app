@@ -44,14 +44,8 @@ public class CallActivity extends AppCompatActivity {
         this.notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         handleCallIntent(this.getIntent());
-
         setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-
-        ensureMicrophoneAccess();
-    }
-
-    private void ensureMicrophoneAccess() {
-
+        this.finish();
     }
 
 
@@ -69,7 +63,6 @@ public class CallActivity extends AppCompatActivity {
             twilio.acceptCall(new TwilioUtils.TwilioCallListener() {
                 @Override
                 public void onConnected(Call call) {
-
                 }
 
                 @Override
@@ -86,11 +79,9 @@ public class CallActivity extends AppCompatActivity {
             this.notificationManager.cancel(twilio.getCurrentCallNotificationId());
         } else if (intent.getAction().equals("call.start")) {
             String recipient = intent.getStringExtra("to");
-
             twilio.getInstance(this).startCall( recipient, new TwilioUtils.TwilioCallListener() {
                 @Override
                 public void onConnected(Call call) {
-
                 }
 
                 @Override
