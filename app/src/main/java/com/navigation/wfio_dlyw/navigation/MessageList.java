@@ -194,8 +194,6 @@ public class MessageList extends AppCompatActivity{
         filter.addAction("call.ondisconnect");
         filter.addAction("call.onconnected");
         filter.addAction("call.onfailure");
-        filter.addAction("call.onfailure");
-
 
         registerReceiver(callEventsHandler, filter);
         return true;
@@ -258,6 +256,7 @@ public class MessageList extends AppCompatActivity{
             case R.id.call_button:
                 if (twilio.getCall() == null) {
                     makeCall();
+                    item.setEnabled(false);
                 } else {
                     stopCall();
                 }
