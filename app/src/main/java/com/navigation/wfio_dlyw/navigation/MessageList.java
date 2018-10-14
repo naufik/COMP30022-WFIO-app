@@ -197,9 +197,16 @@ public class MessageList extends AppCompatActivity{
         filter.addAction("call.onfailure");
 
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(callEventsHandler,
-                filter);
+        registerReceiver(callEventsHandler, filter);
         return true;
+    }
+
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(callEventsHandler);
+        this.callEventsHandler = null;
+        super.onDestroy();
     }
 
     @Override

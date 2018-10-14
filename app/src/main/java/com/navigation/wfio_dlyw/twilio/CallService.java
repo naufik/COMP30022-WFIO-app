@@ -11,6 +11,7 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.twilio.voice.Call;
 
@@ -141,8 +142,8 @@ public class CallService extends Service {
             @Override
             public void onFailure(Call call) {
                 Intent i = new Intent();
-                i.setAction("call.onfailure");
-                sendBroadcast(i);
+                i.setAction( "call.onfailure" );
+                sendBroadcast( i );
                 stopSelf();
             }
         } );
