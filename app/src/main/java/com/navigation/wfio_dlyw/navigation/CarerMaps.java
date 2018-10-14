@@ -151,6 +151,13 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     @Override
+    public void onDestroy() {
+        unregisterReceiver(callEventsListener);
+        callEventsListener = null;
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
