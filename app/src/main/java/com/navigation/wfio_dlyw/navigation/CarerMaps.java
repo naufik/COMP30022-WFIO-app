@@ -152,6 +152,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onDestroy() {
+        stopCall();
         unregisterReceiver(callEventsListener);
         callEventsListener = null;
         super.onDestroy();

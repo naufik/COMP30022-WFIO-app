@@ -489,6 +489,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
+        stopCall();
         Intent intent = new Intent(getApplicationContext(), ElderHome.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);

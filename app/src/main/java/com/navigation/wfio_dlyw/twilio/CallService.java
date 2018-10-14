@@ -116,11 +116,15 @@ public class CallService extends Service {
     }
 
     private void disconnectCall(Intent intent) {
-        twilio.getCall().disconnect();
+        if (twilio.getCall() != null) {
+            twilio.getCall().disconnect();
+        }
     }
 
     private void declineCall(Intent intent) {
-        twilio.declineCall();
+        if (twilio.getActiveCallInvite() != null) {
+            twilio.declineCall();
+        }
     }
 
 
