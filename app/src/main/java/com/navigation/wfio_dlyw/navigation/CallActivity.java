@@ -60,21 +60,10 @@ public class CallActivity extends AppCompatActivity {
             twilio.receiveCall(intent.getIntExtra("notificationId", 0),
                     inv);
 
-            twilio.acceptCall(new TwilioUtils.TwilioCallListener() {
-                @Override
-                public void onConnected(Call call) {
-                }
-
-                @Override
-                public void onDisconnected(Call call) {
-                    CallActivity.this.finish();
-                }
-
-                @Override
-                public void onFailure(Call call) {
-                    CallActivity.this.finish();
-                }
-            } );
+            Intent answeringIntent = new Intent();
+            answeringIntent.setAction("call.answer");
+            answeringIntent.putExtra("invite", inv);
+            startService(answeringIntent);
 
             this.notificationManager.cancel(twilio.getCurrentCallNotificationId());
         } else if (intent.getAction().equals("call.start")) {
