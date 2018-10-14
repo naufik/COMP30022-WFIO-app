@@ -80,6 +80,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public static final int MSG_UPDATE_DESTINATION = 4;
     public static final int MSG_PAUSE_UPDATE = 5;
     public static final int MSG_RESUME_UPDATE = 6;
+    public static final int MSG_SEND_ROUTE = 7;
 
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int TIME_INTERVAL = 1000;
@@ -90,7 +91,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     //other variables
     private MaterialSearchView searchView;
-    private boolean routeGenerated;
+    private boolean routeGenerated = false;
 
     // Service to client message handler
     class IncomingHandler extends Handler {
@@ -294,11 +295,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
 
-        routeGenerated =false;
         Button helpMe = (Button) findViewById(R.id.helpMe);
         helpMe.setOnClickListener(view -> {
             if(routeGenerated) {
-                try {
+                /*try {
                     JSONObject message = new JSONObject();
                     JSONObject destination = new JSONObject();
                     JSONArray route = new JSONArray();
@@ -320,6 +320,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     Token var = Token.getInstance();
                     req.requestAction(ServerAction.CARER_SIGNAL, message, response -> {}, new Credentials(var.getEmail(), var.getValue()));
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                }*/
+                try {
+                    Message msg = Message.obtain(null, MSG_SEND_ROUTE);
+                    msg.replyTo = mMessenger;
+                    mService.send(msg);
+                } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }else{
