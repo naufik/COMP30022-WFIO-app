@@ -58,7 +58,7 @@ public class MessageList extends AppCompatActivity {
     private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
-    private Button mRecord;
+    private Button  mRecord;
 
     private ArrayList<String> fileNames = new ArrayList<>();
     private Button viewClips;
