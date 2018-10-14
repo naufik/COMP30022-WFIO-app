@@ -28,7 +28,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
     public void onCreate() {
         super.onCreate();
         this.notificationManager = (NotificationManager)
-                getSystemService(Context.NOTIFICATION_SERVICE );
+                getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Override

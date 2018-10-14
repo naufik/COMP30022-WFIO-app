@@ -2,11 +2,14 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.Manifest;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +41,7 @@ import java.util.function.Function;
 public class MessageList extends AppCompatActivity {
 
     private TwilioUtils twilio;
+    private BroadcastReceiver callEventsHandler;
 
     private String toName;
     private String toUserName;
@@ -54,13 +58,19 @@ public class MessageList extends AppCompatActivity {
     private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
-    private Button mRecord;
+    private Button  mRecord;
 
     private ArrayList<String> fileNames = new ArrayList<>();
     private Button viewClips;
     private int fileCount = 0;
 
     private int recipientID;
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleCallIntent(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,30 +111,8 @@ public class MessageList extends AppCompatActivity {
                 return false;
             }
         });
+
         /*********/
-    }
-
-    public void sendMessage(View view) {
-        String message = editText.getText().toString();
-
-        if (message.equals("")){
-            return;
-        }
-
-        Token token = Token.getInstance();
-        Requester req = Requester.getInstance(this);
-        try {
-            JSONObject param = new JSONObject();
-            //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
-            param.put("recipient",recipientID).put("content", message);
-            req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
-        } catch (JSONException e) {}
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        if (message.length() > 0) {
-            token.getSessionMessages().add(new Message(message,null,true));
-            editText.getText().clear();
-            populateUsersList();
-        }
     }
 
     private void populateUsersList() {
@@ -171,6 +159,61 @@ public class MessageList extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.messaging, menu);
+        callEventsHandler = new CallService.CallServiceReceiver() {
+            private MenuItem item =
+                    menu.getItem(0);
+
+            @Override
+            public void onDisconnect() {
+                Toolbar toolbar = findViewById(R.id.toolbarML);
+                toolbar.setTitle(MessageList.this.toName);
+                item.setIcon(R.drawable.ic_call);
+                item.setEnabled(true);
+            }
+
+            @Override
+            public void onConnected() {
+                Toolbar toolbar = findViewById(R.id.toolbarML);
+                toolbar.setTitle("(on call) " + MessageList.this.toName);
+
+                item.setIcon(R.drawable.ic_hangup);
+                item.setEnabled(true);
+            }
+
+            @Override
+            public void onCallFailure() {
+                Toolbar toolbar = findViewById(R.id.toolbarML);
+                toolbar.setTitle(MessageList.this.toName);
+                item.setIcon(R.drawable.ic_call);
+
+
+                item.setEnabled(true);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("call.ondisconnect");
+        filter.addAction("call.onconnected");
+        filter.addAction("call.onfailure");
+
+        registerReceiver(callEventsHandler, filter);
+        return true;
+    }
+
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(callEventsHandler);
+        this.callEventsHandler = null;
+        super.onDestroy();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
@@ -181,11 +224,26 @@ public class MessageList extends AppCompatActivity {
         if (!permissionToRecordAccepted ) finish();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.messaging,menu);
-        return true;
+    public void sendMessage(View view) {
+        String message = editText.getText().toString();
+
+        if (message.equals("")){
+            return;
+        }
+
+        Token token = Token.getInstance();
+        Requester req = Requester.getInstance(this);
+        try {
+            JSONObject param = new JSONObject();
+            //param.put("recipient",token.getCurrentConnection().getInt("id")).put("content", message);
+            param.put("recipient",recipientID).put("content", message);
+            req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
+        } catch (JSONException e) {}
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        if (message.length() > 0) {
+            token.getSessionMessages().add(new Message(message, null, true));
+            editText.getText().clear();
+        }
     }
 
     @Override
@@ -194,10 +252,12 @@ public class MessageList extends AppCompatActivity {
             case R.id.call_button:
                 if (twilio.getCall() == null) {
                     makeCall();
+                    item.setEnabled(false);
                 } else {
                     stopCall();
                 }
-                changeUI(item);
+
+                findViewById(R.id.call_button).setEnabled(false);
                 return true;
             case R.id.clips_button:
                 Intent intent = new Intent(getApplicationContext(), StoreClips.class);
@@ -209,10 +269,6 @@ public class MessageList extends AppCompatActivity {
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void changeUI(MenuItem item) {
-        item.setIcon(twilio.getCall() == null ? R.drawable.ic_call : R.drawable.ic_hangup);
     }
 
     private void makeCall() {
@@ -232,6 +288,18 @@ public class MessageList extends AppCompatActivity {
         Intent stopCallIntent = new Intent(this, CallService.class);
         stopCallIntent.setAction("call.stop");
         startService(stopCallIntent);
+    }
+
+    private void handleCallIntent(Intent intent) {
+        if (intent.getAction().equals( "call.answer" )) {
+            CallInvite invite = intent.getParcelableExtra( "invite" );
+            twilio.receiveCall( intent.getIntExtra( "notificationId", 0 ),
+                    invite );
+            Intent answerIntent = new Intent( this, CallService.class );
+            answerIntent.setAction( "call.answer" );
+            answerIntent.putExtra( "invite", invite );
+            startService( answerIntent );
+        }
     }
 
     @Override
