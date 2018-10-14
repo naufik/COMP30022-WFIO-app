@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 
 public class DialogBuilder {
-    private String actionString;
-    private int method;
 
     public static AlertDialog okDialog(String text, Context ctx){
         AlertDialog.Builder builder1 = new AlertDialog.Builder(ctx);

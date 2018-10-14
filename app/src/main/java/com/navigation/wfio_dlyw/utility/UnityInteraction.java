@@ -4,21 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.navigation.wfio_dlyw.comms.Credentials;
-import com.navigation.wfio_dlyw.comms.Requester;
-import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.navigation.ElderHome;
 import com.navigation.wfio_dlyw.navigation.ElderMaps;
 import com.navigation.wfio_dlyw.navigation.MessageListElder;
 import com.unity3d.player.UnityPlayer;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
 
 public class UnityInteraction {
 
