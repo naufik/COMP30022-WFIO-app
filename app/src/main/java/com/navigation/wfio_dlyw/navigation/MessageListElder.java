@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,6 +37,15 @@ public class MessageListElder extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_list_elder);
+
+        try {
+            Toolbar myToolbar = findViewById(R.id.toolbarML);
+            myToolbar.setTitle("");
+            setSupportActionBar(myToolbar);
+            String toName = Token.getInstance().getCurrentConnection().getString("fullname");
+            myToolbar.setTitle(toName);
+        } catch (JSONException e) {}
+
         update = true;
         t2t = new Text2Speech(getApplicationContext());
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
@@ -43,6 +53,7 @@ public class MessageListElder extends AppCompatActivity {
         startService(serviceIntent);
         handler.post(runner);
     }
+
 
     private void populateUsersList() {
         Token token = Token.getInstance();
