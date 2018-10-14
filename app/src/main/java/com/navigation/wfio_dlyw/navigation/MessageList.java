@@ -170,6 +170,8 @@ public class MessageList extends AppCompatActivity{
 
             @Override
             public void onDisconnect() {
+                Toolbar toolbar = findViewById(R.id.toolbarML);
+                toolbar.setTitle(MessageList.this.toName);
                 item.setIcon(R.drawable.ic_call);
                 item.setEnabled(true);
             }
@@ -185,7 +187,11 @@ public class MessageList extends AppCompatActivity{
 
             @Override
             public void onCallFailure() {
+                Toolbar toolbar = findViewById(R.id.toolbarML);
+                toolbar.setTitle(MessageList.this.toName);
                 item.setIcon(R.drawable.ic_call);
+
+
                 item.setEnabled(true);
             }
         };
