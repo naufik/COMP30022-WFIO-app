@@ -2,6 +2,7 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
@@ -116,6 +117,13 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 item.setIcon(R.drawable.ic_call);
             }
         };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CallService.ON_CONNECT);
+        filter.addAction(CallService.ON_DISCONNECT);
+        filter.addAction(CallService.ON_FAILURE);
+
+        registerReceiver(callEventsListener, filter);
     }
 
     private void makeCall() {
