@@ -125,6 +125,7 @@ public class MyElders extends AppCompatActivity {
                             } catch (Exception e) {}
                             req.requestAction(ServerAction.USER_MODIFY_RECORD,params,delete->{
                                 Toast.makeText(MyElders.this, name + " is no longer connected with you", Toast.LENGTH_SHORT).show();
+                                removeItem(position);
                             },new Credentials(t.getEmail(),t.getValue()));
                         }
                     });
@@ -137,8 +138,6 @@ public class MyElders extends AppCompatActivity {
                     });
                     builder.show();
                 } catch (JSONException e) {}
-
-                removeItem(position);
             }
         });
     }

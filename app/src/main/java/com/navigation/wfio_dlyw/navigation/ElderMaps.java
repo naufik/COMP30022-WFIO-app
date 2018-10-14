@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
@@ -16,6 +17,7 @@ import android.os.Messenger;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -41,6 +43,7 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.DialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -426,9 +429,30 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        Toast.makeText(this, "WHAAAAAT", Toast.LENGTH_SHORT).show();
+        Token t = Token.getInstance();
+
+        String text = "Are you sure you want to leave navigation?";
+        AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
+        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                t.setCurrentConnection(null);
+                Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                return;
+            }
+        });
+
+        builder.show();
+
     }
 
 }
