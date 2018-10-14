@@ -98,6 +98,7 @@ public class CallService extends Service {
                 Intent i = new Intent();
                 i.setAction("call.ondisonnect");
                 sendBroadcast(i);
+                stopSelf();
             }
 
             @Override
@@ -105,6 +106,7 @@ public class CallService extends Service {
                 Intent i = new Intent();
                 i.setAction("call.onfailure");
                 sendBroadcast(i);
+                stopSelf();
             }
         } );
     }
@@ -133,6 +135,7 @@ public class CallService extends Service {
                 Intent i = new Intent();
                 i.setAction("call.ondisonnect");
                 sendBroadcast(i);
+                stopSelf();
             }
 
             @Override
@@ -140,6 +143,7 @@ public class CallService extends Service {
                 Intent i = new Intent();
                 i.setAction("call.onfailure");
                 sendBroadcast(i);
+                stopSelf();
             }
         } );
     }
