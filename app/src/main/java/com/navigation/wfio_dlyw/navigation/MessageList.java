@@ -177,7 +177,7 @@ public class MessageList extends AppCompatActivity{
             @Override
             public void onConnected() {
                 Toolbar toolbar = findViewById(R.id.toolbarML);
-                toolbar.setTitle("ON CALL: ");
+                toolbar.setTitle("ON CALL: " + MessageList.this.toName);
 
                 item.setIcon(R.drawable.ic_hangup);
                 item.setEnabled(true);
