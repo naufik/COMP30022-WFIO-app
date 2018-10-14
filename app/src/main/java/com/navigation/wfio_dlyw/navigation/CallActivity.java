@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.twilio.voice.*;
 
@@ -60,7 +61,7 @@ public class CallActivity extends AppCompatActivity {
             twilio.receiveCall(intent.getIntExtra("notificationId", 0),
                     inv);
 
-            Intent answeringIntent = new Intent();
+            Intent answeringIntent = new Intent(this, CallService.class);
             answeringIntent.setAction("call.answer");
             answeringIntent.putExtra("invite", inv);
             startService(answeringIntent);

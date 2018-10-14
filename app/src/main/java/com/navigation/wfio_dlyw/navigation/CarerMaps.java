@@ -185,7 +185,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     }
 
     private void stopCall() {
-        Intent stopCallIntent = new Intent();
+        Intent stopCallIntent = new Intent(this, CallService.class);
         stopCallIntent.setAction("call.stop");
         startService(stopCallIntent);
     }
