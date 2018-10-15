@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
@@ -28,9 +29,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -56,8 +60,9 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private PolylineOptions route = new PolylineOptions();
-    private Circle elderLoc;
+    private Marker elderLoc;
     private boolean firstCamera = true;
+    private BitmapDescriptor elderIcon;
 
     private CallService.CallServiceReceiver callEventsListener = null;
 
@@ -98,6 +103,8 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 } catch (JSONException e){}
             }
         }
+
+        elderIcon = BitmapDescriptorFactory.fromResource(R.drawable.elderloc);
 
     }
 
@@ -270,7 +277,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
-            elderLoc = mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(1).fillColor(Color.RED));
+            elderLoc = mMap.addMarker(new MarkerOptions().icon(elderIcon));
             if(firstCamera){
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 18));
                 firstCamera = false;
