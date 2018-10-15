@@ -239,7 +239,6 @@ public class MessageList extends AppCompatActivity {
             param.put("recipient",recipientID).put("content", message);
             req.requestAction(ServerAction.MESSAGE_SEND, param, t -> {}, new Credentials(token.getEmail(), token.getValue()));
         } catch (JSONException e) {}
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         if (message.length() > 0) {
             token.getSessionMessages().add(new Message(message, null, true));
             editText.getText().clear();
