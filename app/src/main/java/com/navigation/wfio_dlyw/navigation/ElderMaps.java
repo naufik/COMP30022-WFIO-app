@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.VoidDDQ.Cam.GeoStatService;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,6 +57,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
+
     // Location variables
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -89,11 +91,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public static final int MSG_SEND_ROUTE = 7;
     public static final int MSG_SEND_CREDENTIALS = 8;
     public static final int MSG_REQUEST_DISTANCE = 9;
+    public static final int MSG_REPLY_ZOOM = 10;
 
     private static final String TAG = ElderMaps.class.getSimpleName();
-    private static final int TIME_INTERVAL = 1000;
     private static final int DEFAULT_ZOOM = 15;
-    private static final int CHECKPOINT_PROXIMITY = 25;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
@@ -109,6 +110,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
                 case MSG_REQUEST_LOCATION:
+                    // Location retrieved from server, moving camera
                     mCurrentLocation = (Location) msg.obj;
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(mCurrentLocation.getLatitude(),
@@ -135,6 +137,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                         e.printStackTrace();
                     }
                     break;
+                case MSG_REPLY_ZOOM:
+                    CameraUpdate zoom = (CameraUpdate) msg.obj;
+                    mMap.animateCamera(zoom);
             }
         }
     }
