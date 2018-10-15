@@ -148,9 +148,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 case MSG_REPLY_ZOOM:
                     CameraUpdate zoom = (CameraUpdate) msg.obj;
                     mMap.animateCamera(zoom);
+                    break;
                 case MSG_REQUEST_DIRECTION:
                     String direction = (String) msg.obj;
                     tts.read(direction);
+                    break;
             }
         }
     }
