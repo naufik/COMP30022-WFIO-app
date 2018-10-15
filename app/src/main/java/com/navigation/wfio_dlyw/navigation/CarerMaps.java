@@ -277,7 +277,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
-            elderLoc = mMap.addMarker(new MarkerOptions().icon(elderIcon));
+            elderLoc = mMap.addMarker(new MarkerOptions().position(latLngLoc).icon(elderIcon));
             if(firstCamera){
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 18));
                 firstCamera = false;
