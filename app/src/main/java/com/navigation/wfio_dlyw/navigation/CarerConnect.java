@@ -42,7 +42,7 @@ public class CarerConnect extends AppCompatActivity {
         Requester req = Requester.getInstance(this);
         Token token = Token.getInstance();
 
-        Toast.makeText(this , token.getType(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this , token.getType() + "wadaw", Toast.LENGTH_LONG).show();
 
         EditText input = findViewById(R.id.verificationCodeCC);
         Button link = findViewById(R.id.link);
@@ -72,7 +72,9 @@ public class CarerConnect extends AppCompatActivity {
                     Log.d("CC",""+newConnection.length());
                     Log.d("CC",""+token.getConnections().length());
                     startActivity(startIntent);
-                } catch (JSONException e) {}
+                } catch (JSONException e) {
+                    Log.d("this", "doesnt work");
+                }
             }, new Credentials(token.getEmail(), token.getValue()));
         });
 

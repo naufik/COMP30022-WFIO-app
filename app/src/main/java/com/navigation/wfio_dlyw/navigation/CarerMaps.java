@@ -292,13 +292,13 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, CarerMaps.this);
         builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int id) {
+            public void onClick(DialogInterface dialog, int id)  {
                 Intent serviceIntent = new Intent(CarerMaps.this, MsgUpdateService.class);
                 serviceIntent.setAction("stop");
                 startService(serviceIntent);
                 t.setCurrentConnection(null);
-                Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent = new Intent(getApplicationContext(), CarerHome.class);
+//                intent.setFlags(Intent. );
                 startActivity(intent);
             }
         });
