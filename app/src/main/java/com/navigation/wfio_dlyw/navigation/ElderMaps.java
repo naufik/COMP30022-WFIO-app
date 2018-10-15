@@ -105,7 +105,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private boolean routeGenerated;
     private CallService.CallServiceReceiver callEventsHandler;
 
-    private Text2Speech tts;
+    private Text2Speech tts = new Text2Speech(ElderMaps.this);
 
     // Service to client message handler
     class IncomingHandler extends Handler {
@@ -150,7 +150,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     mMap.animateCamera(zoom);
                     break;
                 case MSG_REQUEST_DIRECTION:
-                    String direction = (String) msg.obj;
+                    Log.d(TAG, "Direction retrieved: " + String.valueOf(msg.obj));
+                    String direction = String.valueOf(msg.obj);
                     tts.read(direction);
                     break;
             }
