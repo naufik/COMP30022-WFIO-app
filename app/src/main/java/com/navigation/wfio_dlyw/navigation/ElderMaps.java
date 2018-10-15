@@ -49,6 +49,7 @@ import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.navigation.wfio_dlyw.utility.DialogBuilder;
+import com.navigation.wfio_dlyw.utility.Text2Speech;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,6 +93,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public static final int MSG_SEND_CREDENTIALS = 8;
     public static final int MSG_REQUEST_DISTANCE = 9;
     public static final int MSG_REPLY_ZOOM = 10;
+    public static final int MSG_REQUEST_DIRECTION = 11;
 
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 15;
@@ -102,6 +104,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private MaterialSearchView searchView;
     private boolean routeGenerated;
     private CallService.CallServiceReceiver callEventsHandler;
+
+    private Text2Speech tts;
 
     // Service to client message handler
     class IncomingHandler extends Handler {
@@ -122,7 +126,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                         route = (PolylineOptions) msg.obj;
                         mMap.clear();
                         mMap.addPolyline(route);
-                    } catch (NullPointerException e) {
+
+                        Message resp = Message.obtain(null, MSG_REQUEST_DIRECTION);
+                        resp.replyTo = mMessenger;
+                        mService.send(resp);
+                    } catch (NullPointerException | RemoteException e) {
                         e.printStackTrace();
                     }
                     break;
@@ -140,6 +148,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 case MSG_REPLY_ZOOM:
                     CameraUpdate zoom = (CameraUpdate) msg.obj;
                     mMap.animateCamera(zoom);
+                case MSG_REQUEST_DIRECTION:
+                    String direction = (String) msg.obj;
+                    tts.read(direction);
             }
         }
     }
