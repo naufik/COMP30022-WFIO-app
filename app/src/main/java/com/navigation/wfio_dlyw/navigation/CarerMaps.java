@@ -136,7 +136,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
                     .getString("username"));
             startService(callIntent);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Toast.makeText( this, "currently not being connected to anyone" ,
                     Toast.LENGTH_LONG).show();
         }
@@ -145,7 +145,6 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.carermaps,menu);
 
@@ -168,7 +167,6 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 this.onBackPressed();
                 return true;
             case R.id.sms_button:
-                Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
                 Intent smsintent = new Intent(getApplicationContext(), MessageList.class);
                 startActivity(smsintent);
                 return true;
