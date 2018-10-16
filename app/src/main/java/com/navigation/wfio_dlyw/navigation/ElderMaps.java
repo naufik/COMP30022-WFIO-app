@@ -3,7 +3,9 @@ package com.navigation.wfio_dlyw.navigation;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,6 +18,7 @@ import android.os.Messenger;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,11 +26,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +46,9 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.twilio.CallService;
+import com.navigation.wfio_dlyw.twilio.TwilioUtils;
+import com.navigation.wfio_dlyw.utility.DialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +57,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
+
     // Location variables
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -79,17 +88,20 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public static final int MSG_UPDATE_DESTINATION = 4;
     public static final int MSG_PAUSE_UPDATE = 5;
     public static final int MSG_RESUME_UPDATE = 6;
+    public static final int MSG_SEND_ROUTE = 7;
+    public static final int MSG_SEND_CREDENTIALS = 8;
+    public static final int MSG_REQUEST_DISTANCE = 9;
+    public static final int MSG_REPLY_ZOOM = 10;
 
     private static final String TAG = ElderMaps.class.getSimpleName();
-    private static final int TIME_INTERVAL = 1000;
     private static final int DEFAULT_ZOOM = 15;
-    private static final int CHECKPOINT_PROXIMITY = 25;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
     //other variables
     private MaterialSearchView searchView;
     private boolean routeGenerated;
+    private CallService.CallServiceReceiver callEventsHandler;
 
     // Service to client message handler
     class IncomingHandler extends Handler {
@@ -98,6 +110,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
                 case MSG_REQUEST_LOCATION:
+                    // Location retrieved from server, moving camera
                     mCurrentLocation = (Location) msg.obj;
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(mCurrentLocation.getLatitude(),
@@ -124,6 +137,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                         e.printStackTrace();
                     }
                     break;
+                case MSG_REPLY_ZOOM:
+                    CameraUpdate zoom = (CameraUpdate) msg.obj;
+                    mMap.animateCamera(zoom);
             }
         }
     }
@@ -144,6 +160,12 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
                 msg2.replyTo = mMessenger;
                 mService.send(msg2);
+
+                Token token = Token.getInstance(ElderMaps.this);
+                String[] credentials = {token.getEmail(), token.getValue()};
+                Message msg3 = Message.obtain(null, MSG_SEND_CREDENTIALS, credentials);
+                msg3.replyTo = mMessenger;
+                mService.send(msg3);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -282,6 +304,31 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 //Do some magic
             }
         });
+
+        Button viewMessages = (Button) findViewById(R.id.viewMessages);
+        viewMessages.setOnClickListener(view -> {
+            if (Token.getInstance(this).getCurrentConnection() != null) {
+                Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
+                startActivity(smsintent);
+            }else{
+                Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        Button helpMe = (Button) findViewById(R.id.helpMe);
+        helpMe.setOnClickListener(view -> {
+            if(routeGenerated) {
+                try {
+                    Message msg = Message.obtain(null, MSG_SEND_ROUTE);
+                    msg.replyTo = mMessenger;
+                    mService.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     //inflate toolbar
@@ -292,9 +339,46 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         MenuItem item = menu.findItem(R.id.action_search);
         searchView.setMenuItem(item);
-        routeGenerated =false;
 
+        callEventsHandler = new CallService.CallServiceReceiver() {
+            private MenuItem item =
+                    menu.getItem( 0 );
+
+            @Override
+            public void onDisconnect() {
+                item.setIcon( R.drawable.ic_call );
+                item.setEnabled( true );
+            }
+
+            @Override
+            public void onConnected() {
+                Toolbar toolbar = findViewById( R.id.toolbarML );
+
+                item.setIcon( R.drawable.ic_hangup );
+                item.setEnabled( true );
+            }
+
+            @Override
+            public void onCallFailure() {
+                Toolbar toolbar = findViewById( R.id.toolbarML );
+                item.setIcon( R.drawable.ic_call );
+                item.setEnabled( true );
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CallService.ON_CONNECT);
+        filter.addAction( CallService.ON_DISCONNECT );
+        filter.addAction( CallService.ON_FAILURE );
+        registerReceiver(callEventsHandler, filter);
         return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(callEventsHandler);
+        callEventsHandler = null;
+        super.onDestroy();
     }
 
     //setmenu item
@@ -302,8 +386,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                startActivity(startIntent);
+                this.onBackPressed();
                 return true;
             case R.id.star_button:
                 if(routeGenerated){
@@ -314,50 +397,14 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     Toast.makeText(this, "Please select a destination", Toast.LENGTH_LONG).show();
                 }
                 break;
-            case R.id.sms_button:
-                if (Token.getInstance(this).getCurrentConnection() != null) {
-                    Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
-                    startActivity(smsintent);
-                    return true;
-                }else{
-                    Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.sos_button:
-                if(routeGenerated) {
-                    try {
-                        JSONObject message = new JSONObject();
-                        JSONObject destination = new JSONObject();
-                        JSONArray route = new JSONArray();
-
-                        List<LatLng> routeCheckpoints = this.route.getPoints();
-                        for (int i = 0; i < routeCheckpoints.size(); i++) {
-                            JSONObject checkpoint = new JSONObject();
-                            checkpoint.put("lat", routeCheckpoints.get(i).latitude)
-                                    .put("long", routeCheckpoints.get(i).longitude);
-                            route.put(checkpoint);
-                            if (i == routeCheckpoints.size() - 1) {
-                                destination = checkpoint;
-                            }
-                        }
-                        message.put("route", route)
-                                .put("destination", destination);
-
-                        Requester req = Requester.getInstance(getApplicationContext());
-                        Token var = Token.getInstance();
-                        req.requestAction(ServerAction.CARER_SIGNAL, message, response -> {}, new Credentials(var.getEmail(), var.getValue()));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return true;
-                }else{
-                    Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
-                }
-                break;
             case R.id.call_button:
-                if (Token.getInstance(this).getCurrentConnection() != null) {
-                    Intent callintent = new Intent(getApplicationContext(), MessageListElder.class);
-                    startActivity(callintent);
+                if(Token.getInstance(this).getCurrentConnection() != null) {
+                    if (TwilioUtils.getInstance(this).getCall() == null) {
+                        makeCall();
+                        item.setEnabled(false);
+                    } else {
+                        stopCall();
+                    }
                     return true;
                 }else{
                     Toast.makeText(this, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
@@ -367,6 +414,25 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void stopCall() {
+        Intent stopCallIntent = new Intent(this, CallService.class);
+        stopCallIntent.setAction("call.stop");
+        startService(stopCallIntent);
+    }
+
+    private void makeCall() {
+        try {
+            Intent callIntent = new Intent(this, CallService.class);
+            callIntent.setAction("call.start");
+            callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
+                    .getString("username"));
+            startService(callIntent);
+        } catch (JSONException e) {
+            Toast.makeText( this, "currently not being connected to anyone" ,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -426,9 +492,32 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        Token t = Token.getInstance();
+
+        String text = "Are you sure you want to leave navigation?";
+        AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
+        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
+                t.setCurrentConnection(null);
+                Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                return;
+            }
+        });
+
+        builder.show();
+
     }
 
 }

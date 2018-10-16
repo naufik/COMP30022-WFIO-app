@@ -10,11 +10,9 @@ import android.widget.Toast;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.view.KeyEvent;
-import android.speech.tts.TextToSpeech;
 
 import com.google.firebase.FirebaseApp;
 import com.navigation.wfio_dlyw.utility.*;
-import android.speech.tts.TextToSpeech.OnInitListener;
 
 import com.navigation.wfio_dlyw.comms.*;
 
@@ -38,11 +36,6 @@ public class LogIn extends AppCompatActivity {
         EditText username = findViewById(R.id.username);
         EditText password = findViewById(R.id.password);
         Text2Speech t2t = new Text2Speech(getApplicationContext());
-
-        Button b1 = (Button)findViewById(R.id.forgotPassword);
-
-        t2t.buttonTalk(b1, "Johny Johny... YES PAPA!");
-
 
         //for the moment it only redirects to the elder's home page
         Button enterBtn = findViewById(R.id.enterBtn);
@@ -78,6 +71,7 @@ public class LogIn extends AppCompatActivity {
                                     } catch (JSONException e) {}
                              }, new Credentials(token.getEmail(), token.getValue()));
                             token.createSessionMessages();
+                            t2t.read("Welcome "+token.getFullName());
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
                             startActivity(startIntent);
@@ -89,6 +83,7 @@ public class LogIn extends AppCompatActivity {
                                 } catch (JSONException e) {}
                             }, new Credentials(token.getEmail(), token.getValue()));
                             token.createSessionMessages();
+                            t2t.read("Welcome "+token.getFullName()+" Nice to see you helping others today");
                             finish();
                             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
                             startActivity(startIntent);

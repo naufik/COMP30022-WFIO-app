@@ -26,17 +26,4 @@
         android:title="@string/star"
         app:showAsAction="ifRoom"
         />
-
-    <item
-        android:id="@+id/sms_button"
-        android:icon="@drawable/ic_sms"
-        android:title="@string/smsC"
-        app:showAsAction="ifRoom"
-        />
-    <item
-        android:id="@+id/sos_button"
-        android:icon="@drawable/ic_alert"
-        android:title="@string/sos"
-        app:showAsAction="ifRoom"
-        />
 </menu>
