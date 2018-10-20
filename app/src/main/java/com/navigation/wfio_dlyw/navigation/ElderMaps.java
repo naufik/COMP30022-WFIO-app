@@ -338,7 +338,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     //inflate toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
         getMenuInflater().inflate(R.menu.search, menu);
 
         MenuItem item = menu.findItem(R.id.action_search);
