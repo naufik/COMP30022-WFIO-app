@@ -41,13 +41,6 @@
             android:src="@drawable/ic_delete"
             android:id="@+id/image_delete"/>
 
-        <ImageView
-            android:id="@+id/image_map"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/image_delete"
-            android:src="@drawable/ic_map" />
     </RelativeLayout>
 
 </android.support.v7.widget.CardView>
