@@ -167,14 +167,21 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "Service connected");
             mService = new Messenger(iBinder);
+
             try {
                 Message msg = Message.obtain(null, MSG_REQUEST_LOCATION);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
 
-                Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
-                msg2.replyTo = mMessenger;
-                mService.send(msg2);
+                if (getIntent().hasExtra("FavoriteItem")) {
+                    Message msg2 = Message.obtain(null, MSG_UPDATE_DESTINATION, getIntent().getStringExtra("FavoriteItem"));
+                    msg2.replyTo = mMessenger;
+                    mService.send(msg2);
+                } else {
+                    Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
+                    msg2.replyTo = mMessenger;
+                    mService.send(msg2);
+                }
 
                 Token token = Token.getInstance(ElderMaps.this);
                 String[] credentials = {token.getEmail(), token.getValue()};
@@ -195,10 +202,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "ElderMaps created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_maps);
         Token token = Token.getInstance(this);
+        Log.d(TAG, "ElderMaps created");
 
         // Connects to a carer if available
         String email = getIntent().getStringExtra("from");
@@ -493,25 +500,22 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         super.onResume();
         sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
 
-        if (getIntent().hasExtra("FavoriteItem")) {
-            try {
-                Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION, getIntent().getStringExtra("FavoriteItem"));
-                msg.replyTo = mMessenger;
-                mService.send(msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
+        bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+
+        Log.d(TAG, "Maps resumed");
     }
 
     @Override
     protected void onPause() {
+        Log.d(TAG, "Maps paused");
         super.onPause();
         sensorManager.unregisterListener(eventListener);
     }
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "Maps stopped");
         super.onStop();
         /*try {
             Message msg = Message.obtain(null, MSG_PAUSE_UPDATE);
