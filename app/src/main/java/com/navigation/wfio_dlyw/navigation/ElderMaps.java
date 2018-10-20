@@ -354,6 +354,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 item.setIcon( R.drawable.ic_call );
                 item.setEnabled( true );
             }
+
         };
 
         IntentFilter filter = new IntentFilter();
@@ -406,6 +407,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     Toast.makeText(this, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
                 }
                 break;
+            case R.id.myFavourites:
+                Intent favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
+                startActivity(favouriteIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

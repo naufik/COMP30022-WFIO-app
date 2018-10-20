@@ -26,4 +26,10 @@
         android:title="@string/star"
         app:showAsAction="ifRoom"
         />
+    <item
+        android:id="@+id/myFavourites"
+        android:icon="@drawable/ic_star"
+        android:title="@string/favorites"
+        app:showAsAction="ifRoom"
+        />
 </menu>

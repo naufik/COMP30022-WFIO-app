@@ -99,7 +99,7 @@ public class Favourites extends AppCompatActivity {
 
             @Override
             public void onMapClick(int position) {
-                Intent intent = new Intent(Favourites.this, UnityPlayerActivity.class);
+                Intent intent = new Intent(Favourites.this, ElderMaps.class);
                 //gives a favorite item for you to parse get info from
                 String destination = favourites.get(position).getName();
                 intent.putExtra("FavouriteItem", destination);
