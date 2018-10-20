@@ -492,6 +492,16 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
+
+        if (getIntent().hasExtra("FavoriteItem")) {
+            try {
+                Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION, getIntent().getStringExtra("FavoriteItem"));
+                msg.replyTo = mMessenger;
+                mService.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -547,6 +557,16 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         builder.show();
 
+    }
+
+    private void sendToServer(int msgCode, Object toSend) {
+        try {
+            Message msg = Message.obtain(null, msgCode, toSend);
+            msg.replyTo = mMessenger;
+            mService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
 }
