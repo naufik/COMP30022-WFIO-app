@@ -34,11 +34,12 @@ public class MyElders extends AppCompatActivity {
     private ConnectAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private AlertDialog.Builder builder = null;
-    private Requester req = Requester.getInstance(this);
+    private Requester req;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        req = Requester.getInstance(this);
         elders = new ArrayList<>();
         setContentView(R.layout.activity_my_elders);
         Bundle extras = getIntent().getExtras();
@@ -125,6 +126,7 @@ public class MyElders extends AppCompatActivity {
                             } catch (Exception e) {}
                             req.requestAction(ServerAction.USER_MODIFY_RECORD,params,delete->{
                                 Toast.makeText(MyElders.this, name + " is no longer connected with you", Toast.LENGTH_SHORT).show();
+                                removeItem(position);
                             },new Credentials(t.getEmail(),t.getValue()));
                         }
                     });
@@ -137,8 +139,6 @@ public class MyElders extends AppCompatActivity {
                     });
                     builder.show();
                 } catch (JSONException e) {}
-
-                removeItem(position);
             }
         });
     }

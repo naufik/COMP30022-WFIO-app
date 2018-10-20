@@ -1,35 +1,22 @@
 package com.navigation.wfio_dlyw.comms;
 
 import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.job.JobParameters;
-import android.app.job.JobService;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.navigation.AnswerHelp;
 import com.navigation.wfio_dlyw.navigation.CarerMaps;
-import com.navigation.wfio_dlyw.navigation.ElderHome;
 import com.navigation.wfio_dlyw.navigation.ElderMaps;
-import com.navigation.wfio_dlyw.navigation.ElderNavigation;
-import com.navigation.wfio_dlyw.navigation.NotificationReceiver;
 import com.navigation.wfio_dlyw.navigation.R;
 
 import org.json.JSONArray;
@@ -40,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Function;
 
 /**
  * This service polls notification from the notification server and creates a notification

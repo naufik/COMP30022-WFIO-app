@@ -1,5 +1,10 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
@@ -8,6 +13,7 @@ import android.speech.RecognizerIntent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -23,9 +29,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -35,6 +44,9 @@ import com.navigation.wfio_dlyw.comms.NotifyService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.DialogBuilder;
+import com.navigation.wfio_dlyw.twilio.CallService;
+import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,8 +60,11 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private PolylineOptions route = new PolylineOptions();
-    private Circle elderLoc;
+    private Marker elderLoc;
     private boolean firstCamera = true;
+    private BitmapDescriptor elderIcon;
+
+    private CallService.CallServiceReceiver callEventsListener = null;
 
     private static final String TAG = CarerMaps.class.getSimpleName();
 
@@ -73,7 +88,6 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         //make fake list
-        String[] list = new String[]{"Barney", "is", "a", "dinosaur", "of", "our", "imagination"};
 
         Token token = Token.getInstance(this);
         String email = getIntent().getStringExtra("from");
@@ -89,33 +103,99 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 } catch (JSONException e){}
             }
         }
+
+        elderIcon = BitmapDescriptorFactory.fromResource(R.drawable.elderloc);
+
     }
+
+    private void initializeCallEventsListener(Menu menu) {
+        callEventsListener = new CallService.CallServiceReceiver() {
+            private MenuItem item = menu.getItem(0);
+
+            @Override
+            public void onDisconnect() {
+                item.setIcon(R.drawable.ic_call);
+            }
+
+            @Override
+            public void onConnected() {
+                item.setIcon(R.drawable.ic_hangup);
+            }
+
+            @Override
+            public void onCallFailure() {
+                item.setIcon(R.drawable.ic_call);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CallService.ON_CONNECT);
+        filter.addAction(CallService.ON_DISCONNECT);
+        filter.addAction(CallService.ON_FAILURE);
+
+        registerReceiver(callEventsListener, filter);
+    }
+
+    private void makeCall() {
+        try {
+            Intent callIntent = new Intent(this, CallService.class);
+            callIntent.setAction("call.start");
+            callIntent.putExtra("to", Token.getInstance(this).getCurrentConnection()
+                    .getString("username"));
+            startService(callIntent);
+        } catch (Exception e) {
+            Toast.makeText( this, "currently not being connected to anyone" ,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.carermaps,menu);
+
+        initializeCallEventsListener(menu);
         return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        stopCall();
+        unregisterReceiver(callEventsListener);
+        callEventsListener = null;
+        super.onDestroy();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
-                Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
-                startActivity(startIntent);
+                this.onBackPressed();
                 return true;
             case R.id.sms_button:
-                Toast.makeText(this, "ada", Toast.LENGTH_LONG).show();
                 Intent smsintent = new Intent(getApplicationContext(), MessageList.class);
                 startActivity(smsintent);
+                return true;
+
+            case R.id.call_button:
+                if (TwilioUtils.getInstance(this).getCall() == null) {
+                    makeCall();
+                } else {
+                    stopCall();
+                }
                 return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void stopCall() {
+        Intent stopCallIntent = new Intent(this, CallService.class);
+        stopCallIntent.setAction("call.stop");
+        startService(stopCallIntent);
     }
 
     /**
@@ -197,11 +277,40 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
-            elderLoc = mMap.addCircle(new CircleOptions().center(latLngLoc).visible(true).radius(1).fillColor(Color.RED));
+            elderLoc = mMap.addMarker(new MarkerOptions().position(latLngLoc).icon(elderIcon).anchor(0.5f, 0.5f));
             if(firstCamera){
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 18));
                 firstCamera = false;
             }
         }
+    }
+    @Override
+    public void onBackPressed() {
+        Token t = Token.getInstance();
+
+        String text = "Are you sure you want to leave navigation?";
+        AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, CarerMaps.this);
+        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id)  {
+                Intent serviceIntent = new Intent(CarerMaps.this, MsgUpdateService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
+                t.setCurrentConnection(null);
+                Intent intent = new Intent(getApplicationContext(), CarerHome.class);
+//                intent.setFlags(Intent. );
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                return;
+            }
+        });
+
+        builder.show();
+
     }
 }
