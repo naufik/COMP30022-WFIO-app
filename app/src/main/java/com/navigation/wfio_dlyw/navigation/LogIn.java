@@ -106,11 +106,10 @@ public class LogIn extends AppCompatActivity {
         try {
             Log.d("Login", t.toString());
             Log.d("Login2",t.getJSONObject("result").toString());
-            Log.d("Login2", "2.5");
             token.setValue(t.getJSONObject("result").getString("token"));
-            Log.d("Login2", "3");
             token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
             Log.d("Login2", "4");
+            token.setFavorites(t.getJSONObject("result").getJSONObject("user").getJSONArray("favorites"));
             token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
             Log.d("Login2", "5");
             token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
