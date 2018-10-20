@@ -22,14 +22,14 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.735" />
 
 
     <EditText
         android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="36dp"
         android:layout_marginEnd="18dp"
         android:layout_marginStart="16dp"
         android:ems="10"
@@ -45,7 +45,7 @@
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="18dp"
         android:layout_marginStart="16dp"
         android:ems="10"
@@ -60,6 +60,7 @@
         android:id="@+id/enterBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="Enter"
@@ -74,23 +75,10 @@
         android:id="@+id/signUpBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Sign-Up"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/forgotPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/forgotPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Forgot Password"
+        android:text="Sign-Up"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

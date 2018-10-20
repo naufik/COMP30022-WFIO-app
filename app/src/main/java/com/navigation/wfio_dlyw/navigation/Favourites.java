@@ -1,19 +1,23 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.DialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,7 +98,38 @@ public class Favourites extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new FavouritesAdapter.OnItemClickListener() {
             @Override
             public void onDeleteClick(int position) {
-                removeItem(position);
+                Token t = Token.getInstance();
+                Requester req = Requester.getInstance(getApplicationContext());
+                try {
+                    String name = t.getFavorites().getJSONObject(position).getString("name");
+
+                    String text = "Are you sure you want to delete " + name;
+                    AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, Favourites.this);
+                    builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            Log.d("favorites2",t.getFavorites().toString());
+                            t.getFavorites().remove(position);
+                            Log.d("favorites3",t.getFavorites().toString());
+                            JSONObject params = new JSONObject();
+                            try {
+                                params.put("favorites", t.getFavorites());
+                            } catch (Exception e) {}
+                            req.requestAction(ServerAction.USER_MODIFY_RECORD,params,delete->{
+                                Toast.makeText(Favourites.this, name + " is no longer your favorite place", Toast.LENGTH_SHORT).show();
+                                removeItem(position);
+                            },new Credentials(t.getEmail(),t.getValue()));
+                        }
+                    });
+
+                    builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            return;
+                        }
+                    });
+                    builder.show();
+                } catch (JSONException e) {}
             }
 
             @Override

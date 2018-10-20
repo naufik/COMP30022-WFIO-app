@@ -40,6 +40,7 @@ public class Token{
     private JSONObject currentConnection;
     private String username;
     private String twilioVoiceToken;
+    private JSONArray favorites;
 
     public String getUsername() {
         return username;
@@ -183,6 +184,14 @@ public class Token{
                                     });
                         }
             });
+    }
+
+    public JSONArray getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(JSONArray favorites) {
+        this.favorites = favorites;
     }
 
     public void startVoice() {
