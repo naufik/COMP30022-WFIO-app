@@ -513,7 +513,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
-        Token t = Token.getInstance();
+        Token t = Token.getInstance(getApplicationContext());
 
         String text = "Are you sure you want to leave navigation?";
         AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
@@ -525,7 +525,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 startService(serviceIntent);
                 t.setCurrentConnection(null);
                 Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+                Log.d("EM", t.getValue());
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Log.d("EM2", t.getValue());
                 startActivity(intent);
             }
         });
