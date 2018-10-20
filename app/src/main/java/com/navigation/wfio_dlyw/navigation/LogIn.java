@@ -3,6 +3,7 @@ package com.navigation.wfio_dlyw.navigation;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,74 +36,51 @@ public class LogIn extends AppCompatActivity {
         setContentView(R.layout.activity_log_in);
         EditText username = findViewById(R.id.username);
         EditText password = findViewById(R.id.password);
-        Text2Speech t2t = new Text2Speech(getApplicationContext());
+
+        JSONObject storedC = FileIO.getCredentials(getApplicationContext());
+        if (storedC != null){
+            Log.d("Login", "pop");
+            try {
+                req.requestAction(ServerAction.USER_GET_INFO, null, t -> {
+                    try {
+                        Log.d("Login", "Requester send");
+                        t.getJSONObject("result").put("token", storedC.get("token"));
+                        loggingIn(t, token);
+                        checkAccount(token);
+                    } catch (Exception e) {}
+                }, new Credentials(storedC.getString("email"),storedC.getString("token")));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         //for the moment it only redirects to the elder's home page
         Button enterBtn = findViewById(R.id.enterBtn);
         enterBtn.setOnClickListener(view -> {
 
-                String user = username.getText().toString();
-                String pass = password.getText().toString();
+            String user = username.getText().toString();
+            String pass = password.getText().toString();
 
-                try {
-                    JSONObject params = new JSONObject();
-                    params.put("username", user).put("password", pass);
+            try {
+                JSONObject params = new JSONObject();
+                params.put("username", user).put("password", pass);
 
                 req.requestAction(ServerAction.USER_LOGIN, params,
                         t -> {
-                    try {
-                        if(!t.getBoolean("ok")){
-                            Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        String s = t.getJSONObject("result").getString("token");
-                        token.setValue(s);
-                        token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
-                        //  Toast.makeText(this.getApplicationContext(), token.getType(), Toast.LENGTH_LONG).show();
-                        token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
-                        token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
-                        token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
-                        token.setUsername(user);
-                        if (token.getType().equals("ELDER")) {
-
-                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
-                                try {
-                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
-                                    } catch (JSONException e) {}
-                             }, new Credentials(token.getEmail(), token.getValue()));
-                            token.createSessionMessages();
-                            t2t.read("Welcome "+token.getFullName());
-                            finish();
-                            Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                            startActivity(startIntent);
-                        }
-                        else {
-                            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
-                                try {
-                                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
-                                } catch (JSONException e) {}
-                            }, new Credentials(token.getEmail(), token.getValue()));
-                            token.createSessionMessages();
-                            t2t.read("Welcome "+token.getFullName()+" Nice to see you helping others today");
-                            finish();
-                            Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
-                            startActivity(startIntent);
-                        }
-                    } catch (JSONException e) {}
+                            try {
+                                if (!t.getBoolean("ok")) {
+                                    Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                this.loggingIn(t, token);
+                                FileIO.storeCredentials(token.getValue(),token.getEmail(), this.getApplicationContext());
+                                this.checkAccount(token);
+                            } catch (JSONException e) {
+                            }
                         });
-                } catch (JSONException e) {
-                }
+            } catch (JSONException e) {}
+        });
 
-
-                if (user.equals("Elder") && pass.equals("123")) {
-                    Intent startIntent = new Intent(getApplicationContext(), ElderHome.class);
-                    startActivity(startIntent);
-                }
-                if (user.equals("Carer") && pass.equals("123")) {
-                    Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);
-                    startActivity(startIntent);
-                }
-            });
         Button signUpBtn = findViewById(R.id.signUpBtn);
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,5 +100,52 @@ public class LogIn extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void loggingIn(JSONObject t, Token token){
+        try {
+            Log.d("Login", t.toString());
+            Log.d("Login2",t.getJSONObject("result").toString());
+            Log.d("Login2", "2.5");
+            token.setValue(t.getJSONObject("result").getString("token"));
+            Log.d("Login2", "3");
+            token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
+            Log.d("Login2", "4");
+            token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
+            Log.d("Login2", "5");
+            token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
+            token.setUsername(t.getJSONObject("result").getJSONObject("user").getString("username"));
+            Log.d("Login2", "6");
+
+        } catch (Exception e) {}
+    }
+
+    private void checkAccount(Token token){
+        Intent startIntent;
+        Requester req = Requester.getInstance(getApplicationContext());
+        Text2Speech t2t = new Text2Speech(getApplicationContext());
+        if (token.getType().equals("ELDER")) {
+
+            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                try {
+                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
+                } catch (JSONException e) {
+                }
+            }, new Credentials(token.getEmail(), token.getValue()));
+            startIntent = new Intent(getApplicationContext(), ElderHome.class);
+        } else {
+            req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
+                try {
+                    token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("eldersList"));
+                } catch (JSONException e) {
+                }
+            }, new Credentials(token.getEmail(), token.getValue()));
+            finish();
+            startIntent = new Intent(getApplicationContext(), CarerHome.class);
+        }
+        token.createSessionMessages();
+        t2t.read("Welcome " + token.getFullName());
+        finish();
+        startActivity(startIntent);
     }
 }
