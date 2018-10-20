@@ -300,7 +300,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 if(query == null) {
                     return false;
                 }
-
+                
                 // Sends new destination to service
                 try {
                     Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION, query);
