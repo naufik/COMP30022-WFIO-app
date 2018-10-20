@@ -1,17 +1,32 @@
 package com.navigation.wfio_dlyw.navigation;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.DialogBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class Favourites extends AppCompatActivity {
-    private static ArrayList<FavouriteItem> favourites = new ArrayList<>();
+    private static ArrayList<FavouriteItem> favourites;
 
     private RecyclerView mRecyclerView;
     private static FavouritesAdapter mAdapter;
@@ -22,11 +37,19 @@ public class Favourites extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
+        favourites = new ArrayList<>();
 
         Toolbar myToolbar = findViewById(R.id.toolbarF);
         setSupportActionBar(myToolbar);
 
+        createFavorites();
         buildRecyclerViewer();
+    }
+
+    public void insertFavourites(int position, FavouriteItem item){
+        Log.d("favorite", item.getName());
+        favourites.add(position, item);
+        mAdapter.notifyItemInserted(position);
     }
 
     public void removeItem(int position){
@@ -34,16 +57,34 @@ public class Favourites extends AppCompatActivity {
         mAdapter.notifyItemRemoved(position);
     }
 
-    public static void setFavorites(String name, double longitude, double latitude){
-        //inserts the new item at the last position
-        int position = favourites.size();
-        Location hey = new Location(name);
-        hey.setLatitude(longitude);
-        hey.setLongitude(latitude);
-        FavouriteItem item = new FavouriteItem(hey);
-        favourites.add(position, item);
-        mAdapter.notifyItemInserted(position);
+    public void createFavorites(){
+        Token t = Token.getInstance();
+        Requester.getInstance(this).requestAction(ServerAction.USER_GET_INFO, null, res->{
+            try{
+                JSONArray fList = res.getJSONObject("result").getJSONObject("user").getJSONArray("favorites");
+                for(int i=0; i<fList.length(); ++i){
+                    JSONObject currentFavourite = fList.getJSONObject(i);
+                    Location location = new Location(currentFavourite.getString("name"));
+                    JSONObject point = currentFavourite.getJSONObject("location");
+                    location.setLatitude(point.getJSONArray("coordinates").getDouble(0));
+                    location.setLongitude(point.getJSONArray("coordinates").getDouble(1));
+
+                    insertFavourites(i, new FavouriteItem(location));
+                }
+            } catch (JSONException e) {
+
+            }
+        }, new Credentials(t.getEmail(), t.getValue()));
     }
+
+//    public static void setFavorites(String name, double longitude, double latitude){
+//        //inserts the new item at the last position
+//        int position = favourites.size();
+//        Location hey = new Location(name);
+//        hey.setLatitude(longitude);
+//        hey.setLongitude(latitude);
+//        FavouriteItem item = new FavouriteItem(hey);
+//    }
 
     public void buildRecyclerViewer() {
         mRecyclerView = findViewById(R.id.favouriteView);
@@ -57,17 +98,49 @@ public class Favourites extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new FavouritesAdapter.OnItemClickListener() {
             @Override
             public void onDeleteClick(int position) {
-                removeItem(position);
+                Token t = Token.getInstance();
+                Requester req = Requester.getInstance(getApplicationContext());
+                try {
+                    String name = t.getFavorites().getJSONObject(position).getString("name");
+
+                    String text = "Are you sure you want to delete " + name;
+                    AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, Favourites.this);
+                    builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            Log.d("favorites2",t.getFavorites().toString());
+                            t.getFavorites().remove(position);
+                            Log.d("favorites3",t.getFavorites().toString());
+                            JSONObject params = new JSONObject();
+                            try {
+                                params.put("favorites", t.getFavorites());
+                            } catch (Exception e) {}
+                            req.requestAction(ServerAction.USER_MODIFY_RECORD,params,delete->{
+                                Toast.makeText(Favourites.this, name + " is no longer your favorite place", Toast.LENGTH_SHORT).show();
+                                removeItem(position);
+                            },new Credentials(t.getEmail(),t.getValue()));
+                        }
+                    });
+
+                    builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            return;
+                        }
+                    });
+                    builder.show();
+                } catch (JSONException e) {}
             }
 
             @Override
             public void onMapClick(int position) {
-                Intent intent = new Intent(Favourites.this, CarerHome.class);
+                Intent intent = new Intent();
                 //gives a favorite item for you to parse get info from
-                intent.putExtra("Example Item", favourites.get(position));
-                startActivity(intent);
+                String destination = favourites.get(position).getName();
+                intent.putExtra("FavoriteItem", destination);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
     }
-
 }
