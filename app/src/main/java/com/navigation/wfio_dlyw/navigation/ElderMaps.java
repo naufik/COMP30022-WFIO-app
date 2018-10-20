@@ -18,6 +18,7 @@ import android.os.Messenger;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +31,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
+import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
@@ -107,6 +109,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private CallService.CallServiceReceiver callEventsHandler;
 
     private Text2Speech tts = new Text2Speech(ElderMaps.this);
+    private String favorite = "";
 
     // Service to client message handler
     class IncomingHandler extends Handler {
@@ -173,11 +176,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 msg.replyTo = mMessenger;
                 mService.send(msg);
 
-                if (getIntent().hasExtra("FavoriteItem")) {
-                    Message msg2 = Message.obtain(null, MSG_UPDATE_DESTINATION, getIntent().getStringExtra("FavoriteItem"));
+                if (!favorite.equals("")) {
+                    Log.d(TAG, "Resumed from favorites");
+                    Message msg2 = Message.obtain(null, MSG_UPDATE_DESTINATION, favorite);
                     msg2.replyTo = mMessenger;
                     mService.send(msg2);
                 } else {
+                    Log.d(TAG, "Resumed from AR");
                     Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
                     msg2.replyTo = mMessenger;
                     mService.send(msg2);
@@ -305,6 +310,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     e.printStackTrace();
                 }
 
+                favorite = "";
+
                 return true;
             }
 
@@ -416,12 +423,26 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 break;
             case R.id.myFavourites:
                 Intent favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
-                startActivity(favouriteIntent);
+                startActivityForResult(favouriteIntent, 1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
+        favorite = "";
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                favorite = data.getStringExtra("FavoriteItem");
+            }
+        }
+
+        Log.d(TAG, favorite);
     }
 
     // Method called when view messages clicked

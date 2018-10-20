@@ -99,18 +99,13 @@ public class Favourites extends AppCompatActivity {
 
             @Override
             public void onMapClick(int position) {
-                Intent intent = new Intent(Favourites.this, ElderMaps.class);
+                Intent intent = new Intent();
                 //gives a favorite item for you to parse get info from
                 String destination = favourites.get(position).getName();
                 intent.putExtra("FavoriteItem", destination);
-                startActivity(intent);
+                setResult(RESULT_OK, intent);
+                finish();
             }
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(Favourites.this, ElderMaps.class);
-        startActivity(intent);
     }
 }

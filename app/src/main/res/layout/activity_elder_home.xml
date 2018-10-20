@@ -21,18 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbarEH" />
 
-    <Button
-        android:id="@+id/favoritesBtn"
-        android:layout_width="258dp"
-        android:layout_height="81dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
-        android:text="Favorites"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/navigateButton" />
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarEH"
         android:layout_width="match_parent"
