@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Favourites extends AppCompatActivity {
-    private static ArrayList<FavouriteItem> favourites = new ArrayList<>();
+    private static ArrayList<FavouriteItem> favourites;
 
     private RecyclerView mRecyclerView;
     private static FavouritesAdapter mAdapter;
@@ -33,6 +33,7 @@ public class Favourites extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
+        favourites = new ArrayList<>();
 
         Toolbar myToolbar = findViewById(R.id.toolbarF);
         setSupportActionBar(myToolbar);

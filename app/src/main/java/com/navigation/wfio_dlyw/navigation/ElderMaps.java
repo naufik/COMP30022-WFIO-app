@@ -526,7 +526,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 t.setCurrentConnection(null);
                 Intent intent = new Intent(getApplicationContext(), ElderHome.class);
                 Log.d("EM", t.getValue());
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                finish();
+//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 Log.d("EM2", t.getValue());
                 startActivity(intent);
             }
