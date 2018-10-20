@@ -128,7 +128,6 @@ public class Favourites extends AppCompatActivity {
                     });
                     builder.show();
                 } catch (JSONException e) {}
-                removeItem(position);
             }
 
             @Override
