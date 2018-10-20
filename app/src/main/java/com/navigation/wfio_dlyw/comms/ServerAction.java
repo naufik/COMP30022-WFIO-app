@@ -8,6 +8,7 @@ public enum ServerAction {
     USER_SIGN_UP("user.signup", Request.Method.POST),
     USER_GET_INFO("user.details", Request.Method.GET),
     USER_MODIFY_RECORD("user.modify", Request.Method.POST),
+    USER_ADD_FAV("user.addfav", Request.Method.POST),
     ELDER_REQUEST_LINK("user.genlink", Request.Method.POST),
     CARER_LINK("user.link", Request.Method.POST),
     MESSAGE_PULL("msg.pull", Request.Method.GET),
