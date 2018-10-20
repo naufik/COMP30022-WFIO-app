@@ -99,15 +99,6 @@ public class MyElders extends AppCompatActivity {
 
         mAdapter.setOnItemClickListener(new ConnectAdapter.OnItemClickListener() {
 
-            //CarerHome should be changed to ElderMaps instead
-            @Override
-            public void onMapClick(int position){
-                Intent intent = new Intent(MyElders.this, CarerHome.class);
-                intent.putExtra("Example Item", elders.get(position));
-                startActivity(intent);
-            }
-
-
             @Override
             public void onDeleteClick(int position) {
                 Token t = Token.getInstance();

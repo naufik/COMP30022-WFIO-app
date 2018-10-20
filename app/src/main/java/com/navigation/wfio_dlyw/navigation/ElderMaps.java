@@ -18,6 +18,7 @@ import android.os.Messenger;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +31,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
+import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
@@ -49,6 +51,7 @@ import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.navigation.wfio_dlyw.utility.DialogBuilder;
+import com.navigation.wfio_dlyw.utility.Text2Speech;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,6 +95,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public static final int MSG_SEND_CREDENTIALS = 8;
     public static final int MSG_REQUEST_DISTANCE = 9;
     public static final int MSG_REPLY_ZOOM = 10;
+    public static final int MSG_REQUEST_DIRECTION = 11;
+    public static final int MSG_SAVE_FAVORITES = 12;
 
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 15;
@@ -102,6 +107,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private MaterialSearchView searchView;
     private boolean routeGenerated;
     private CallService.CallServiceReceiver callEventsHandler;
+
+    private Text2Speech tts = new Text2Speech(ElderMaps.this);
+    private String favorite = "";
 
     // Service to client message handler
     class IncomingHandler extends Handler {
@@ -122,7 +130,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                         route = (PolylineOptions) msg.obj;
                         mMap.clear();
                         mMap.addPolyline(route);
-                    } catch (NullPointerException e) {
+
+                        Message resp = Message.obtain(null, MSG_REQUEST_DIRECTION);
+                        resp.replyTo = mMessenger;
+                        mService.send(resp);
+                    } catch (NullPointerException | RemoteException e) {
                         e.printStackTrace();
                     }
                     break;
@@ -140,6 +152,12 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 case MSG_REPLY_ZOOM:
                     CameraUpdate zoom = (CameraUpdate) msg.obj;
                     mMap.animateCamera(zoom);
+                    break;
+                case MSG_REQUEST_DIRECTION:
+                    Log.d(TAG, "Direction retrieved: " + String.valueOf(msg.obj));
+                    String direction = String.valueOf(msg.obj);
+                    tts.read(direction);
+                    break;
             }
         }
     }
@@ -152,14 +170,23 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "Service connected");
             mService = new Messenger(iBinder);
+
             try {
                 Message msg = Message.obtain(null, MSG_REQUEST_LOCATION);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
 
-                Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
-                msg2.replyTo = mMessenger;
-                mService.send(msg2);
+                if (!favorite.equals("")) {
+                    Log.d(TAG, "Resumed from favorites");
+                    Message msg2 = Message.obtain(null, MSG_UPDATE_DESTINATION, favorite);
+                    msg2.replyTo = mMessenger;
+                    mService.send(msg2);
+                } else {
+                    Log.d(TAG, "Resumed from AR");
+                    Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
+                    msg2.replyTo = mMessenger;
+                    mService.send(msg2);
+                }
 
                 Token token = Token.getInstance(ElderMaps.this);
                 String[] credentials = {token.getEmail(), token.getValue()};
@@ -180,10 +207,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "ElderMaps created");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_elder_maps);
         Token token = Token.getInstance(this);
+        Log.d(TAG, "ElderMaps created");
 
         // Connects to a carer if available
         String email = getIntent().getStringExtra("from");
@@ -283,6 +310,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     e.printStackTrace();
                 }
 
+                favorite = "";
+
                 return true;
             }
 
@@ -304,37 +333,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 //Do some magic
             }
         });
-
-        Button viewMessages = (Button) findViewById(R.id.viewMessages);
-        viewMessages.setOnClickListener(view -> {
-            if (Token.getInstance(this).getCurrentConnection() != null) {
-                Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
-                startActivity(smsintent);
-            }else{
-                Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        Button helpMe = (Button) findViewById(R.id.helpMe);
-        helpMe.setOnClickListener(view -> {
-            if(routeGenerated) {
-                try {
-                    Message msg = Message.obtain(null, MSG_SEND_ROUTE);
-                    msg.replyTo = mMessenger;
-                    mService.send(msg);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }else{
-                Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     //inflate toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Toast.makeText(this, "hey", Toast.LENGTH_LONG).show();
         getMenuInflater().inflate(R.menu.search, menu);
 
         MenuItem item = menu.findItem(R.id.action_search);
@@ -364,6 +367,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 item.setIcon( R.drawable.ic_call );
                 item.setEnabled( true );
             }
+
         };
 
         IntentFilter filter = new IntentFilter();
@@ -390,7 +394,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 return true;
             case R.id.star_button:
                 if(routeGenerated){
-                    //do stuff (add to favorites)
+                    try {
+                        Message msg = Message.obtain(null, MSG_SAVE_FAVORITES);
+                        msg.replyTo = mMessenger;
+                        mService.send(msg);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(this, "Favorites added", Toast.LENGTH_LONG).show();
                     return true;
                 }else{
@@ -410,10 +420,53 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     Toast.makeText(this, "Please connect to a Carer to enable voice call", Toast.LENGTH_LONG).show();
                 }
                 break;
+            case R.id.myFavourites:
+                Intent favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
+                startActivityForResult(favouriteIntent, 1);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult");
+        favorite = "";
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                favorite = data.getStringExtra("FavoriteItem");
+            }
+        }
+
+        Log.d(TAG, favorite);
+    }
+
+    // Method called when view messages clicked
+    public void viewMessages (View view) {
+        if (Token.getInstance(this).getCurrentConnection() != null) {
+            Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
+            startActivity(smsintent);
+        }else{
+            Toast.makeText(this, "Please connect to a Carer to enable messaging", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // Method called when SOS clicked
+    public void helpMe (View view) {
+        if(routeGenerated) {
+            try {
+                Message msg = Message.obtain(null, MSG_SEND_ROUTE);
+                msg.replyTo = mMessenger;
+                mService.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }else{
+            Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void stopCall() {
@@ -466,16 +519,23 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(eventListener,sensor,SensorManager.SENSOR_DELAY_FASTEST);
+
+        bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = true;
+
+        Log.d(TAG, "Maps resumed");
     }
 
     @Override
     protected void onPause() {
+        Log.d(TAG, "Maps paused");
         super.onPause();
         sensorManager.unregisterListener(eventListener);
     }
 
     @Override
     protected void onStop() {
+        Log.d(TAG, "Maps stopped");
         super.onStop();
         /*try {
             Message msg = Message.obtain(null, MSG_PAUSE_UPDATE);
@@ -492,7 +552,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onBackPressed() {
-        Token t = Token.getInstance();
+        Token t = Token.getInstance(getApplicationContext());
 
         String text = "Are you sure you want to leave navigation?";
         AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
@@ -504,7 +564,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 startService(serviceIntent);
                 t.setCurrentConnection(null);
                 Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Log.d("EM", t.getValue());
+                finish();
+//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Log.d("EM2", t.getValue());
                 startActivity(intent);
             }
         });
@@ -518,6 +581,16 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         builder.show();
 
+    }
+
+    private void sendToServer(int msgCode, Object toSend) {
+        try {
+            Message msg = Message.obtain(null, msgCode, toSend);
+            msg.replyTo = mMessenger;
+            mService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
 }

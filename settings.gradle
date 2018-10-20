@@ -1,1 +1,1 @@
-include ':app', ':AR', ':viewmap'
+include ':app', ':AR'

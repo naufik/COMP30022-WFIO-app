@@ -37,6 +37,7 @@ public class CarerConnect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_connect);
 
+        //Add
         Toolbar myToolbar = findViewById(R.id.toolbarCC);
         setSupportActionBar(myToolbar);
         Requester req = Requester.getInstance(this);
