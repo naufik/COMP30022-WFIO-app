@@ -109,14 +109,13 @@ public class LogIn extends AppCompatActivity {
             token.setValue(t.getJSONObject("result").getString("token"));
             token.setType(t.getJSONObject("result").getJSONObject("user").getString("accountType"));
             Log.d("Login2", "4");
-            token.setFavorites(t.getJSONObject("result").getJSONObject("user").getJSONArray("favorites"));
             token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
             Log.d("Login2", "5");
             token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
             token.setUsername(t.getJSONObject("result").getJSONObject("user").getString("username"));
             Log.d("Login2", "6");
 
-        } catch (Exception e) {}
+        } catch (Exception e) {e.printStackTrace();}
     }
 
     private void checkAccount(Token token){
@@ -128,6 +127,7 @@ public class LogIn extends AppCompatActivity {
             req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
                 try {
                     token.setConnections(t2.getJSONObject("result").getJSONObject("user").getJSONArray("carersList"));
+                    token.setFavorites(t2.getJSONObject("result").getJSONObject("user").getJSONArray("favorites"));
                 } catch (JSONException e) {
                 }
             }, new Credentials(token.getEmail(), token.getValue()));
