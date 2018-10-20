@@ -18,6 +18,7 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.FileIO;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +61,6 @@ public class ElderSettings extends AppCompatActivity {
                 if (!fullnameS.isEmpty()) {
                     if (p.matcher(fullnameS).matches()) {
                         params.put("fullName", fullnameS);
-
                         req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t -> {
                                 try {
                                     if (t.getBoolean("ok")) {
@@ -90,6 +90,12 @@ public class ElderSettings extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Token.reset();
+                if (FileIO.deleteCredentials(getApplicationContext())){
+                    Log.d("ElderLogOut", "Credentials deleted");
+                }
+                else {
+                    Log.d("ElderLogOut", "Credentials NOT deleted");
+                }
                 Intent intent = new Intent(getApplicationContext(), LogIn.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

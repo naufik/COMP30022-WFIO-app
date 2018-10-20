@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
+import com.navigation.wfio_dlyw.utility.FileIO;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,6 +90,12 @@ public class CarerSettings extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Token.reset();
+                if (FileIO.deleteCredentials(getApplicationContext())){
+                    Log.d("CarerLogOut", "Credentials deleted");
+                }
+                else {
+                    Log.d("CarerLogOut", "Credentials NOT deleted");
+                }
                 Intent intent = new Intent(getApplicationContext(), LogIn.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
