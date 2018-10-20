@@ -7,6 +7,17 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+
+import com.VoidDDQ.Cam.UnityPlayerActivity;
+import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.Requester;
+import com.navigation.wfio_dlyw.comms.ServerAction;
+import com.navigation.wfio_dlyw.comms.Token;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -26,7 +37,14 @@ public class Favourites extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarF);
         setSupportActionBar(myToolbar);
 
+        createFavorites();
         buildRecyclerViewer();
+    }
+
+    public void insertFavourites(int position, FavouriteItem item){
+        Log.d("favorite", item.getName());
+        favourites.add(position, item);
+        mAdapter.notifyItemInserted(position);
     }
 
     public void removeItem(int position){
@@ -34,16 +52,34 @@ public class Favourites extends AppCompatActivity {
         mAdapter.notifyItemRemoved(position);
     }
 
-    public static void setFavorites(String name, double longitude, double latitude){
-        //inserts the new item at the last position
-        int position = favourites.size();
-        Location hey = new Location(name);
-        hey.setLatitude(longitude);
-        hey.setLongitude(latitude);
-        FavouriteItem item = new FavouriteItem(hey);
-        favourites.add(position, item);
-        mAdapter.notifyItemInserted(position);
+    public void createFavorites(){
+        Token t = Token.getInstance();
+        Requester.getInstance(this).requestAction(ServerAction.USER_GET_INFO, null, res->{
+            try{
+                JSONArray fList = res.getJSONObject("result").getJSONObject("user").getJSONArray("favorites");
+                for(int i=0; i<fList.length(); ++i){
+                    JSONObject currentFavourite = fList.getJSONObject(i);
+                    Location location = new Location(currentFavourite.getString("name"));
+                    JSONObject point = currentFavourite.getJSONObject("location");
+                    location.setLatitude(point.getJSONArray("coordinates").getDouble(0));
+                    location.setLongitude(point.getJSONArray("coordinates").getDouble(1));
+
+                    insertFavourites(i, new FavouriteItem(location));
+                }
+            } catch (JSONException e) {
+
+            }
+        }, new Credentials(t.getEmail(), t.getValue()));
     }
+
+//    public static void setFavorites(String name, double longitude, double latitude){
+//        //inserts the new item at the last position
+//        int position = favourites.size();
+//        Location hey = new Location(name);
+//        hey.setLatitude(longitude);
+//        hey.setLongitude(latitude);
+//        FavouriteItem item = new FavouriteItem(hey);
+//    }
 
     public void buildRecyclerViewer() {
         mRecyclerView = findViewById(R.id.favouriteView);
@@ -62,9 +98,10 @@ public class Favourites extends AppCompatActivity {
 
             @Override
             public void onMapClick(int position) {
-                Intent intent = new Intent(Favourites.this, CarerHome.class);
+                Intent intent = new Intent(Favourites.this, UnityPlayerActivity.class);
                 //gives a favorite item for you to parse get info from
-                intent.putExtra("Example Item", favourites.get(position));
+                String destination = favourites.get(position).getName();
+                intent.putExtra("FavouriteItem", destination);
                 startActivity(intent);
             }
         });
