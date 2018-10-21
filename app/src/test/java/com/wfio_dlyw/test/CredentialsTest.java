@@ -1,5 +1,6 @@
 package com.wfio_dlyw.test;
 
+import com.google.gson.JsonObject;
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.navigation.wfio_dlyw.comms.Credentials;
 
@@ -17,7 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CredentialsTest {
 
     @Captor
@@ -81,9 +81,8 @@ public class CredentialsTest {
         String testToken = "zimbabwe";
         Credentials cObj = new Credentials(testUserName, testToken);
 
-
-
         JSONObject t = cObj.toJSONObject();
+
         Assertions.assertTrue(t instanceof JSONObject);
     }
 }
