@@ -31,7 +31,7 @@ public class StoreClips extends AppCompatActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
 
         // List of all the voice clips
-        ArrayList<String> fileNames =  getIntent().getStringArrayListExtra("listName");
+        ArrayList<String> fileNames =  getIntent().getStringArrayListExtra("fileNames");
 
         setContentView(R.layout.activity_store_clips);
 
