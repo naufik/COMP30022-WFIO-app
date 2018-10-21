@@ -17,9 +17,15 @@ import com.twilio.voice.Voice;
 import java.util.HashMap;
 import java.util.function.UnaryOperator;
 
+/**
+ * Singleton utility to deal with Twilio interactions.
+ */
 public class TwilioUtils {
 
-
+    /**
+     * A callback interface that defines actions that happen after an event has happened
+     * to a call.
+     */
     public interface TwilioCallListener {
         public void onConnected(Call call);
 
@@ -35,6 +41,11 @@ public class TwilioUtils {
     private Call activeCall;
     private int activeCallNotificationId;
 
+    /**
+     * Obtains an instance of the Twilio utilities.
+     * @param context THe context that requests the instance.
+     * @return The twilio manager instance.
+     */
     public static synchronized TwilioUtils getInstance(Context context) {
         if (instance == null) {
             instance = new TwilioUtils();
@@ -46,6 +57,12 @@ public class TwilioUtils {
         return instance;
     }
 
+    /**
+     * Registers a call invite and displays it to the user.
+     * @param notificationId The ID of the notification that contains the call. This notification
+     *                       will be dismissed.
+     * @param invite The Twilio call invite object that packs an incoming call.
+     */
     public void receiveCall(int notificationId, CallInvite invite) {
         if (this.activeCall != null || this.activeCallInvite != null) {
             invite.reject(this.pastContext);
@@ -55,6 +72,12 @@ public class TwilioUtils {
         this.activeCallNotificationId = notificationId;
     }
 
+    /**
+     * Accepts a call.
+     *
+     * @param listener The series of callbacks or Twilio event listeners that will be called when
+     *                 events happen on the answered call.
+     */
     public void acceptCall(TwilioCallListener listener) {
         if (this.activeCallInvite != null) {
             activeCallInvite.accept(pastContext,
@@ -63,6 +86,9 @@ public class TwilioUtils {
         this.activeCallInvite = null;
     }
 
+    /**
+     * Declines the currently registered call invite.
+     */
     public void declineCall() {
         if (this.activeCallInvite != null) {
             this.activeCallInvite.reject(this.pastContext);
@@ -70,10 +96,17 @@ public class TwilioUtils {
         this.activeCallInvite = null;
     }
 
+    /**
+     * @return obtains the currently registered call invite.
+     */
     public CallInvite getActiveCallInvite() {
         return activeCallInvite;
     }
 
+    /**
+     * @return obtains instance of currently running call. null if there is no call happening
+     * in the background.
+     */
     public Call getCall() {
         return activeCall;
     }
@@ -119,10 +152,19 @@ public class TwilioUtils {
         };
     }
 
+    /**
+     * @return the currently registered call notification ID
+     */
     public int getCurrentCallNotificationId() {
         return this.activeCallNotificationId;
     }
 
+    /**
+     * Starts a call to a recipient.
+     * @param userName The username of the person that we want to call.
+     * @param listener A series of callback methods that will be called when certain events happen
+     *                 to the started up call.
+     */
     public void startCall(String userName, TwilioCallListener listener) {
         HashMap<String, String> twiMlParams = new HashMap<>();
         twiMlParams.put("to", userName);

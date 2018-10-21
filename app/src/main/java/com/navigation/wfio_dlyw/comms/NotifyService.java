@@ -9,7 +9,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * The job of this service is to notify the other party that one has agreed to assist them.
+ * A notification handler used to notify the other party in a connection that the other has agreed
+ * to help them or if they have requested for help.
+ *
+ * @author Naufal Fikri (http://github.com/naufik)
  */
 public class NotifyService extends IntentService {
     public NotifyService() {
@@ -20,7 +23,7 @@ public class NotifyService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         try {
             Requester.getInstance( this ).requestAction( ServerAction.CARER_ACCEPT,
-                    new JSONObject().put( "elderEmail", intent.getStringExtra( "to" ) ),
+                    new JSONObject().put("elderEmail", intent.getStringExtra( "to" ) ),
                     t -> {
                         // to be implemented later.
                     },
