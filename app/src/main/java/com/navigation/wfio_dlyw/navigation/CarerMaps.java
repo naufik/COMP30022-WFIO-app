@@ -1,44 +1,32 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
-import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
 
-import android.speech.RecognizerIntent;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
-import com.miguelcatalan.materialsearchview.SearchAdapter;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.NotifyService;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -52,10 +40,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * CarerMaps is started upon the carer accepting the help request from the elder. Upon accepting,
+ * CarerMaps renders the route grabbed from the notification and the elder's location from the
+ * server. CarerMaps also has features to call the elder and message them.
+ *
+ * @author Samuel Tumewa
+ */
 public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -63,6 +57,8 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     private Marker elderLoc;
     private boolean firstCamera = true;
     private BitmapDescriptor elderIcon;
+
+    private static final int ZOOM_PADDING = 200;
 
     private CallService.CallServiceReceiver callEventsListener = null;
 
@@ -73,13 +69,14 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carer_maps);
 
+        // Initialize toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarCM);
         setSupportActionBar(myToolbar);
 
+        // Initialize notification service
         Intent notify = new Intent(this, NotifyService.class);
         notify.setAction("notify");
         notify.putExtra("to", getIntent().getStringExtra("from"));
-
         startService(notify);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -87,8 +84,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //make fake list
-
+        // Initialize token connection
         Token token = Token.getInstance(this);
         String email = getIntent().getStringExtra("from");
         if (email != null) {
@@ -104,10 +100,11 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
 
+        // Initialize elder logo
         elderIcon = BitmapDescriptorFactory.fromResource(R.drawable.elderloc);
-
     }
 
+    // Initialize listener for calls from elder
     private void initializeCallEventsListener(Menu menu) {
         callEventsListener = new CallService.CallServiceReceiver() {
             private MenuItem item = menu.getItem(0);
@@ -136,6 +133,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         registerReceiver(callEventsListener, filter);
     }
 
+    // Calls the connected elder
     private void makeCall() {
         try {
             Intent callIntent = new Intent(this, CallService.class);
@@ -149,7 +147,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-
+    // Initialize options menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -171,20 +169,25 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
+                // Back button pressed
                 this.onBackPressed();
                 return true;
+
             case R.id.sms_button:
+                // Opens the message activity
                 Intent smsintent = new Intent(getApplicationContext(), MessageList.class);
                 startActivity(smsintent);
                 return true;
 
             case R.id.call_button:
+                // Calls the elder through Twilio
                 if (TwilioUtils.getInstance(this).getCall() == null) {
                     makeCall();
                 } else {
                     stopCall();
                 }
                 return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -192,43 +195,45 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    // End call with elder
     private void stopCall() {
         Intent stopCallIntent = new Intent(this, CallService.class);
         stopCallIntent.setAction("call.stop");
         startService(stopCallIntent);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         Intent intent = getIntent();
         try {
-            Log.d(TAG, "Getting Intent extra");
+            // Grabs route from notification intent and renders
             Bundle b = intent.getExtras();
-            JSONArray route = new JSONArray(b.getString("route"));
-            Log.d(TAG, "Route converted, grabbing checkpoints...");
-            for (int i = 0; i < route.length(); i++) {
-                Log.d(TAG, "Checkpoint: "+i);
-                JSONObject JSONcheckpoint = route.getJSONObject(i);
+            JSONArray JSONroute = new JSONArray(b.getString("route"));
+            for (int i = 0; i < JSONroute.length(); i++) {
+                JSONObject JSONcheckpoint = JSONroute.getJSONObject(i);
                 LatLng checkpoint = new LatLng(JSONcheckpoint.getDouble("lat"), JSONcheckpoint.getDouble("long"));
-                this.route.add(checkpoint);
+                route.add(checkpoint);
             }
-            Log.d(TAG, "Rendering to map");
-            mMap.addPolyline(this.route);
+            mMap.addPolyline(route);
+
+            // Zooms to route once map fully loaded
+            mMap.setOnMapLoadedCallback(() -> {
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                for(LatLng checkpoint : route.getPoints()){
+                    builder.include(checkpoint);
+                }
+                LatLngBounds zoomBounds = builder.build();
+                CameraUpdate zoom = CameraUpdateFactory.newLatLngBounds(zoomBounds, ZOOM_PADDING);
+                mMap.animateCamera(zoom);
+            });
+
         } catch (NullPointerException | JSONException e) {
             e.printStackTrace();
         }
 
+        // Grab elder location every second
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -240,6 +245,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
         }, 0, 1000);
     }
 
+    // Grab location of elder from server
     private void getLocationFromServer() {
         Requester req = Requester.getInstance(this);
         req.requestAction(ServerAction.MESSAGE_PULL, null, t -> {
@@ -247,6 +253,7 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
                 Location location = null;
                 Location destination = null;
 
+                // JSONArray manipulation obtained from server
                 JSONArray locations = t.getJSONObject("result").getJSONArray("messages");
 
                 if(locations.length() != 0){
@@ -266,9 +273,11 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             } catch(JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
-        }, new Credentials("dropcomputing@gmail.com","kontol"));
+        }, new Credentials(Token.getInstance(CarerMaps.this).getEmail(),
+                Token.getInstance(CarerMaps.this).getValue()));
     }
 
+    // Renders elder's location on map
     private void renderLoc(Location loc) {
         if(loc != null) {
             Log.d(TAG, loc.toString());
@@ -278,36 +287,27 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
             elderLoc = mMap.addMarker(new MarkerOptions().position(latLngLoc).icon(elderIcon).anchor(0.5f, 0.5f));
-            if(firstCamera){
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 18));
-                firstCamera = false;
-            }
         }
     }
     @Override
     public void onBackPressed() {
         Token t = Token.getInstance();
 
+        // Confirm with user whether quitting navigation, if yes, stop message service updates also
         String text = "Are you sure you want to leave navigation?";
         AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, CarerMaps.this);
-        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id)  {
-                Intent serviceIntent = new Intent(CarerMaps.this, MsgUpdateService.class);
-                serviceIntent.setAction("stop");
-                startService(serviceIntent);
-                t.setCurrentConnection(null);
-                Intent intent = new Intent(getApplicationContext(), CarerHome.class);
+        builder.setPositiveButton("YES!", (dialog, id) -> {
+            Intent serviceIntent = new Intent(CarerMaps.this, MsgUpdateService.class);
+            serviceIntent.setAction("stop");
+            startService(serviceIntent);
+            t.setCurrentConnection(null);
+            Intent intent = new Intent(getApplicationContext(), CarerHome.class);
 //                intent.setFlags(Intent. );
-                startActivity(intent);
-            }
+            startActivity(intent);
         });
 
-        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                return;
-            }
+        builder.setNegativeButton("NO!", (dialog, id) -> {
+            return;
         });
 
         builder.show();

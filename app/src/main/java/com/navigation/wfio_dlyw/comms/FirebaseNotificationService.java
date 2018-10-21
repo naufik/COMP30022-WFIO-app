@@ -21,6 +21,13 @@ import com.twilio.voice.Voice;
 
 import java.util.Map;
 
+/**
+ * This service fetches notifications from Twilio's Firebase cloud messaging service and sends it
+ * to the associated client. This is used on notifications for Twilio based call as they are
+ * based on Firebase and there is no way to use our own notification server for this.
+ *
+ * @author Naufal Fikri (http://github.com/naufik).
+ */
 public class FirebaseNotificationService extends FirebaseMessagingService {
     private NotificationManager notificationManager;
 
@@ -33,9 +40,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage message) {
-        Log.d("NOTIF", "kalo yang ini pasti nongol anjing");
         if (message.getData().size() > 0) {
-            Log.d("NOTIF", "nongol gan");
             Map<String, String> content = message.getData();
             final int notificationId = (int) System.currentTimeMillis();
 

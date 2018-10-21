@@ -1,6 +1,5 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -13,8 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -25,12 +22,12 @@ import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.utility.Text2Speech;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-
+/**
+* Class that represent home menu for users with elder account
+*/
 public class ElderHome extends AppCompatActivity {
     private Text2Speech t2t;
-    private Intent favouriteIntent;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     @Override
@@ -42,11 +39,13 @@ public class ElderHome extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarEH);
         setSupportActionBar(myToolbar);
 
+        // start notification service
         Intent notifier = new Intent(this, NotificationService.class);
         notifier.setAction("poll");
         startService(notifier);
         t2t = new Text2Speech(getApplicationContext());
 
+        //get list of carers from server and store it to the current session
         Requester req = Requester.getInstance(this);
         req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
             try {
@@ -62,6 +61,10 @@ public class ElderHome extends AppCompatActivity {
         return true;
     }
 
+    /***
+     * Request user permission to access device location
+     * @param view current view
+     */
     public void getLocationPermission(View view) {
         t2t.read("Where do you wanna go today?");
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
@@ -92,6 +95,9 @@ public class ElderHome extends AppCompatActivity {
         }
     }
 
+    /***
+     * start unity when permission is granted
+     */
     private void onPermissionGranted() {
         Intent intent = new Intent(this, UnityPlayerActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -116,17 +122,6 @@ public class ElderHome extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        System.exit(0);
+        //Do nothing
     }
-
-
-    public static void Call(Activity activity){
-        Intent intent = new Intent(activity, ElderMaps.class);
-        activity.startActivity(intent);
-    }
-
-//    public static void CallAgain(Activity activity){
-//        Intent intent = new Intent(activity, ElderNavigation.class);
-//        activity.startActivity(intent);
-//    }
 }

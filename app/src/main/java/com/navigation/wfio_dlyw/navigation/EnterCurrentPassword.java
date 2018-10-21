@@ -20,7 +20,9 @@ import com.navigation.wfio_dlyw.comms.Token;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+/**
+ * Activity to confirm the identity of the user before changing password
+ */
 public class EnterCurrentPassword extends AppCompatActivity {
 
     @Override
@@ -30,6 +32,7 @@ public class EnterCurrentPassword extends AppCompatActivity {
         Token token = Token.getInstance();
         Requester req = Requester.getInstance(this);
 
+        // submit password to proof identity
         Button currentPasswordBtn = findViewById(R.id.currentPasswordBtn);
         currentPasswordBtn.setOnClickListener(new View.OnClickListener() {
             @Override

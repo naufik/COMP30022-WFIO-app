@@ -15,6 +15,9 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 
 import java.util.Locale;
 
+/***
+ * Utility class that can is used for reading a string with default android text to speech function
+ */
 public class Text2Speech {
     private Context application;
 
@@ -24,6 +27,11 @@ public class Text2Speech {
 
     private android.speech.tts.TextToSpeech t1;
 
+    /***
+     * Delegates a button object as a trigger for the text to speech to read a string
+     * @param b1 Button as a trigger when clicked
+     * @param text String to be read
+     */
     public void buttonTalk(Button b1, String text){
 
         Intent checkIntent = new Intent();
@@ -47,6 +55,11 @@ public class Text2Speech {
         });
     }
 
+    /***
+     * Delegates a Text View object as a trigger for the text to speech to read a string
+     * @param tv1 Text view object as a trigger when clicked
+     * @param text String to be read
+     */
     public void textViewTalk(TextView tv1, String text){
         Intent checkIntent = new Intent();
         checkIntent.setAction(android.speech.tts.TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -69,6 +82,10 @@ public class Text2Speech {
         });
     }
 
+    /***
+     * Text2Speech object will read out a String object
+     * @param text String to be read
+     */
     public void read(String text){
         Intent checkIntent = new Intent();
         checkIntent.setAction(android.speech.tts.TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
