@@ -11,8 +11,16 @@ import com.navigation.wfio_dlyw.comms.Token;
 
 import java.util.ArrayList;
 
+/***
+ * Adapter to display all message in current session
+ */
 public class CustomMessageAdapter extends ArrayAdapter<Message> {
 
+    /***
+     * Creater a new CustomMessageAdapter object
+     * @param context Current activity context
+     * @param messages all messages to be desplayed
+     */
     public CustomMessageAdapter(Context context, ArrayList<Message> messages) {
         super(context, 0, messages);
 

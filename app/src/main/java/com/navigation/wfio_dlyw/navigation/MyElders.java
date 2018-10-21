@@ -2,7 +2,6 @@ package com.navigation.wfio_dlyw.navigation;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +26,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * extension of AppCompatActivity that have its content altered/changed dynamically by an adapter
+ */
 public class MyElders extends AppCompatActivity {
     private ArrayList<ElderItem> elders;
 
@@ -57,21 +59,28 @@ public class MyElders extends AppCompatActivity {
         }
     }
 
+    /***
+     * Insert an elder item onto current view
+     * @param position the index to put the item
+     * @param item elderItem to be put in
+     */
     public void insertItem(int position, ElderItem item){
         elders.add(position, item);
         mAdapter.notifyItemInserted(position);
     }
 
+    /***
+     * Remove an elder item from current view
+     * @param position the index of item to be removed
+     */
     public void removeItem(int position){
         elders.remove(position);
         mAdapter.notifyItemRemoved(position);
     }
 
-    public void changeItem(int position, String text){
-        elders.get(position).changeText1(text);
-        mAdapter.notifyItemChanged(position);
-    }
-
+    /***
+     * Create elderItems to be passed into the adapter from the user connection list
+     */
     public void createElders(){
         Token t = Token.getInstance();
         Requester.getInstance(this).requestAction(ServerAction.USER_GET_INFO, null, res -> {
@@ -88,6 +97,9 @@ public class MyElders extends AppCompatActivity {
     }
 
 
+    /***
+     * Build a recycler viewer as a place for the adapter to show elderItems
+     */
     public void buildRecyclerViewer(){
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);

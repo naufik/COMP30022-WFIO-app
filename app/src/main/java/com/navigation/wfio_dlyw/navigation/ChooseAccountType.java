@@ -7,13 +7,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
+/**
+ * class for activity to chose account type before signing up
+ */
 public class ChooseAccountType extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_account_type);
+
+        //be a carer by clicking picture of carer
         ImageView chooseCarer = findViewById(R.id.chooseCarer);
         chooseCarer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -23,6 +27,8 @@ public class ChooseAccountType extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        //be an elder by clicking picture of elder
         ImageView chooseElder = findViewById(R.id.chooseElder);
         chooseElder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,6 +39,7 @@ public class ChooseAccountType extends AppCompatActivity {
             }
         });
 
+        //be a carer by clicking the text view
         TextView carerText = findViewById(R.id.carerText);
         carerText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,6 +49,8 @@ public class ChooseAccountType extends AppCompatActivity {
                 startActivity(startIntent);
             }
         });
+
+        //be an elder by clicking the text view
         TextView elderText = findViewById(R.id.elderText);
         elderText.setOnClickListener(new View.OnClickListener() {
             @Override

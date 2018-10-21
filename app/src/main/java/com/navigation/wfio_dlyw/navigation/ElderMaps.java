@@ -3,7 +3,6 @@ package com.navigation.wfio_dlyw.navigation;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -27,13 +26,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
-import com.VoidDDQ.Cam.UnityPlayerActivity;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,36 +39,37 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
-import com.navigation.wfio_dlyw.comms.Credentials;
-import com.navigation.wfio_dlyw.comms.Requester;
-import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.navigation.wfio_dlyw.utility.DialogBuilder;
 import com.navigation.wfio_dlyw.utility.Text2Speech;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+/**
+ * ElderMaps is one of the main components of the navigation aspect of this app. It is the activity
+ * that holds the map that renders the elder's location, destination upon entering, and other
+ * options visible on the UI such as requesting a carer's assistance, saving the destination as a
+ * favorite, or going to the favorites list. This activity is created when the phone is tilted
+ * downwards on UnityPlayerActivity, or when returning back from the Favorites activity.
+ *
+ * @author Samuel Tumewa
+ */
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     // Location variables
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private boolean mLocationPermissionGranted = true;
-    private LocationRequest mLocationRequest;
-    private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
     private Location mDefaultLocation;
     private PolylineOptions route;
-    private String destination;
-    private boolean updateRoute;
-    private String ROUTE_URL;
-    private String API_KEY;
+    private boolean routeGenerated;
+    private String favorite = "";
 
     // Sensor variables
     private SensorEventListener eventListener;
@@ -83,124 +79,101 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     // Service variables
     Messenger mService = null;
     boolean mIsBound;
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
 
-    // Constant variables
-    public static final int MSG_REQUEST_LOCATION = 1;
-    public static final int MSG_REQUEST_ROUTE = 2;
-    public static final int MSG_REQUEST_CHECKPOINT = 3;
-    public static final int MSG_UPDATE_DESTINATION = 4;
-    public static final int MSG_PAUSE_UPDATE = 5;
-    public static final int MSG_RESUME_UPDATE = 6;
-    public static final int MSG_SEND_ROUTE = 7;
-    public static final int MSG_SEND_CREDENTIALS = 8;
-    public static final int MSG_REQUEST_DISTANCE = 9;
-    public static final int MSG_REPLY_ZOOM = 10;
-    public static final int MSG_REQUEST_DIRECTION = 11;
-    public static final int MSG_SAVE_FAVORITES = 12;
-
+    // Constants
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 15;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    //other variables
+    // UI variables
     private MaterialSearchView searchView;
-    private boolean routeGenerated;
     private CallService.CallServiceReceiver callEventsHandler;
-
     private Text2Speech tts = new Text2Speech(ElderMaps.this);
-    private String favorite = "";
 
-    // Service to client message handler
+    /**
+     * The IncomingHandler class handles replies from the service based on the cases set as
+     * public constants in the GeoStatService. These messages include the data from GeoStatService
+     * including location, route, destination, zoom, and direction, which are then rendered on the
+     * map fragment accordingly, and the direction spoken through text-to-speech
+     */
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
-                case MSG_REQUEST_LOCATION:
-                    // Location retrieved from server, moving camera
+                case GeoStatService.MSG_REQUEST_LOCATION:
+                    // Location retrieved from service, moving camera
                     mCurrentLocation = (Location) msg.obj;
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(mCurrentLocation.getLatitude(),
                                     mCurrentLocation.getLongitude()), DEFAULT_ZOOM));
                     break;
-                case MSG_REQUEST_ROUTE:
-                    // Update map with new route
+
+                case GeoStatService.MSG_REQUEST_ROUTE:
+                    // Update map with new route, request for direction afterwards
                     try {
                         route = (PolylineOptions) msg.obj;
                         mMap.clear();
                         mMap.addPolyline(route);
 
-                        Message resp = Message.obtain(null, MSG_REQUEST_DIRECTION);
-                        resp.replyTo = mMessenger;
-                        mService.send(resp);
-                    } catch (NullPointerException | RemoteException e) {
+                        notifyService(GeoStatService.MSG_REPLY_ZOOM, null);
+                        notifyService(GeoStatService.MSG_REQUEST_DIRECTION, null);
+                    } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
                     break;
-                case MSG_UPDATE_DESTINATION:
-                    routeGenerated =true;
+
+                case GeoStatService.MSG_UPDATE_DESTINATION:
                     // After destination updated, grab new route, callback above
-                    try {
-                        Message resp = Message.obtain(null, MSG_REQUEST_ROUTE);
-                        resp.replyTo = mMessenger;
-                        mService.send(resp);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                    routeGenerated =true;
+                    notifyService(GeoStatService.MSG_REQUEST_ROUTE, null);
+                    break;
+
+                case GeoStatService.MSG_REPLY_ZOOM:
+                    // Zoom retrieved from service
+                    if (msg.obj != null) {
+                        CameraUpdate zoom = (CameraUpdate) msg.obj;
+                        mMap.animateCamera(zoom);
                     }
                     break;
-                case MSG_REPLY_ZOOM:
-                    CameraUpdate zoom = (CameraUpdate) msg.obj;
-                    mMap.animateCamera(zoom);
-                    break;
-                case MSG_REQUEST_DIRECTION:
-                    Log.d(TAG, "Direction retrieved: " + String.valueOf(msg.obj));
+
+                case GeoStatService.MSG_REQUEST_DIRECTION:
+                    // Direction retrieved from service
                     String direction = String.valueOf(msg.obj);
                     tts.read(direction);
                     break;
+
             }
         }
     }
 
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
-
     // Main service interface
     private ServiceConnection mConnection = new ServiceConnection() {
+
+        // Called when reopening Maps from Favorites or AR
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.d(TAG, "Service connected");
+
             mService = new Messenger(iBinder);
 
-            try {
-                Message msg = Message.obtain(null, MSG_REQUEST_LOCATION);
-                msg.replyTo = mMessenger;
-                mService.send(msg);
+            Token token = Token.getInstance(ElderMaps.this);
+            String[] credentials = {token.getEmail(), token.getValue()};
 
-                if (!favorite.equals("")) {
-                    Log.d(TAG, "Resumed from favorites");
-                    Message msg2 = Message.obtain(null, MSG_UPDATE_DESTINATION, favorite);
-                    msg2.replyTo = mMessenger;
-                    mService.send(msg2);
-                } else {
-                    Log.d(TAG, "Resumed from AR");
-                    Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
-                    msg2.replyTo = mMessenger;
-                    mService.send(msg2);
-                }
+            // Send credentials to service first to be safe, then request location
+            notifyService(GeoStatService.MSG_SEND_CREDENTIALS, credentials);
+            notifyService(GeoStatService.MSG_REQUEST_LOCATION, null);
 
-                Token token = Token.getInstance(ElderMaps.this);
-                String[] credentials = {token.getEmail(), token.getValue()};
-                Message msg3 = Message.obtain(null, MSG_SEND_CREDENTIALS, credentials);
-                msg3.replyTo = mMessenger;
-                mService.send(msg3);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            // Skip to route request if starting activity from AR or from Favorites without selecting a favorite location
+            if (!favorite.equals("")) {
+                notifyService(GeoStatService.MSG_UPDATE_DESTINATION, favorite);
+            } else {
+                notifyService(GeoStatService.MSG_REQUEST_ROUTE, favorite);
             }
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            Log.d(TAG, "Service disconnected");
             mService = null;
         }
     };
@@ -240,12 +213,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mDefaultLocation.setLatitude(-37.8070);
         mDefaultLocation.setLongitude(144.9612);
 
-        // Should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
-        //Intent intent = getIntent();
-        //ElderItem elderItem = intent.getParcelableExtra("Example Item");
-        //String name = elderItem.getText1();
-
-        //findtoolbar
+        // Setup toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEM);
         setSupportActionBar(myToolbar);
 
@@ -276,63 +244,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             //mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
 
-        //make fake list
-        String[] list = new String[] { "Barney" , "is", "a", "dinosaur", "of", "our", "imagination"};
-
-        //searchview stuff
-        MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        this.searchView = searchView;
-        searchView.setSuggestions(list);
-
-        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String query = (String) parent.getItemAtPosition(position);
-                searchView.closeSearch();
-                //query is the clicked string use that to search for destination
-                Log.d("test", query);
-            }
-        });
-
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(query == null) {
-                    return false;
-                }
-
-                // Sends new destination to service
-                try {
-                    Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION, query);
-                    msg.replyTo = mMessenger;
-                    mService.send(msg);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-
-                favorite = "";
-
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //Do some magic
-                return false;
-            }
-        });
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-            }
-        });
+        initializeSearchBar();
     }
 
     //inflate toolbar
@@ -390,17 +302,13 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
+                // Back button has been pressed
                 this.onBackPressed();
                 return true;
             case R.id.star_button:
+                // Notify GeoStatService to save the current destination as a favorite
                 if(routeGenerated){
-                    try {
-                        Message msg = Message.obtain(null, MSG_SAVE_FAVORITES);
-                        msg.replyTo = mMessenger;
-                        mService.send(msg);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    notifyService(GeoStatService.MSG_SAVE_FAVORITES, null);
                     Toast.makeText(this, "Favorites added", Toast.LENGTH_LONG).show();
                     return true;
                 }else{
@@ -408,6 +316,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.call_button:
+                // Start a call with the carer with Twilio
                 if(Token.getInstance(this).getCurrentConnection() != null) {
                     if (TwilioUtils.getInstance(this).getCall() == null) {
                         makeCall();
@@ -421,6 +330,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.myFavourites:
+                // Go to the favorites page
                 Intent favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
                 startActivityForResult(favouriteIntent, 1);
                 return true;
@@ -430,21 +340,83 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         return super.onOptionsItemSelected(item);
     }
 
+    // Method called if returning to Maps from Favorites
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult");
+
+        // Reset favorite if returning from favorites page without selecting, otherwise save selected favorite
         favorite = "";
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 favorite = data.getStringExtra("FavoriteItem");
             }
         }
-
-        Log.d(TAG, favorite);
     }
 
-    // Method called when view messages clicked
+    /**
+     * Creates the searchbar that is added onto the toolbar, provides various functionality for
+     * searching/navigating to a particular location
+     */
+    public void initializeSearchBar(){
+        //input suggestions into list
+        String[] list = new String[] {};
+
+        //searchview stuff
+        MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
+        this.searchView = searchView;
+        //add list of suggestions into the the searchview
+        //searchView.setSuggestions(list);
+
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String query = (String) parent.getItemAtPosition(position);
+                searchView.closeSearch();
+                //query is the clicked string use that to search for destination
+                Log.d("test", query);
+            }
+        });
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(query == null) {
+                    return false;
+                }
+
+                // Sends new destination to service, reset current favorite in case previous destination was from favorite
+                notifyService(GeoStatService.MSG_UPDATE_DESTINATION, query);
+                favorite = "";
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
+    }
+
+    /**
+     * viewMessages() is called when the elder selects the View Messages button in the bottom left.
+     * This starts moves the user to the message list activity.
+     * @param view The activity view required to be passed when setting public methods through
+     *             the layout
+     */
     public void viewMessages (View view) {
         if (Token.getInstance(this).getCurrentConnection() != null) {
             Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
@@ -454,27 +426,59 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    // Method called when SOS clicked
+    /**
+     * helpMe() is called when the elder selects the Help Me button in the bottom right. This
+     * notifies the service to send the route to the server, thereby notifying all elders. It then
+     * waits until the connection between the carer and elder has been established, which upon
+     * establishment, will send the connection ID to the service.
+     * @param view The activity view required to be passed when setting public methods through
+     *             the layout
+     */
     public void helpMe (View view) {
         if(routeGenerated) {
-            try {
-                Message msg = Message.obtain(null, MSG_SEND_ROUTE);
-                msg.replyTo = mMessenger;
-                mService.send(msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            notifyService(GeoStatService.MSG_SEND_ROUTE, null);
+
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    ElderMaps.this.runOnUiThread(() -> {
+                        int id = connectionEstablished();
+                        if(id != 0){
+                            notifyService(GeoStatService.MSG_SEND_CONNECTION_ID, id);
+                            timer.cancel();
+                        }
+                    });
+                }
+            }, 0, 100);
+
         }else{
             Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
         }
     }
 
+    // Checks whether the connection id from the token has been initialized
+    private int connectionEstablished(){
+        JSONObject connection= Token.getInstance(this).getCurrentConnection();
+        if(connection != null){
+            try {
+                return connection.getInt("id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    // Stops the call from CallService
     private void stopCall() {
         Intent stopCallIntent = new Intent(this, CallService.class);
         stopCallIntent.setAction("call.stop");
         startService(stopCallIntent);
     }
 
+    // Starts a call with the carer through CallService
     private void makeCall() {
         try {
             Intent callIntent = new Intent(this, CallService.class);
@@ -494,18 +498,18 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mMap = googleMap;
         updateLocationUI();
 
-        //Log.d(TAG, "Binding service...");
         bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
     }
 
+    // Allows the map to render the location and the zoom to location button
     @SuppressLint("MissingPermission")
     private void updateLocationUI() {
-        Log.d(TAG, "Updating location UI");
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
+    // Saves the current position and camera position
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (mMap != null) {
@@ -515,6 +519,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    // Rebind the service upon resuming the activity
     @Override
     protected void onResume() {
         super.onResume();
@@ -522,68 +527,62 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
-
-        Log.d(TAG, "Maps resumed");
     }
 
+    // Unregister the accelerometer sensor on pausing
     @Override
     protected void onPause() {
-        Log.d(TAG, "Maps paused");
         super.onPause();
         sensorManager.unregisterListener(eventListener);
     }
 
+    // Unbind the service upon quitting the activity
     @Override
     protected void onStop() {
-        Log.d(TAG, "Maps stopped");
         super.onStop();
-        /*try {
-            Message msg = Message.obtain(null, MSG_PAUSE_UPDATE);
-            msg.replyTo = mMessenger;
-            mService.send(msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
+
         if (mIsBound) {
             unbindService(mConnection);
         }
         mIsBound = false;
     }
 
+    // Notifies the user whether they want to quit the navigation, which if yes, will notify the
+    // service to reset the destination data, stop the MsgUpdateService, and close the activity
     @Override
     public void onBackPressed() {
-        Token t = Token.getInstance(getApplicationContext());
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            Token t = Token.getInstance(getApplicationContext());
 
-        String text = "Are you sure you want to leave navigation?";
-        AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
-        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
+            String text = "Are you sure you want to leave navigation?";
+            AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
+            builder.setPositiveButton("YES!", (dialog, id) -> {
+
+                notifyService(GeoStatService.MSG_UPDATE_DESTINATION,"");
+
                 Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
                 serviceIntent.setAction("stop");
                 startService(serviceIntent);
+
                 t.setCurrentConnection(null);
+
                 Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-                Log.d("EM", t.getValue());
                 finish();
-//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                Log.d("EM2", t.getValue());
                 startActivity(intent);
-            }
-        });
+            });
 
-        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
+            builder.setNegativeButton("NO!", (dialog, id) -> {
                 return;
-            }
-        });
+            });
 
-        builder.show();
-
+            builder.show();
+        }
     }
 
-    private void sendToServer(int msgCode, Object toSend) {
+    // Sends the message code and optionally, an object, to the service
+    private void notifyService(int msgCode, Object toSend) {
         try {
             Message msg = Message.obtain(null, msgCode, toSend);
             msg.replyTo = mMessenger;
