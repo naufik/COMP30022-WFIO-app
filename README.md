@@ -1,4 +1,4 @@
-# Don't Lose Your Way
+Don't Lose Your Way
 
 Team "We'll Figure It Out" presents... Don't Lose Your Way.
 
@@ -21,8 +21,7 @@ An application to help the elderly reach their destination.
 | Issue                                    | Comment                                  |
 | ---------------------------------------- | ---------------------------------------- |
 | After selecting a destination in Map View switching to AR View and switching back to Map View prompts you to re-select a destination in order to request for help. | This issue has to do with the way onResume() works in Android Studio. We are aware of the issue, however at the moment we assume that the elder is  requests for help immediately after selecting a destination or after the elder switches to AR View. |
-| Pressing the call button on Maps View and switching to Message View does not change the call icon in Message View to the hang-up icon. | This issue has to do with.....However, the button functionality still works, that is if you press the icon it still hangs-up the call. |
-| Upon a carer's log-in, old notifications for an elder's request for help are pulled despite the elder exiting navigation mode. | This issue has to do with....            |
+| Pressing the call button on Maps View and switching to Message View does not change the call icon in Message View to the hang-up icon. | The button functionality still works, that is if you press the icon it still hangs-up the call. |
 | When a Carer accepts an Elder's request for help, it might take a while for the Elder's location to show  on the Carer's side. | Tests vary, however a rough estimate concludes that the delay rarely happens. However, when it does it may take up to 30 seconds to show. |
 
 ## Guide
@@ -94,7 +93,7 @@ Firstly, register for a new *Elder* account and log-in with the newly created ac
 
 **Accepting a Carer's Help**
 
-1. Upon receiving a notification for an Elder's request for help, to accept the request press `accept` on the notification or press the notification followed by pressing `ACCEPT` on the newly generated activity. To decline the request, dismiss the notification, or press the notification and press `DELETE` on the newly generated activity.
+1. Upon receiving a notification for an Elder's request for help, to accept the request press `accept` on the notification or press the notification itself. To decline the request, dismiss the notification, or press the notification and press `DELETE` on the newly generated activity.
 2. Upon accepting the request, an activity will open with the Elder's location and the route to a destination shown within a map. 
 3. The user is now able to call and/or text-message the elder to give custom navigational instructions 
 4. To exit navigation press the device's in-built back button anytime during navigation and to confirm the exit press `Yes!`
