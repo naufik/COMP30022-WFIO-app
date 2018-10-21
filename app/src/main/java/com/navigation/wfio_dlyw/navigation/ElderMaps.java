@@ -58,6 +58,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -150,7 +152,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
     }
-
+    public void resetData() {
+        notifyService(GeoStatService.MSG_UPDATE_DESTINATION,"");
+    }
     // Main service interface
     private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -420,9 +424,37 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public void helpMe (View view) {
         if(routeGenerated) {
             notifyService(GeoStatService.MSG_SEND_ROUTE, null);
+
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    ElderMaps.this.runOnUiThread(() -> {
+                        int id = connectionEstablished();
+                        if(id != 0){
+                            notifyService(GeoStatService.MSG_SEND_CONNECTION_ID, id);
+                            timer.cancel();
+                        }
+                    });
+                }
+            }, 0, 100);
+
         }else{
             Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private int connectionEstablished(){
+        JSONObject connection= Token.getInstance(this).getCurrentConnection();
+        if(connection != null){
+            try {
+                return connection.getInt("id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private void stopCall() {
@@ -493,13 +525,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     protected void onStop() {
         Log.d(TAG, "Maps stopped");
         super.onStop();
-        /*try {
-            Message msg = Message.obtain(null, GeoStatService.MSG_PAUSE_UPDATE);
-            msg.replyTo = mMessenger;
-            mService.send(msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }*/
+
         if (mIsBound) {
             unbindService(mConnection);
         }
