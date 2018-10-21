@@ -148,11 +148,14 @@ public class LogIn extends AppCompatActivity {
         finish();
         startActivity(startIntent);
     }
-
+    
     @Override
     public void onBackPressed() {
+        // will not expect to receive data
         Intent main = new Intent(Intent.ACTION_MAIN);
+        // launch the home screen
         main.addCategory(Intent.CATEGORY_HOME);
+        // become start of a new task on this stack
         main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(main);
     }
