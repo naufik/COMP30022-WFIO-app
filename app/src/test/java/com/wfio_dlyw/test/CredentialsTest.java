@@ -1,11 +1,32 @@
-package com.navigation.wfio_dlyw_tests;
+package com.wfio_dlyw.test;
 
+import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.navigation.wfio_dlyw.comms.Credentials;
 
-import org.json.JSONObject;
-import org.junit.jupiter.api.*;
+import net.bytebuddy.asm.Advice;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.jupiter.api.*;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+
+@RunWith(MockitoJUnitRunner.class)
 public class CredentialsTest {
+
+    @Captor
+    ArgumentCaptor<String> stringCaptor;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void testCreate() {
@@ -51,7 +72,7 @@ public class CredentialsTest {
         Credentials cObj = new Credentials(testUserName, testToken);
 
         Assertions.assertEquals(testUserName, cObj.getEmail());
-        Assertions.assertEquals(testToken, cObj);
+        Assertions.assertEquals(testToken, cObj.getPrivateToken());
     }
 
     @Test
@@ -60,8 +81,9 @@ public class CredentialsTest {
         String testToken = "zimbabwe";
         Credentials cObj = new Credentials(testUserName, testToken);
 
-        JSONObject j = cObj.toJSONObject();
-        Assertions.assertTrue(j.has("email"));
-        Assertions.assertTrue(j.has("token"));
+
+
+        JSONObject t = cObj.toJSONObject();
+        Assertions.assertTrue(t instanceof JSONObject);
     }
 }
