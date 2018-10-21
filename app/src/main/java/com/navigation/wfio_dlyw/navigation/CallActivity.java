@@ -19,7 +19,6 @@ import com.twilio.voice.*;
  *
  * Passing an intent with a CallInvite object to this activity will answer the call that is wrapped
  * within the invite.
- *
  * @author Naufal Fikri (http://github.com/naufik.net)
  */
 public class CallActivity extends AppCompatActivity {
