@@ -39,26 +39,33 @@ public class NewPassword extends AppCompatActivity {
                 String newPasswordS = newPassword.getText().toString();
                 String retypeNewPasswordS = retypeNewPassword.getText().toString();
 
-                //as of now it goes back to elder settings even if your originally login as a carer
+                //checks if new password is empty
                 if(newPasswordS.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please enter a new password", Toast.LENGTH_LONG).show();
+                //checks if retyped password is empty
                 }else if(retypeNewPasswordS.isEmpty()){
                     Toast.makeText(getApplicationContext(), "Please Re-Type your new Password", Toast.LENGTH_LONG).show();
+                //checks if passwords are the same
                 }else if(!newPasswordS.equals(retypeNewPasswordS)){
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
                 }else{
+
+                    //if all initial checks pass send the password to the database
                     JSONObject params = new JSONObject();
                     try {
                         params.put("password", newPasswordS);
                     } catch (JSONException e) {}
                     req.requestAction(ServerAction.USER_MODIFY_RECORD, params, t->{
                     }, new Credentials(token.getEmail(), token.getValue()));
-                    Toast.makeText(NewPassword.this,"Password changes successfully",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NewPassword.this,"Password changed successfully",Toast.LENGTH_SHORT).show();
+
+                    //if an elder accessed this activity send the elder back to eldersettings
                     if (token.getType().equals("ELDER")) {
                         Intent startIntent = new Intent(getApplicationContext(), ElderSettings.class);
                         startActivity(startIntent);
                         finish();
                     }
+                    //if carer accessed this activity send the carer back to carersettings
                     else {
                         Intent startIntent = new Intent(getApplicationContext(), CarerSettings.class);
                         startActivity(startIntent);
@@ -68,13 +75,13 @@ public class NewPassword extends AppCompatActivity {
             }
         });
 
-        //for use outside of onclicklistener scope
+        //handles the what happens on click of the device's done/enter button
         EditText retypeNewPasswordEnter = findViewById(R.id.retypeNewPassword);
         retypeNewPasswordEnter.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
-                    //do what you want on the press of 'done'
+                    //does the same thing as pressing the in-built submit button
                     newPasswordBtn.performClick();
                 }
                 return false;

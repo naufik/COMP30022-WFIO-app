@@ -21,6 +21,9 @@ import com.navigation.wfio_dlyw.comms.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+* Class that handles all logging in process
+*/
 public class LogIn extends AppCompatActivity {
 
 
@@ -40,11 +43,9 @@ public class LogIn extends AppCompatActivity {
 
         JSONObject storedC = FileIO.getCredentials(getApplicationContext());
         if (storedC != null){
-            Log.d("Login", "pop");
             try {
                 req.requestAction(ServerAction.USER_GET_INFO, null, t -> {
                     try {
-                        Log.d("Login", "Requester send");
                         t.getJSONObject("result").put("token", storedC.get("token"));
                         loggingIn(t, token);
                         checkAccount(token);
@@ -82,6 +83,7 @@ public class LogIn extends AppCompatActivity {
             } catch (JSONException e) {}
         });
 
+        //Start signup activity
         Button signUpBtn = findViewById(R.id.signUpBtn);
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +93,7 @@ public class LogIn extends AppCompatActivity {
             }
         });
 
+        //Pressing enter during process of entering password is equal to pressing LogIn button
         password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -103,6 +106,11 @@ public class LogIn extends AppCompatActivity {
         });
     }
 
+    /***
+     * Login as a user and create a new session
+     * @param t the user information
+     * @param token token to store the information
+     */
     private void loggingIn(JSONObject t, Token token){
         try {
             Log.d("Login", t.toString());
@@ -119,6 +127,10 @@ public class LogIn extends AppCompatActivity {
         } catch (Exception e) {e.printStackTrace();}
     }
 
+    /***
+     * check whether the inserted data are valid
+     * @param token token that store the data
+     */
     private void checkAccount(Token token){
         Intent startIntent;
         Requester req = Requester.getInstance(getApplicationContext());

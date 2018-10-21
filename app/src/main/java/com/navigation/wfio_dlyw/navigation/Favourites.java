@@ -25,6 +25,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/**
+ * Activity that displays favorite objects with the help of adapter
+ */
 public class Favourites extends AppCompatActivity {
     private static ArrayList<FavouriteItem> favourites;
 
@@ -46,17 +49,29 @@ public class Favourites extends AppCompatActivity {
         buildRecyclerViewer();
     }
 
+    /***
+     * Insert a new favoriteItem into current view
+     * @param position the index to put then item
+     * @param item the favoriteItem to be inserted
+     */
     public void insertFavourites(int position, FavouriteItem item){
         Log.d("favorite", item.getName());
         favourites.add(position, item);
         mAdapter.notifyItemInserted(position);
     }
 
+    /***
+     * remove a favoriteItem from current view
+     * @param position the index of the item to be removed
+     */
     public void removeItem(int position){
         favourites.remove(position);
         mAdapter.notifyItemRemoved(position);
     }
 
+    /***
+     * Create favoriteItems to be passed into the favorite adapter
+     */
     public void createFavorites(){
         Token t = Token.getInstance();
         Requester.getInstance(this).requestAction(ServerAction.USER_GET_INFO, null, res->{
@@ -77,15 +92,9 @@ public class Favourites extends AppCompatActivity {
         }, new Credentials(t.getEmail(), t.getValue()));
     }
 
-//    public static void setFavorites(String name, double longitude, double latitude){
-//        //inserts the new item at the last position
-//        int position = favourites.size();
-//        Location hey = new Location(name);
-//        hey.setLatitude(longitude);
-//        hey.setLongitude(latitude);
-//        FavouriteItem item = new FavouriteItem(hey);
-//    }
-
+    /***
+     * Build a recycler viewer as a place for the adapter to show favoriteItems
+     */
     public void buildRecyclerViewer() {
         mRecyclerView = findViewById(R.id.favouriteView);
         mRecyclerView.setHasFixedSize(true);

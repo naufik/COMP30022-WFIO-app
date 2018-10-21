@@ -4,12 +4,20 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/***
+ * A class which holds information about a favourite place
+ * used mainly to be displayed by Favourites adapter
+ */
 public class FavouriteItem implements Parcelable{
     private Location location;
     private String name;
     private double longitude;
     private double latitude;
 
+    /***
+     * Create a new favouriteItem object from a location
+     * @param location Location to be added as a favorite
+     */
     public FavouriteItem(Location location){
         this.location = location;
         this.name = location.getProvider();
@@ -17,12 +25,16 @@ public class FavouriteItem implements Parcelable{
         this.latitude = location.getLatitude();
     }
 
+    // Read favorite from parcel
     protected FavouriteItem(Parcel in){
         name = in.readString();
         longitude = in.readDouble();
         latitude = in.readDouble();
     }
 
+    /***
+     * generate a creator of favorite items
+     */
     public static final Creator<FavouriteItem> CREATOR = new Creator<FavouriteItem>() {
         @Override
         public FavouriteItem createFromParcel(Parcel in) {
@@ -45,11 +57,23 @@ public class FavouriteItem implements Parcelable{
         parcel.writeDouble(latitude);
     }
 
+    /***
+     * @return the location
+     */
     public Location getLocation() { return location; }
 
+    /***
+     * @return the name of the location
+     */
     public String getName() { return name; }
 
+    /***
+     * @return the latitude of the location
+     */
     public double getLatitude() { return latitude; }
 
+    /***
+     * @return the longitude of the location
+     */
     public double getLongitude() { return longitude; }
 }

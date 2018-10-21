@@ -22,6 +22,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/***
+ * A singleton class that acts as a session manager to store all information needed
+ * for current session.
+ */
 public class Token{
     private static final String TOKEN_ENDPOINT_URL = "https://rawon.naufik.net/voice/accessToken";
 
@@ -42,14 +46,20 @@ public class Token{
     private String twilioVoiceToken;
     private JSONArray favorites;
 
+    /***
+     * @return return username of current user
+     */
     public String getUsername() {
         return username;
     }
 
-    public void setVoiceToken(String v) {
+    private void setVoiceToken(String v) {
         this.twilioVoiceToken = v;
     }
 
+    /***
+     * @return return voice token of current user
+     */
     public String getVoiceToken() {
         return this.twilioVoiceToken;
     }
@@ -71,6 +81,9 @@ public class Token{
         this.value = data;
     }
 
+    /***
+     * @return token value of current user
+     */
     public String getValue(){
         return this.value;
     }
@@ -79,6 +92,9 @@ public class Token{
         this.type = type;
     }
 
+    /***
+     * @return return current user account type
+     */
     public String getType() {
         return type;
     }
@@ -87,10 +103,16 @@ public class Token{
         this.id = id;
     }
 
+    /***
+     * @return return current user ID
+     */
     public int getId(){
         return id;
     }
 
+    /***
+     * @return return current user email
+     */
     public String getEmail() {
         return email;
     }
@@ -99,6 +121,9 @@ public class Token{
         this.email = email;
     }
 
+    /***
+     * @return return all users currently connected to user
+     */
     public JSONArray getConnections() {
         return connections;
     }
@@ -107,6 +132,9 @@ public class Token{
         this.connections = connections;
     }
 
+    /***
+     * @return return current user full name
+     */
     public String getFullName() {
         return fullname;
     }
@@ -115,6 +143,12 @@ public class Token{
         this.fullname = fullname;
     }
 
+    /***
+     * Return the current instance of token, unless token have not been
+     * initialized for current session, in which it creates new token object
+     * @param ctx activity context
+     * @return current token instance
+     */
     public static synchronized Token getInstance(Context ctx) {
         if(instance == null){
             instance = new Token();
@@ -131,10 +165,13 @@ public class Token{
     }
 
     public static synchronized Token reset() {
-        instance = new Token();
+        instance = null;
         return instance;
     }
 
+    /***
+     * @return return a user JSONObject which is the person currently helping/being helped with/by the user
+     */
     public synchronized JSONObject getCurrentConnection() {
         return currentConnection;
     }
@@ -143,10 +180,16 @@ public class Token{
         this.currentConnection = currentConnection;
     }
 
+    /***
+     * @return get all message from server that are currently addressed to the user
+     */
     public synchronized JSONArray getServerMessages() {
         return serverMessages;
     }
 
+    /***
+     * @return get all message that have been displayed in current session
+     */
     public synchronized ArrayList<Message> getSessionMessages() {
         return sessionMessages;
     }
@@ -186,6 +229,9 @@ public class Token{
             });
     }
 
+    /***
+     * @return return current user favorites places
+     */
     public JSONArray getFavorites() {
         return favorites;
     }
@@ -198,6 +244,9 @@ public class Token{
         this.loadTwilioToken();
     }
 
+    /***
+     * Initialize Session Messages
+     */
     public synchronized void createSessionMessages () {
         this.sessionMessages = new ArrayList<>();
         this.serverMessages = new JSONArray();

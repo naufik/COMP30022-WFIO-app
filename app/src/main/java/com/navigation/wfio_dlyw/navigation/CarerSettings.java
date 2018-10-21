@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.NotificationService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
@@ -25,6 +26,9 @@ import org.json.JSONObject;
 
 import java.util.regex.Pattern;
 
+/**
+ * Settings page for carer, to change full name (display name), change password, and LogOut
+ */
 public class CarerSettings extends AppCompatActivity {
 
     @Override
@@ -38,7 +42,7 @@ public class CarerSettings extends AppCompatActivity {
         TextView username = (TextView) findViewById(R.id.usernameCS);
         TextView email = (TextView) findViewById(R.id.emailCS);
 
-        //TO-DO set hints so that it shows the user's current details
+        // display current user info (retrieved from server) as a hint
         req.requestAction(ServerAction.USER_GET_INFO, null,
                 t-> {
                     try {
@@ -52,6 +56,8 @@ public class CarerSettings extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarCS);
         setSupportActionBar(myToolbar);
 
+
+        //Change full name
         Button changeFullName = (Button) findViewById(R.id.changeFullName);
         changeFullName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,10 +91,15 @@ public class CarerSettings extends AppCompatActivity {
             }
         });
 
+        //LogOut from device. (stopping session and delete login.json from internal storage)
         final Button carerLogOutBtn = (Button) findViewById(R.id.carerLogOutBtn);
         carerLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent serviceIntent = new Intent(CarerSettings.this, NotificationService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
+
                 Token.reset();
                 if (FileIO.deleteCredentials(getApplicationContext())){
                     Log.d("CarerLogOut", "Credentials deleted");
@@ -102,6 +113,7 @@ public class CarerSettings extends AppCompatActivity {
             }
         });
 
+        //Start process for changing password
         Button changePassword = findViewById(R.id.changePasswordCS);
         changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +123,7 @@ public class CarerSettings extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

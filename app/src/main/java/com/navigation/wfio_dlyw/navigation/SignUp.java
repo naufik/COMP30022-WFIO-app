@@ -22,6 +22,7 @@ public class SignUp extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         Token token = Token.getInstance();
 
+        //get the sign0up button from the activity layout
         setContentView(R.layout.activity_sign_up);
         Button submitBtn = findViewById(R.id.submitBtn);
         submitBtn.setOnClickListener(view -> {
@@ -31,7 +32,7 @@ public class SignUp extends AppCompatActivity {
                     type = extras.getString("type");
                 }
 
-                //trim removes leading and trailing whitespace
+                //the following retrieves the text values from the layout fields in the signup page
                 EditText usernameS = findViewById(R.id.usernameS);
                 String usernameSS = usernameS.getText().toString().trim();
 
@@ -47,24 +48,37 @@ public class SignUp extends AppCompatActivity {
                 EditText rePasswordS = findViewById(R.id.rePasswordS);
                 String rePasswordSS = rePasswordS.getText().toString();
 
-                //password same as re-entered and username/email doesnt contain white space
+            /**
+             *the following checks are for formatting the user data values before it is sent to the
+             * backend server, if all checks prove false send the data to the server for user
+             * creation
+             */
 
+            //checks whether the user has entered anything for his/her fullname
                 if(fullnameSS.isEmpty()){
                     Toast.makeText(getApplicationContext(), "Please enter your full name", Toast.LENGTH_LONG).show();
+                //checks whether the user has entered anything for his/her username
                 }else if (usernameSS.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please enter your username", Toast.LENGTH_LONG).show();
+                //checks whether the user has entered anything for his/her email address
                 }else if(emailSS.isEmpty()){
                     Toast.makeText(getApplicationContext(), "Please enter your E-Mail", Toast.LENGTH_LONG).show();
+                //checks whether the user has entered anything for his/her password
                 }else if(passwordSS.isEmpty()){
                     Toast.makeText(getApplicationContext(), "Please enter a password", Toast.LENGTH_LONG).show();
+                //checks whether the user has entered anything for his/her password reconfirmation
                 }else if(rePasswordSS.isEmpty()){
                     Toast.makeText(getApplicationContext(), "Please re-enter your password", Toast.LENGTH_LONG).show();
+                //checks whether the user's password and re-entered password matches
                 }else if(!rePasswordSS.equals(passwordSS)){
                     Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
+                //checks whether the username entered contains any spaces
                 }else if(usernameSS.contains(" ")){
                     Toast.makeText(getApplicationContext(), "Username cannot contain spaces", Toast.LENGTH_LONG).show();
+                //checks whether the email is legible (bare minimum) server does more intensive checks
                 }else if(emailSS.contains(" ") || !emailSS.contains("@")){
                     Toast.makeText(getApplicationContext(), "Invalid E-mail address", Toast.LENGTH_LONG).show();
+                //if all cases satisfied send the data to the server
                 }else{
                     try {
                         JSONObject params = new JSONObject();
