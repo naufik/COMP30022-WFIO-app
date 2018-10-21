@@ -116,7 +116,7 @@ public class ElderHome extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        System.exit(0);
+        //Do nothing
     }
 
 

@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.VoidDDQ.Cam.GeoStatService;
+import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
@@ -96,6 +98,7 @@ public class ElderSettings extends AppCompatActivity {
                 else {
                     Log.d("ElderLogOut", "Credentials NOT deleted");
                 }
+
                 Intent intent = new Intent(getApplicationContext(), LogIn.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

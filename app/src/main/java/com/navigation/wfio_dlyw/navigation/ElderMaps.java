@@ -110,8 +110,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(mCurrentLocation.getLatitude(),
                                     mCurrentLocation.getLongitude()), DEFAULT_ZOOM));
-
                     break;
+
                 case GeoStatService.MSG_REQUEST_ROUTE:
                     // Update map with new route, request for direction afterwards
                     try {
@@ -119,30 +119,34 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                         mMap.clear();
                         mMap.addPolyline(route);
 
+                        notifyService(GeoStatService.MSG_REPLY_ZOOM, null);
                         notifyService(GeoStatService.MSG_REQUEST_DIRECTION, null);
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
-
                     break;
+
                 case GeoStatService.MSG_UPDATE_DESTINATION:
                     // After destination updated, grab new route, callback above
                     routeGenerated =true;
                     notifyService(GeoStatService.MSG_REQUEST_ROUTE, null);
                     break;
+
                 case GeoStatService.MSG_REPLY_ZOOM:
                     // Zoom retrieved from service
-                    CameraUpdate zoom = (CameraUpdate) msg.obj;
-                    mMap.animateCamera(zoom);
-
+                    if (msg.obj != null) {
+                        CameraUpdate zoom = (CameraUpdate) msg.obj;
+                        mMap.animateCamera(zoom);
+                    }
                     break;
+
                 case GeoStatService.MSG_REQUEST_DIRECTION:
                     // Direction retrieved from service
                     Log.d(TAG, "Direction retrieved: " + String.valueOf(msg.obj));
                     String direction = String.valueOf(msg.obj);
                     tts.read(direction);
-
                     break;
+
             }
         }
     }
@@ -153,8 +157,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         // Called when reopening Maps from Favorites or AR
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.d(TAG, "Service connected");
             mService = new Messenger(iBinder);
+
+            Token token = Token.getInstance(ElderMaps.this);
+            String[] credentials = {token.getEmail(), token.getValue()};
+            notifyService(GeoStatService.MSG_SEND_CREDENTIALS, credentials);
 
             notifyService(GeoStatService.MSG_REQUEST_LOCATION, null);
 
@@ -164,10 +171,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             } else {
                 notifyService(GeoStatService.MSG_REQUEST_ROUTE, favorite);
             }
-
-            Token token = Token.getInstance(ElderMaps.this);
-            String[] credentials = {token.getEmail(), token.getValue()};
-            notifyService(GeoStatService.MSG_SEND_CREDENTIALS, credentials);
         }
 
         @Override
@@ -272,12 +275,10 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 if(query == null) {
                     return false;
                 }
-                
+
                 // Sends new destination to service
                 notifyService(GeoStatService.MSG_UPDATE_DESTINATION, query);
-
                 favorite = "";
-
                 return true;
             }
 
@@ -512,6 +513,9 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         String text = "Are you sure you want to leave navigation?";
         AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
         builder.setPositiveButton("YES!", (dialog, id) -> {
+
+            notifyService(GeoStatService.MSG_UPDATE_DESTINATION,"");
+
             Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
             serviceIntent.setAction("stop");
             startService(serviceIntent);

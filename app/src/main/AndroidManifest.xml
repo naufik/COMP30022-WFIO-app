@@ -96,9 +96,6 @@
         <activity android:name=".MessageListElder" />
 
 
-        <activity
-            android:name=".MapsPermissionTest"
-            android:label="@string/title_activity_maps_permission_test"></activity>
         <service android:name=".MsgUpdateService"/>
         <service android:name=".InitializeService"/>
         <service android:name="com.navigation.wfio_dlyw.comms.NotifyService" />
