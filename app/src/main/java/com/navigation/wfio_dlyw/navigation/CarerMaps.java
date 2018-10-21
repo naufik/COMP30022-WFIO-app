@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -66,6 +67,8 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     private Marker elderLoc;
     private boolean firstCamera = true;
     private BitmapDescriptor elderIcon;
+
+    private static final int ZOOM_PADDING = 200;
 
     private CallService.CallServiceReceiver callEventsListener = null;
 
@@ -213,21 +216,20 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         Intent intent = getIntent();
         try {
-            Log.d(TAG, "Getting Intent extra");
             Bundle b = intent.getExtras();
             JSONArray route = new JSONArray(b.getString("route"));
-            Log.d(TAG, "Route converted, grabbing checkpoints...");
             for (int i = 0; i < route.length(); i++) {
-                Log.d(TAG, "Checkpoint: "+i);
                 JSONObject JSONcheckpoint = route.getJSONObject(i);
                 LatLng checkpoint = new LatLng(JSONcheckpoint.getDouble("lat"), JSONcheckpoint.getDouble("long"));
                 this.route.add(checkpoint);
+                builder.include(checkpoint);
             }
-            Log.d(TAG, "Rendering to map");
             mMap.addPolyline(this.route);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), ZOOM_PADDING));
         } catch (NullPointerException | JSONException e) {
             e.printStackTrace();
         }
@@ -282,10 +284,10 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
             LatLng latLngLoc = new LatLng(loc.getLatitude(), loc.getLongitude());
             elderLoc = mMap.addMarker(new MarkerOptions().position(latLngLoc).icon(elderIcon).anchor(0.5f, 0.5f));
-            if(firstCamera){
+            /*if(firstCamera){
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngLoc, 18));
                 firstCamera = false;
-            }
+            }*/
         }
     }
     @Override
