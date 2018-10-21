@@ -114,3 +114,11 @@ Firstly, register for a new *Elder* account and log-in with the newly created ac
 1. To record a voice clip hold-press the `^` button on the bottom-left corner of the text-messaging activity.
 2. To view recorded voice clips, press the top-right logo on the newly text-messaging activity toolbar
 3. To play/stop the voice message click on the individual voice clip item.
+
+## Unit Testing
+
+Unfortunately there was not a lot of unit testing that is done for this project. Mainly due to the limitations of the Android testing framework that we are using.
+
+`Mockito`, the framework taught in class are not able to do two crucial things: Mocking constructors (i.e. to test methods that create a new object) and the Android Studio test environment forces methods from external libraries to be mocked. Since many of our methods relies on creating and reading JSON objects, we cannot simulate them with Android's limitation on unit testing as the Android JUnit runner will break if we try to verify methods inside the JSON Object class.
+
+The `test` package contains few Unit Tests for some utility modules.
