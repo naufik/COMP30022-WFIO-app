@@ -3,7 +3,6 @@ package com.navigation.wfio_dlyw.navigation;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -27,13 +26,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.VoidDDQ.Cam.GeoStatService;
-import com.VoidDDQ.Cam.UnityPlayerActivity;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,38 +39,37 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
-import com.navigation.wfio_dlyw.comms.Credentials;
-import com.navigation.wfio_dlyw.comms.Requester;
-import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.navigation.wfio_dlyw.utility.DialogBuilder;
 import com.navigation.wfio_dlyw.utility.Text2Speech;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * ElderMaps is one of the main components of the navigation aspect of this app. It is the activity
+ * that holds the map that renders the elder's location, destination upon entering, and other
+ * options visible on the UI such as requesting a carer's assistance, saving the destination as a
+ * favorite, or going to the favorites list. This activity is created when the phone is tilted
+ * downwards on UnityPlayerActivity, or when returning back from the Favorites activity.
+ *
+ * @author Samuel Tumewa
+ */
 public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     // Location variables
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private boolean mLocationPermissionGranted = true;
-    private LocationRequest mLocationRequest;
-    private LocationCallback mLocationCallback;
     private Location mCurrentLocation;
     private Location mDefaultLocation;
     private PolylineOptions route;
-    private String destination;
-    private boolean updateRoute;
-    private String ROUTE_URL;
-    private String API_KEY;
+    private boolean routeGenerated;
+    private String favorite = "";
 
     // Sensor variables
     private SensorEventListener eventListener;
@@ -85,23 +79,25 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     // Service variables
     Messenger mService = null;
     boolean mIsBound;
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
 
+    // Constants
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 15;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
-    //other variables
+    // UI variables
     private MaterialSearchView searchView;
-    private boolean routeGenerated;
     private CallService.CallServiceReceiver callEventsHandler;
-
     private Text2Speech tts = new Text2Speech(ElderMaps.this);
-    private String favorite = "";
 
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
-
-    // Service to client message handler
+    /**
+     * The IncomingHandler class handles replies from the service based on the cases set as
+     * public constants in the GeoStatService. These messages include the data from GeoStatService
+     * including location, route, destination, zoom, and direction, which are then rendered on the
+     * map fragment accordingly, and the direction spoken through text-to-speech
+     */
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -144,7 +140,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
                 case GeoStatService.MSG_REQUEST_DIRECTION:
                     // Direction retrieved from service
-                    Log.d(TAG, "Direction retrieved: " + String.valueOf(msg.obj));
                     String direction = String.valueOf(msg.obj);
                     tts.read(direction);
                     break;
@@ -152,21 +147,21 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
         }
     }
-    public void resetData() {
-        notifyService(GeoStatService.MSG_UPDATE_DESTINATION,"");
-    }
+
     // Main service interface
     private ServiceConnection mConnection = new ServiceConnection() {
 
         // Called when reopening Maps from Favorites or AR
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+
             mService = new Messenger(iBinder);
 
             Token token = Token.getInstance(ElderMaps.this);
             String[] credentials = {token.getEmail(), token.getValue()};
-            notifyService(GeoStatService.MSG_SEND_CREDENTIALS, credentials);
 
+            // Send credentials to service first to be safe, then request location
+            notifyService(GeoStatService.MSG_SEND_CREDENTIALS, credentials);
             notifyService(GeoStatService.MSG_REQUEST_LOCATION, null);
 
             // Skip to route request if starting activity from AR or from Favorites without selecting a favorite location
@@ -179,7 +174,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            Log.d(TAG, "Service disconnected");
             mService = null;
         }
     };
@@ -219,12 +213,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mDefaultLocation.setLatitude(-37.8070);
         mDefaultLocation.setLongitude(144.9612);
 
-        // Should use this getintent, if you want to open elder's location and get elder's details from myelders->onmapclick button - Farhan
-        //Intent intent = getIntent();
-        //ElderItem elderItem = intent.getParcelableExtra("Example Item");
-        //String name = elderItem.getText1();
-
-        //findtoolbar
+        // Setup toolbar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbarEM);
         setSupportActionBar(myToolbar);
 
@@ -280,7 +269,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                     return false;
                 }
 
-                // Sends new destination to service
+                // Sends new destination to service, reset current favorite in case previous destination was from favorite
                 notifyService(GeoStatService.MSG_UPDATE_DESTINATION, query);
                 favorite = "";
                 return true;
@@ -361,9 +350,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back_button:
+                // Back button has been pressed
                 this.onBackPressed();
                 return true;
             case R.id.star_button:
+                // Notify GeoStatService to save the current destination as a favorite
                 if(routeGenerated){
                     notifyService(GeoStatService.MSG_SAVE_FAVORITES, null);
                     Toast.makeText(this, "Favorites added", Toast.LENGTH_LONG).show();
@@ -373,6 +364,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.call_button:
+                // Start a call with the carer with Twilio
                 if(Token.getInstance(this).getCurrentConnection() != null) {
                     if (TwilioUtils.getInstance(this).getCall() == null) {
                         makeCall();
@@ -386,6 +378,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 break;
             case R.id.myFavourites:
+                // Go to the favorites page
                 Intent favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
                 startActivityForResult(favouriteIntent, 1);
                 return true;
@@ -399,18 +392,22 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult");
+
+        // Reset favorite if returning from favorites page without selecting, otherwise save selected favorite
         favorite = "";
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 favorite = data.getStringExtra("FavoriteItem");
             }
         }
-
-        Log.d(TAG, favorite);
     }
 
-    // Method called when view messages clicked
+    /**
+     * viewMessages() is called when the elder selects the View Messages button in the bottom left.
+     * This starts moves the user to the message list activity.
+     * @param view The activity view required to be passed when setting public methods through
+     *             the layout
+     */
     public void viewMessages (View view) {
         if (Token.getInstance(this).getCurrentConnection() != null) {
             Intent smsintent = new Intent(getApplicationContext(), MessageListElder.class);
@@ -420,7 +417,14 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
-    // Method called when SOS clicked
+    /**
+     * helpMe() is called when the elder selects the Help Me button in the bottom right. This
+     * notifies the service to send the route to the server, thereby notifying all elders. It then
+     * waits until the connection between the carer and elder has been established, which upon
+     * establishment, will send the connection ID to the service.
+     * @param view The activity view required to be passed when setting public methods through
+     *             the layout
+     */
     public void helpMe (View view) {
         if(routeGenerated) {
             notifyService(GeoStatService.MSG_SEND_ROUTE, null);
@@ -444,6 +448,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    // Checks whether the connection id from the token has been initialized
     private int connectionEstablished(){
         JSONObject connection= Token.getInstance(this).getCurrentConnection();
         if(connection != null){
@@ -457,12 +462,14 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         return 0;
     }
 
+    // Stops the call from CallService
     private void stopCall() {
         Intent stopCallIntent = new Intent(this, CallService.class);
         stopCallIntent.setAction("call.stop");
         startService(stopCallIntent);
     }
 
+    // Starts a call with the carer through CallService
     private void makeCall() {
         try {
             Intent callIntent = new Intent(this, CallService.class);
@@ -482,18 +489,18 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mMap = googleMap;
         updateLocationUI();
 
-        //Log.d(TAG, "Binding service...");
         bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
     }
 
+    // Allows the map to render the location and the zoom to location button
     @SuppressLint("MissingPermission")
     private void updateLocationUI() {
-        Log.d(TAG, "Updating location UI");
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
     }
 
+    // Saves the current position and camera position
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (mMap != null) {
@@ -503,6 +510,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         }
     }
 
+    // Rebind the service upon resuming the activity
     @Override
     protected void onResume() {
         super.onResume();
@@ -510,20 +518,18 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         bindService(new Intent(this, GeoStatService.class), mConnection, Context.BIND_AUTO_CREATE);
         mIsBound = true;
-
-        Log.d(TAG, "Maps resumed");
     }
 
+    // Unregister the accelerometer sensor on pausing
     @Override
     protected void onPause() {
-        Log.d(TAG, "Maps paused");
         super.onPause();
         sensorManager.unregisterListener(eventListener);
     }
 
+    // Unbind the service upon quitting the activity
     @Override
     protected void onStop() {
-        Log.d(TAG, "Maps stopped");
         super.onStop();
 
         if (mIsBound) {
@@ -532,6 +538,8 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         mIsBound = false;
     }
 
+    // Notifies the user whether they want to quit the navigation, which if yes, will notify the
+    // service to reset the destination data, stop the MsgUpdateService, and close the activity
     @Override
     public void onBackPressed() {
         Token t = Token.getInstance(getApplicationContext());
@@ -545,11 +553,11 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
             serviceIntent.setAction("stop");
             startService(serviceIntent);
+
             t.setCurrentConnection(null);
+
             Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-            Log.d("EM", t.getValue());
             finish();
-            Log.d("EM2", t.getValue());
             startActivity(intent);
         });
 
@@ -561,6 +569,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
+    // Sends the message code and optionally, an object, to the service
     private void notifyService(int msgCode, Object toSend) {
         try {
             Message msg = Message.obtain(null, msgCode, toSend);
