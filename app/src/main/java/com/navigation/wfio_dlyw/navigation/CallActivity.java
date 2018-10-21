@@ -4,24 +4,14 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.net.rtp.AudioStream;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
-import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.twilio.CallService;
 import com.navigation.wfio_dlyw.twilio.TwilioUtils;
 import com.twilio.voice.*;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Callable;
 
 /**
  * This is an intermediary activity that is used to direct notifications to accept calls as that

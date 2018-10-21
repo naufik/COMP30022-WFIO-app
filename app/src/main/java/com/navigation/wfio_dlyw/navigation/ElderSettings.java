@@ -14,8 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.VoidDDQ.Cam.GeoStatService;
-import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.navigation.wfio_dlyw.comms.Credentials;
 import com.navigation.wfio_dlyw.comms.NotificationService;
 import com.navigation.wfio_dlyw.comms.Requester;
@@ -26,7 +24,6 @@ import com.navigation.wfio_dlyw.utility.FileIO;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**

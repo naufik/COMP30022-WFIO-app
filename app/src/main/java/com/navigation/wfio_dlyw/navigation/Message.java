@@ -1,7 +1,6 @@
 package com.navigation.wfio_dlyw.navigation;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 /***
  * A message object, that would displayed by custom Message adapter
