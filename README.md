@@ -93,7 +93,7 @@ Firstly, register for a new *Elder* account and log-in with the newly created ac
 
 **Accepting a Carer's Help**
 
-1. Upon receiving a notification for n Elder's request for help, to accept the request press `accept` on the notification or press the notification followed by pressing `ACCEPT` on the newly generated activity. To decline the request, dismiss the notification, or press the notification and press `DELETE` on the newly generated activity.
+1. Upon receiving a notification for an Elder's request for help, to accept the request press `accept` on the notification or press the notification followed by pressing `ACCEPT` on the newly generated activity. To decline the request, dismiss the notification, or press the notification and press `DELETE` on the newly generated activity.
 2. Upon accepting the request, an activity will open with the Elder's location and the route to a destination shown within a map. 
 3. The user is now able to call and/or text-message the elder to give custom navigational instructions 
 4. To exit navigation press the device's in-built back button anytime during navigation and to confirm the exit press `Yes!`
