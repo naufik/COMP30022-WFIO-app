@@ -31,6 +31,8 @@ import java.util.TimerTask;
 /**
  * This service polls notification from the notification server and creates a notification
  * if such is needed.
+ *
+ * @author Naufal Fikri (http://github.com/naufik).
  */
 public class NotificationService extends IntentService {
     private static Timer timer;

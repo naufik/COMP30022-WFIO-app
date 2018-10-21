@@ -9,7 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * The job of this service is to notify the other party that one has agreed to assist them.
+ * A notification handler used to notify the other party in a connection that the other has agreed
+ * to help them or if they have requested for help.
  */
 public class NotifyService extends IntentService {
     public NotifyService() {
