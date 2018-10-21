@@ -1,6 +1,5 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -13,8 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.VoidDDQ.Cam.UnityPlayerActivity;
 import com.navigation.wfio_dlyw.comms.Credentials;
@@ -25,7 +22,6 @@ import com.navigation.wfio_dlyw.comms.Token;
 import com.navigation.wfio_dlyw.utility.Text2Speech;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
 * Class that represent home menu for users with elder account

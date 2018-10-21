@@ -9,6 +9,10 @@ import com.navigation.wfio_dlyw.navigation.ElderHome;
 import com.navigation.wfio_dlyw.navigation.ElderMaps;
 import com.navigation.wfio_dlyw.navigation.MessageListElder;
 
+/**
+ * A mediator between AR and the app. AR will call this class certain functions which will access
+ * app. This must exists because this class does not require to be initialized
+ */
 public class UnityInteraction {
 
     /**
