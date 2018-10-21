@@ -3,6 +3,10 @@ package com.navigation.wfio_dlyw.navigation;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * A class which holds limited information about an elder user
+ * used mainly to be displayed by connectAdapter
+ */
 public class ElderItem implements Parcelable{
     private String mText1;
     private String mText2;

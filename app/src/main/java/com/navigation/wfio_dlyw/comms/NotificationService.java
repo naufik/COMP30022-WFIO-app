@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.navigation.AnswerHelp;
 import com.navigation.wfio_dlyw.navigation.CarerMaps;
@@ -49,8 +50,10 @@ public class NotificationService extends IntentService {
     public void onCreate() {
         if (timer == null) {
             timer = new Timer();
+        } else {
+            timer.cancel();
+            timer = new Timer();
         }
-        ;
         if (!channelsCreated) {
             createNotificationChannels();
         }

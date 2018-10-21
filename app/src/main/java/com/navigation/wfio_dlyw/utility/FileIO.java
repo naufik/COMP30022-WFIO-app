@@ -16,7 +16,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
+/***
+ * A class that specialize in reading and writing from the file system
+ */
 public class FileIO {
+
+    /***
+     * Store credentials (a json object) in form of string stored into internal storage
+     * @param tokenValue value of the session token
+     * @param email Email of the user
+     * @param context activity context
+     */
     public static void storeCredentials(String tokenValue, String email, Context context){
         JSONObject credentials = new JSONObject();
 
@@ -29,6 +39,11 @@ public class FileIO {
         } catch (Exception e) {}
     }
 
+    /***
+     * Get a credentials from internal storage
+     * @param context activity context
+     * @return a JSONObject that contains 2 string: "token" a token value, and "email" an email
+     */
     public static JSONObject getCredentials(Context context){
         JSONObjectParser parser = new JSONObjectParser();
         String directory = context.getFilesDir().toString() + "/login.json";
@@ -43,6 +58,11 @@ public class FileIO {
         return null;
     }
 
+    /***
+     * Read a login.json file from internal storage
+     * @param context activity context
+     * @return
+     */
     public static JSONObject loadJSONFromAsset(Context context) {
         File myFile = new File(context.getFilesDir().toString() +"/login.json");
         String json = null;
@@ -63,6 +83,11 @@ public class FileIO {
         return obj;
     }
 
+    /***
+     * delete currently existing login.json file
+     * @param context activity context
+     * @return shows whether the file is deleted or not
+     */
     public static boolean deleteCredentials(Context context){
         File myFile = new File(context.getFilesDir().toString() +"/login.json");
         return myFile.delete();

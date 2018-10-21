@@ -13,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 
 import com.navigation.wfio_dlyw.comms.NotificationService;
 
+/**
+* Class thast handles the home activity for users with carer account+
+*/
 public class CarerHome extends AppCompatActivity {
     Intent serviceIntent;
 
@@ -24,6 +27,7 @@ public class CarerHome extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarCH);
         setSupportActionBar(myToolbar);
 
+        // Goes to carer connect page
         Button connectToElderBtn = (Button)findViewById(R.id.connectToElderBtn);
         connectToElderBtn.setOnClickListener(view -> {
                 Intent startIntent = new Intent(getApplicationContext(), CarerConnect.class);
@@ -31,17 +35,19 @@ public class CarerHome extends AppCompatActivity {
             }
         );
 
+        // Goes to myElder page
         Button myElders = (Button)findViewById(R.id.myElders);
         myElders.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), MyElders.class);
             startActivity(startIntent);
         });
 
+        // Start a service that will be notified if a notification is received
         this.serviceIntent = new Intent(this, NotificationService.class);
         serviceIntent.setAction("poll");
         startService(serviceIntent);
     }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
