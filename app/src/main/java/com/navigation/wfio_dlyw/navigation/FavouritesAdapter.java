@@ -10,18 +10,30 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter to display all favorite places of the current user (which should be an elder)
+ */
 public class FavouritesAdapter extends RecyclerView.Adapter<FavouritesAdapter.FavouriteViewHolder> {
     private ArrayList<FavouriteItem> mFavourites;
     private OnItemClickListener mListener;
 
-
+    /***
+     * Delete item on certain position
+     */
     public interface OnItemClickListener{
         void onDeleteClick(int position);
         void onMapClick(int position);
     }
 
+    /***
+     * Set listener for this adapt3er
+     * @param listener
+     */
     public void setOnItemClickListener(OnItemClickListener listener){ mListener = listener;}
 
+    /***
+     * Create a holder for elderItem to be displayed
+     */
     public static class FavouriteViewHolder extends RecyclerView.ViewHolder{
         public TextView mFavourite;
         public ImageView mDeleteImage;

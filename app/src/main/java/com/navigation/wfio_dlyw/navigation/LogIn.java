@@ -82,6 +82,7 @@ public class LogIn extends AppCompatActivity {
             } catch (JSONException e) {}
         });
 
+        //Start signup activity
         Button signUpBtn = findViewById(R.id.signUpBtn);
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +92,7 @@ public class LogIn extends AppCompatActivity {
             }
         });
 
+        //Pressing enter during process of entering password is equal to pressing LogIn button
         password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

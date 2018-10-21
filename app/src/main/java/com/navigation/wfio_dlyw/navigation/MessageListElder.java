@@ -16,6 +16,9 @@ import com.navigation.wfio_dlyw.utility.Text2Speech;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/***
+ * Display message received in current session
+ */
 public class MessageListElder extends AppCompatActivity {
     private boolean update;
     private Intent serviceIntent;
@@ -48,16 +51,21 @@ public class MessageListElder extends AppCompatActivity {
 
         update = true;
         t2t = new Text2Speech(getApplicationContext());
+
+        //Start pulling messages from server
         this.serviceIntent = new Intent(this, MsgUpdateService.class);
         this.serviceIntent.setAction("poll");
         startService(serviceIntent);
         handler.post(runner);
     }
 
-
+    /***
+     * Populate current view with message with the help of customMessageAdapter
+     */
     private void populateUsersList() {
         Token token = Token.getInstance();
         t2t = new Text2Speech(getApplicationContext());
+
         // Construct the data source
         while (token.getServerMessages().length() > 0) {
             try {
@@ -68,6 +76,7 @@ public class MessageListElder extends AppCompatActivity {
                 token.getServerMessages().remove(0);
             } catch (JSONException e) {}
         }
+
         // Create the adapter to convert the array to views
         CustomMessageAdapter adapter = new CustomMessageAdapter(this, token.getSessionMessages());
         // Attach the adapter to a ListView

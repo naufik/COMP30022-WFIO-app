@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 
-
+/***
+ * Display Message in current session and allows call to be made from this activity
+ */
 public class MessageList extends AppCompatActivity {
 
     private TwilioUtils twilio;
@@ -91,7 +93,7 @@ public class MessageList extends AppCompatActivity {
             this.toUserName = Token.getInstance().getCurrentConnection().getString("username");
             myToolbar.setTitle(this.toName);
         } catch (JSONException e) {}
-        /*********/
+
         // Record to the external cache directory for visibility
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest" + fileCount + ".3gp";
@@ -99,8 +101,8 @@ public class MessageList extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, permissions, REQUEST_AUDIO_RECORD);
         mRecord = findViewById(R.id.recordButton);
 
+        //Start Recording audio
         mRecord.setOnTouchListener(new View.OnTouchListener(){
-
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
@@ -111,10 +113,11 @@ public class MessageList extends AppCompatActivity {
                 return false;
             }
         });
-
-        /*********/
     }
 
+    /***
+     * Populate current view with message with the help of customMessageAdapter
+     */
     private void populateUsersList() {
         Token token = Token.getInstance();
         // Create the adapter to convert the array to views
@@ -124,6 +127,9 @@ public class MessageList extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
+    /***
+     * Start recording audio for voice message
+     */
     private void startRecording() {
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -140,6 +146,9 @@ public class MessageList extends AppCompatActivity {
 
     }
 
+    /***
+     * Strop recording audio
+     */
     private void stopRecording() {
 
         try{
@@ -224,6 +233,10 @@ public class MessageList extends AppCompatActivity {
         if (!permissionToRecordAccepted ) finish();
     }
 
+    /***
+     * Send message to the server, triggered by on click with arrow image
+     * @param view the current view
+     */
     public void sendMessage(View view) {
         String message = editText.getText().toString();
 
