@@ -51,7 +51,7 @@ public class CredentialsTest {
         Credentials cObj = new Credentials(testUserName, testToken);
 
         Assertions.assertEquals(testUserName, cObj.getEmail());
-        Assertions.assertEquals(testToken, cObj.getPrivateToken());
+        Assertions.assertEquals(testToken, cObj);
     }
 
     @Test
