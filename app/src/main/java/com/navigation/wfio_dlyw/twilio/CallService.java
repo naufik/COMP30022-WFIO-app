@@ -17,6 +17,12 @@ import com.twilio.voice.Call;
 
 import java.io.FileDescriptor;
 
+/**
+ * A background service to handle ongoing calls such that the ongoing call can continue even if
+ * it is detached from an activity.
+ *
+ * @author Naufal Fikri (http://github.com/naufik)
+ */
 public class CallService extends Service {
     public static String ON_DISCONNECT = "call.ondisconnect";
     public static String ON_CONNECT = "call.onconnected";
@@ -40,11 +46,27 @@ public class CallService extends Service {
 
     private TwilioUtils twilio;
 
+    /**
+     * A broadcast receiver that defines callback actions for actions to happen immediately after
+     * events happens to a call.
+     *
+     * @author Naufal Fikri (http://github.com/naufik)
+     */
     public static abstract class CallServiceReceiver extends BroadcastReceiver {
+        /**
+         * A callback / event handler for when the call is disconnected.
+         */
         public abstract void onDisconnect();
 
+        /**
+         * A callback / event handler for when the call is connected.
+         */
         public abstract void onConnected();
 
+        /**
+         * A callback / event handler for when the call is disconnected by failure.
+         * Either it is a timeout or the other party disconnected not in a graceful way.
+         */
         public abstract void onCallFailure();
 
         @Override

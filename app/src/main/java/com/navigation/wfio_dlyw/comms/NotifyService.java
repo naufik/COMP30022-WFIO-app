@@ -23,7 +23,7 @@ public class NotifyService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         try {
             Requester.getInstance( this ).requestAction( ServerAction.CARER_ACCEPT,
-                    new JSONObject().put( "elderEmail", intent.getStringExtra( "to" ) ),
+                    new JSONObject().put("elderEmail", intent.getStringExtra( "to" ) ),
                     t -> {
                         // to be implemented later.
                     },
