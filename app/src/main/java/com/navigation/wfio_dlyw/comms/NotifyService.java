@@ -11,6 +11,8 @@ import org.json.JSONObject;
 /**
  * A notification handler used to notify the other party in a connection that the other has agreed
  * to help them or if they have requested for help.
+ *
+ * @author Naufal Fikri (http://github.com/naufik)
  */
 public class NotifyService extends IntentService {
     public NotifyService() {
