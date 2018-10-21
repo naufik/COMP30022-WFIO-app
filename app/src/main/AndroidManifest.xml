@@ -87,8 +87,6 @@
             android:label="@string/title_activity_carer_maps"
             android:windowSoftInputMode="adjustPan" />
 
-        <receiver android:name=".NotificationReceiver" />
-
         <activity android:name=".AnswerHelp" />
         <activity android:name=".EnterCurrentPassword" />
         <activity android:name=".NewPassword" />
