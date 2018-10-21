@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Camera;
 import android.graphics.Color;
 import android.content.Intent;
 import android.location.Location;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -216,20 +218,28 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         Intent intent = getIntent();
         try {
             Bundle b = intent.getExtras();
-            JSONArray route = new JSONArray(b.getString("route"));
-            for (int i = 0; i < route.length(); i++) {
-                JSONObject JSONcheckpoint = route.getJSONObject(i);
+            JSONArray JSONroute = new JSONArray(b.getString("route"));
+            for (int i = 0; i < JSONroute.length(); i++) {
+                JSONObject JSONcheckpoint = JSONroute.getJSONObject(i);
                 LatLng checkpoint = new LatLng(JSONcheckpoint.getDouble("lat"), JSONcheckpoint.getDouble("long"));
-                this.route.add(checkpoint);
-                builder.include(checkpoint);
+                route.add(checkpoint);
             }
-            mMap.addPolyline(this.route);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), ZOOM_PADDING));
+            mMap.addPolyline(route);
+
+            mMap.setOnMapLoadedCallback(() -> {
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                for(LatLng checkpoint : route.getPoints()){
+                    builder.include(checkpoint);
+                }
+                LatLngBounds zoomBounds = builder.build();
+                CameraUpdate zoom = CameraUpdateFactory.newLatLngBounds(zoomBounds, ZOOM_PADDING);
+                mMap.animateCamera(zoom);
+            });
+
         } catch (NullPointerException | JSONException e) {
             e.printStackTrace();
         }
@@ -244,6 +254,8 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             }
         }, 0, 1000);
     }
+
+
 
     private void getLocationFromServer() {
         Requester req = Requester.getInstance(this);
