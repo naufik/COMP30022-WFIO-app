@@ -47,16 +47,6 @@ public class ElderHome extends AppCompatActivity {
         startService(notifier);
         t2t = new Text2Speech(getApplicationContext());
 
-        Button favouriteButton = findViewById(R.id.favoritesBtn);
-        favouriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                favouriteIntent = new Intent(getApplicationContext(), Favourites.class);
-                startActivity(favouriteIntent);
-
-            }
-        });
-
         Requester req = Requester.getInstance(this);
         req.requestAction(ServerAction.USER_GET_INFO, null, t2 -> {
             try {
