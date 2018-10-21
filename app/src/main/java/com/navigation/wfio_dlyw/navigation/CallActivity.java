@@ -23,6 +23,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
+/**
+ * This is an intermediary activity that is used to direct notifications to accept calls as that
+ * notifications are not able to be redirected to services alone but only activities.
+ *
+ * Passing an intent with a CallInvite object to this activity will answer the call that is wrapped
+ * within the invite.
+ *
+ * @author Naufal Fikri (http://github.com/naufik.net)
+ */
 public class CallActivity extends AppCompatActivity {
 
     public static final String TOKEN_ENDPOINT_URL = "https://rawon.naufik.net/voice/accessToken";
