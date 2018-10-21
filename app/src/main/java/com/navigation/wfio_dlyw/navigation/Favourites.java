@@ -116,9 +116,7 @@ public class Favourites extends AppCompatActivity {
                     builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
-                            Log.d("favorites2",t.getFavorites().toString());
                             t.getFavorites().remove(position);
-                            Log.d("favorites3",t.getFavorites().toString());
                             JSONObject params = new JSONObject();
                             try {
                                 params.put("favorites", t.getFavorites());

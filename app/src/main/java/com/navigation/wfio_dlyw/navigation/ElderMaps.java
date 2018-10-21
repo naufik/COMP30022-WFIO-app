@@ -244,55 +244,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
             //mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
 
-        //make fake list
-        String[] list = new String[] { "Barney" , "is", "a", "dinosaur", "of", "our", "imagination"};
-
-        //searchview stuff
-        MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        this.searchView = searchView;
-        searchView.setSuggestions(list);
-
-        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String query = (String) parent.getItemAtPosition(position);
-                searchView.closeSearch();
-                //query is the clicked string use that to search for destination
-                Log.d("test", query);
-            }
-        });
-
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                if(query == null) {
-                    return false;
-                }
-
-                // Sends new destination to service, reset current favorite in case previous destination was from favorite
-                notifyService(GeoStatService.MSG_UPDATE_DESTINATION, query);
-                favorite = "";
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //Do some magic
-                return false;
-            }
-        });
-
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-            }
-        });
+        initializeSearchBar();
     }
 
     //inflate toolbar
@@ -400,6 +352,63 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 favorite = data.getStringExtra("FavoriteItem");
             }
         }
+    }
+
+    /**
+     * Creates the searchbar that is added onto the toolbar, provides various functionality for
+     * searching/navigating to a particular location
+     */
+    public void initializeSearchBar(){
+        //input suggestions into list
+        String[] list = new String[] {};
+
+        //searchview stuff
+        MaterialSearchView searchView = (MaterialSearchView) findViewById(R.id.search_view);
+        this.searchView = searchView;
+        //add list of suggestions into the the searchview
+        //searchView.setSuggestions(list);
+
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String query = (String) parent.getItemAtPosition(position);
+                searchView.closeSearch();
+                //query is the clicked string use that to search for destination
+                Log.d("test", query);
+            }
+        });
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if(query == null) {
+                    return false;
+                }
+
+                // Sends new destination to service, reset current favorite in case previous destination was from favorite
+                notifyService(GeoStatService.MSG_UPDATE_DESTINATION, query);
+                favorite = "";
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Do some magic
+                return false;
+            }
+        });
+
+        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                //Do some magic
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+                //Do some magic
+            }
+        });
     }
 
     /**
@@ -542,31 +551,34 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     // service to reset the destination data, stop the MsgUpdateService, and close the activity
     @Override
     public void onBackPressed() {
-        Token t = Token.getInstance(getApplicationContext());
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            Token t = Token.getInstance(getApplicationContext());
 
-        String text = "Are you sure you want to leave navigation?";
-        AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
-        builder.setPositiveButton("YES!", (dialog, id) -> {
+            String text = "Are you sure you want to leave navigation?";
+            AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
+            builder.setPositiveButton("YES!", (dialog, id) -> {
 
-            notifyService(GeoStatService.MSG_UPDATE_DESTINATION,"");
+                notifyService(GeoStatService.MSG_UPDATE_DESTINATION,"");
 
-            Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
-            serviceIntent.setAction("stop");
-            startService(serviceIntent);
+                Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
 
-            t.setCurrentConnection(null);
+                t.setCurrentConnection(null);
 
-            Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-            finish();
-            startActivity(intent);
-        });
+                Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+                finish();
+                startActivity(intent);
+            });
 
-        builder.setNegativeButton("NO!", (dialog, id) -> {
-            return;
-        });
+            builder.setNegativeButton("NO!", (dialog, id) -> {
+                return;
+            });
 
-        builder.show();
-
+            builder.show();
+        }
     }
 
     // Sends the message code and optionally, an object, to the service

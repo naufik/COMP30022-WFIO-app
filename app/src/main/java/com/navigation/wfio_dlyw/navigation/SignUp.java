@@ -97,7 +97,6 @@ public class SignUp extends AppCompatActivity {
                                         token.setId(t.getJSONObject("result").getJSONObject("user").getInt("id"));
                                         token.setEmail(t.getJSONObject("result").getJSONObject("user").getString("email"));
                                         token.setFullname(t.getJSONObject("result").getJSONObject("user").getString("fullname"));
-                                        Toast.makeText(this , tkn, Toast.LENGTH_LONG).show();
                                     } catch (JSONException e) {}
                                 });
 
