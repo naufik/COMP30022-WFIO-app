@@ -84,20 +84,6 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     Messenger mService = null;
     boolean mIsBound;
 
-    // Constant variables
-    public static final int MSG_REQUEST_LOCATION = 1;
-    public static final int MSG_REQUEST_ROUTE = 2;
-    public static final int MSG_REQUEST_CHECKPOINT = 3;
-    public static final int MSG_UPDATE_DESTINATION = 4;
-    public static final int MSG_PAUSE_UPDATE = 5;
-    public static final int MSG_RESUME_UPDATE = 6;
-    public static final int MSG_SEND_ROUTE = 7;
-    public static final int MSG_SEND_CREDENTIALS = 8;
-    public static final int MSG_REQUEST_DISTANCE = 9;
-    public static final int MSG_REPLY_ZOOM = 10;
-    public static final int MSG_REQUEST_DIRECTION = 11;
-    public static final int MSG_SAVE_FAVORITES = 12;
-
     private static final String TAG = ElderMaps.class.getSimpleName();
     private static final int DEFAULT_ZOOM = 15;
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -111,91 +97,77 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     private Text2Speech tts = new Text2Speech(ElderMaps.this);
     private String favorite = "";
 
+    final Messenger mMessenger = new Messenger(new IncomingHandler());
+
     // Service to client message handler
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
-            Log.d(TAG, "Handling Service-To-ElderMaps message...");
             switch (msg.what) {
-                case MSG_REQUEST_LOCATION:
-                    // Location retrieved from server, moving camera
+                case GeoStatService.MSG_REQUEST_LOCATION:
+                    // Location retrieved from service, moving camera
                     mCurrentLocation = (Location) msg.obj;
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(mCurrentLocation.getLatitude(),
                                     mCurrentLocation.getLongitude()), DEFAULT_ZOOM));
+
                     break;
-                case MSG_REQUEST_ROUTE:
-                    // Update map with new route
+                case GeoStatService.MSG_REQUEST_ROUTE:
+                    // Update map with new route, request for direction afterwards
                     try {
                         route = (PolylineOptions) msg.obj;
                         mMap.clear();
                         mMap.addPolyline(route);
 
-                        Message resp = Message.obtain(null, MSG_REQUEST_DIRECTION);
-                        resp.replyTo = mMessenger;
-                        mService.send(resp);
-                    } catch (NullPointerException | RemoteException e) {
+                        notifyService(GeoStatService.MSG_REQUEST_DIRECTION, null);
+                    } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
+
                     break;
-                case MSG_UPDATE_DESTINATION:
-                    routeGenerated =true;
+                case GeoStatService.MSG_UPDATE_DESTINATION:
                     // After destination updated, grab new route, callback above
-                    try {
-                        Message resp = Message.obtain(null, MSG_REQUEST_ROUTE);
-                        resp.replyTo = mMessenger;
-                        mService.send(resp);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    routeGenerated =true;
+                    notifyService(GeoStatService.MSG_REQUEST_ROUTE, null);
                     break;
-                case MSG_REPLY_ZOOM:
+                case GeoStatService.MSG_REPLY_ZOOM:
+                    // Zoom retrieved from service
                     CameraUpdate zoom = (CameraUpdate) msg.obj;
                     mMap.animateCamera(zoom);
+
                     break;
-                case MSG_REQUEST_DIRECTION:
+                case GeoStatService.MSG_REQUEST_DIRECTION:
+                    // Direction retrieved from service
                     Log.d(TAG, "Direction retrieved: " + String.valueOf(msg.obj));
                     String direction = String.valueOf(msg.obj);
                     tts.read(direction);
+
                     break;
             }
         }
     }
 
-    final Messenger mMessenger = new Messenger(new IncomingHandler());
-
     // Main service interface
     private ServiceConnection mConnection = new ServiceConnection() {
+
+        // Called when reopening Maps from Favorites or AR
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.d(TAG, "Service connected");
             mService = new Messenger(iBinder);
 
-            try {
-                Message msg = Message.obtain(null, MSG_REQUEST_LOCATION);
-                msg.replyTo = mMessenger;
-                mService.send(msg);
+            notifyService(GeoStatService.MSG_REQUEST_LOCATION, null);
 
-                if (!favorite.equals("")) {
-                    Log.d(TAG, "Resumed from favorites");
-                    Message msg2 = Message.obtain(null, MSG_UPDATE_DESTINATION, favorite);
-                    msg2.replyTo = mMessenger;
-                    mService.send(msg2);
-                } else {
-                    Log.d(TAG, "Resumed from AR");
-                    Message msg2 = Message.obtain(null, MSG_REQUEST_ROUTE);
-                    msg2.replyTo = mMessenger;
-                    mService.send(msg2);
-                }
-
-                Token token = Token.getInstance(ElderMaps.this);
-                String[] credentials = {token.getEmail(), token.getValue()};
-                Message msg3 = Message.obtain(null, MSG_SEND_CREDENTIALS, credentials);
-                msg3.replyTo = mMessenger;
-                mService.send(msg3);
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            // Skip to route request if starting activity from AR or from Favorites without selecting a favorite location
+            if (!favorite.equals("")) {
+                notifyService(GeoStatService.MSG_UPDATE_DESTINATION, favorite);
+            } else {
+                notifyService(GeoStatService.MSG_REQUEST_ROUTE, favorite);
             }
+
+            Token token = Token.getInstance(ElderMaps.this);
+            String[] credentials = {token.getEmail(), token.getValue()};
+            notifyService(GeoStatService.MSG_SEND_CREDENTIALS, credentials);
         }
 
         @Override
@@ -302,13 +274,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 }
                 
                 // Sends new destination to service
-                try {
-                    Message msg = Message.obtain(null, MSG_UPDATE_DESTINATION, query);
-                    msg.replyTo = mMessenger;
-                    mService.send(msg);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                notifyService(GeoStatService.MSG_UPDATE_DESTINATION, query);
 
                 favorite = "";
 
@@ -394,13 +360,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
                 return true;
             case R.id.star_button:
                 if(routeGenerated){
-                    try {
-                        Message msg = Message.obtain(null, MSG_SAVE_FAVORITES);
-                        msg.replyTo = mMessenger;
-                        mService.send(msg);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    notifyService(GeoStatService.MSG_SAVE_FAVORITES, null);
                     Toast.makeText(this, "Favorites added", Toast.LENGTH_LONG).show();
                     return true;
                 }else{
@@ -430,6 +390,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         return super.onOptionsItemSelected(item);
     }
 
+    // Method called if returning to Maps from Favorites
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -457,13 +418,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
     // Method called when SOS clicked
     public void helpMe (View view) {
         if(routeGenerated) {
-            try {
-                Message msg = Message.obtain(null, MSG_SEND_ROUTE);
-                msg.replyTo = mMessenger;
-                mService.send(msg);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            notifyService(GeoStatService.MSG_SEND_ROUTE, null);
         }else{
             Toast.makeText(this, "Please select a destination to request for help", Toast.LENGTH_LONG).show();
         }
@@ -538,7 +493,7 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
         Log.d(TAG, "Maps stopped");
         super.onStop();
         /*try {
-            Message msg = Message.obtain(null, MSG_PAUSE_UPDATE);
+            Message msg = Message.obtain(null, GeoStatService.MSG_PAUSE_UPDATE);
             msg.replyTo = mMessenger;
             mService.send(msg);
         } catch (RemoteException e) {
@@ -556,34 +511,27 @@ public class ElderMaps extends AppCompatActivity implements OnMapReadyCallback {
 
         String text = "Are you sure you want to leave navigation?";
         AlertDialog.Builder builder = DialogBuilder.confirmDialog(text, ElderMaps.this);
-        builder.setPositiveButton("YES!",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
-                serviceIntent.setAction("stop");
-                startService(serviceIntent);
-                t.setCurrentConnection(null);
-                Intent intent = new Intent(getApplicationContext(), ElderHome.class);
-                Log.d("EM", t.getValue());
-                finish();
-//                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                Log.d("EM2", t.getValue());
-                startActivity(intent);
-            }
+        builder.setPositiveButton("YES!", (dialog, id) -> {
+            Intent serviceIntent = new Intent(ElderMaps.this, MsgUpdateService.class);
+            serviceIntent.setAction("stop");
+            startService(serviceIntent);
+            t.setCurrentConnection(null);
+            Intent intent = new Intent(getApplicationContext(), ElderHome.class);
+            Log.d("EM", t.getValue());
+            finish();
+            Log.d("EM2", t.getValue());
+            startActivity(intent);
         });
 
-        builder.setNegativeButton("NO!",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                return;
-            }
+        builder.setNegativeButton("NO!", (dialog, id) -> {
+            return;
         });
 
         builder.show();
 
     }
 
-    private void sendToServer(int msgCode, Object toSend) {
+    private void notifyService(int msgCode, Object toSend) {
         try {
             Message msg = Message.obtain(null, msgCode, toSend);
             msg.replyTo = mMessenger;
