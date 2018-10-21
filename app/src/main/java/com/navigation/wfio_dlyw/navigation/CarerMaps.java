@@ -56,6 +56,9 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Handles how the maps work from carer perspective
+ */
 public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -266,7 +269,8 @@ public class CarerMaps extends AppCompatActivity implements OnMapReadyCallback {
             } catch(JSONException e) {
                 Log.e(TAG, e.getMessage());
             }
-        }, new Credentials("dropcomputing@gmail.com","kontol"));
+        }, new Credentials(Token.getInstance(CarerMaps.this).getEmail(),
+                Token.getInstance(CarerMaps.this).getValue()));
     }
 
     private void renderLoc(Location loc) {

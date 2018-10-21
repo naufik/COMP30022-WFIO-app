@@ -18,6 +18,9 @@ import com.navigation.wfio_dlyw.comms.Token;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Handles code generation for connecting with carer
+ */
 public class ElderConnect extends AppCompatActivity {
 
     @Override
@@ -30,6 +33,7 @@ public class ElderConnect extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarEC);
         setSupportActionBar(myToolbar);
 
+        // generate the code
         Button getCode = findViewById(R.id.newCodeBtn);
         TextView connectCode = findViewById(R.id.elderConnectCode);
 

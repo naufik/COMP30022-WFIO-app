@@ -1,6 +1,5 @@
 package com.navigation.wfio_dlyw.navigation;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +12,9 @@ import com.navigation.wfio_dlyw.comms.Token;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Class for activity that allows carer to decide whether to help an elder or not
+ */
 public class AnswerHelp extends AppCompatActivity {
 
     @Override
@@ -21,6 +23,7 @@ public class AnswerHelp extends AppCompatActivity {
         setContentView(R.layout.activity_answer_help);
         Token token = Token.getInstance();
 
+        // Connect to the elder, and start a new messaging session
         TextView text = findViewById(R.id.textView5);
         text.setText(getIntent().getStringExtra("fromName") + " needs help navigating!");
         for (int i =0; i<token.getConnections().length(); i++){
@@ -35,6 +38,7 @@ public class AnswerHelp extends AppCompatActivity {
             } catch (JSONException e){}
         }
 
+        // Agrees to help elder that sent a notification
         Button accept = findViewById(R.id.acceptbutton);
         accept.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
@@ -44,6 +48,7 @@ public class AnswerHelp extends AppCompatActivity {
             startActivity(startIntent);
         });
 
+        // Decline to help an elder
         Button decline = findViewById(R.id.decline);
         decline.setOnClickListener(view -> {
             Intent startIntent = new Intent(getApplicationContext(), CarerHome.class);

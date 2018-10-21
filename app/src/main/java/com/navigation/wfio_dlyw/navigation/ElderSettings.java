@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.navigation.wfio_dlyw.comms.Credentials;
+import com.navigation.wfio_dlyw.comms.NotificationService;
 import com.navigation.wfio_dlyw.comms.Requester;
 import com.navigation.wfio_dlyw.comms.ServerAction;
 import com.navigation.wfio_dlyw.comms.Token;
@@ -23,9 +24,11 @@ import com.navigation.wfio_dlyw.utility.FileIO;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class that handles how settings page works, which contains (LogOut, Change fullname & password, generate code)
+ */
 public class ElderSettings extends AppCompatActivity {
 
     @Override
@@ -52,6 +55,7 @@ public class ElderSettings extends AppCompatActivity {
                     }
                 }, new Credentials(token.getEmail(), token.getValue()));
 
+        //change full name
         Button applyChangesES = (Button) findViewById(R.id.applyChangesES);
         applyChangesES.setOnClickListener(view -> {
             String fullnameS = fullname.getText().toString();
@@ -85,10 +89,15 @@ public class ElderSettings extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.toolbarES);
         setSupportActionBar(myToolbar);
 
+        //LogOut
         Button elderLogOutBtn = findViewById(R.id.elderLogOutBtn);
         elderLogOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent serviceIntent = new Intent(ElderSettings.this, NotificationService.class);
+                serviceIntent.setAction("stop");
+                startService(serviceIntent);
+
                 Token.reset();
                 if (FileIO.deleteCredentials(getApplicationContext())){
                     Log.d("ElderLogOut", "Credentials deleted");
@@ -96,12 +105,14 @@ public class ElderSettings extends AppCompatActivity {
                 else {
                     Log.d("ElderLogOut", "Credentials NOT deleted");
                 }
+
                 Intent intent = new Intent(getApplicationContext(), LogIn.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }
         });
 
+        //start the change password process
         Button changePassword = findViewById(R.id.changePasswordES);
         changePassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +122,7 @@ public class ElderSettings extends AppCompatActivity {
             }
         });
 
+        //goes to the page that generate code for carer to connect with the user
         Button connectBtn = findViewById(R.id.rncButton);
         connectBtn.setOnClickListener(new View.OnClickListener(){
             @Override
