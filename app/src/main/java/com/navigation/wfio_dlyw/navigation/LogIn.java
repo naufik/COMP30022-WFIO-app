@@ -148,7 +148,10 @@ public class LogIn extends AppCompatActivity {
         finish();
         startActivity(startIntent);
     }
-    
+
+    /**
+     * Pressing the back button closes the app
+     */
     @Override
     public void onBackPressed() {
         // will not expect to receive data
