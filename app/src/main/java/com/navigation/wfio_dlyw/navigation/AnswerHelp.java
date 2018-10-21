@@ -44,6 +44,8 @@ public class AnswerHelp extends AppCompatActivity {
             Intent startIntent = new Intent(getApplicationContext(), CarerMaps.class);
             startIntent.setAction("can-help");
             startIntent.putExtra("from", getIntent().getStringExtra("from"));
+            startIntent.putExtra("fromName", getIntent().getStringExtra("fromName"));
+            startIntent.putExtra("route", getIntent().getBundleExtra("route"));
             this.finish();
             startActivity(startIntent);
         });

@@ -23,6 +23,7 @@ An application to help the elderly reach their destination.
 | After selecting a destination in Map View switching to AR View and switching back to Map View prompts you to re-select a destination in order to request for help. | This issue has to do with the way onResume() works in Android Studio. We are aware of the issue, however at the moment we assume that the elder is  requests for help immediately after selecting a destination or after the elder switches to AR View. |
 | Pressing the call button on Maps View and switching to Message View does not change the call icon in Message View to the hang-up icon. | This issue has to do with.....However, the button functionality still works, that is if you press the icon it still hangs-up the call. |
 | Upon a carer's log-in, old notifications for an elder's request for help are pulled despite the elder exiting navigation mode. | This issue has to do with....            |
+| When a Carer accepts an Elder's request for help, it might take a while for the Elder's location to show  on the Carer's side. | Tests vary, however a rough estimate concludes that the delay rarely happens. However, when it does it may take up to 30 seconds to show. |
 
 ## Guide
 
