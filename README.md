@@ -1,6 +1,6 @@
 # Don't Lose Your Way
 
-This was a submission for the capstone project ([COMP30022 IT Project](https://handbook.unimelb.edu.au/2018/subjects/comp30022)) in university of Melbourne. This project is sadly no longer functional due to API keys.
+This was a submission for the capstone project ([COMP30022 IT Project](https://handbook.unimelb.edu.au/2018/subjects/comp30022)) in university of Melbourne. This project is sadly no longer functional due to expired and revoked API keys.
 
 ## Project Summary
 
